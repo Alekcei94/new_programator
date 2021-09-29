@@ -1,6 +1,23 @@
 import servis_method
+import save_options
 
-def read_otp_address(number_mk):
+
+# def queue_test_teams(number_mk):
+#     claster, number = servis_method.serch_claster_and_number(number_mk)
+#     servis_method.write_commands(ser, claster, number, 170, 0)  # AA
+#     servis_method.write_commands(ser, claster, number, 166, 56)  # not command
+#     servis_method.write_commands(ser, claster, number, 166, 7)
+#     servis_method.write_commands(ser, claster, number, 166, 48)
+#     servis_method.write_commands(ser, claster, number, 166, 0)
+#     servis_method.write_commands(ser, claster, number, 166, 1)
+#     servis_method.write_commands(ser, claster, number, 166, 94)
+#     servis_method.write_commands(ser, claster, number, 166, 6)
+#     servis_method.write_commands(ser, claster, number, 166, 140)
+#     servis_method.write_commands(ser, claster, number, 166, 219)
+#     pr(number_mk)
+
+
+def read_otp_address(number_mk, number_OTP_mem):
     address_otp_list = [[0, 248], [8, 248], [16, 248], [24, 248], [32, 248], [40, 248], [48, 248], [56, 248], [64, 248],
                         [72, 248], [80, 248], [88, 248], [96, 248], [104, 248], [112, 248], [120, 248], [128, 248],
                         [136, 248], [144, 248], [152, 248], [160, 248], [168, 248], [176, 248], [184, 248], [192, 248],
@@ -34,27 +51,31 @@ def read_otp_address(number_mk):
                         [136, 255], [144, 255], [152, 255], [160, 255], [168, 255], [176, 255], [184, 255], [192, 255],
                         [200, 255], [208, 255], [216, 255], [224, 255], [232, 255], [240, 255], [248, 255]]
 
-    for one_line in address_otp_list:
-        global ser
-        claster, number = servis_method.serch_claster_and_number(number_mk)
-        servis_method.write_commands(ser, claster, number, 170, 0)  # AA
-        servis_method.write_commands(ser, claster, number, 166, 228)  # A6 e4
-        servis_method.write_commands(ser, claster, number, 166, one_line[0])  # A6 data_0
-        servis_method.write_commands(ser, claster, number, 166, one_line[1])  # A6 data_1
-        address_otp_cod = read_data_in_mk(claster, number, 2)
+    global ser
+    claster, number = servis_method.serch_claster_and_number(number_mk)
+    servis_method.write_commands(ser, claster, number, 170, 0)  # AA
+    servis_method.write_commands(ser, claster, number, 166, 228)  # A6 e4
+    servis_method.write_commands(ser, claster, number, 166, address_otp_list[number_OTP_mem][0])  # A6 data_0
+    servis_method.write_commands(ser, claster, number, 166, address_otp_list[number_OTP_mem][1])  # A6 data_1
+    address_otp_cod = read_data_in_mk(claster, number, 2, False)
+    return address_otp_cod
 
 
-def read_temp(number_mk):
+def form_temp_cod_not_activ(number_mk):
     global ser
     claster, number = servis_method.serch_claster_and_number(number_mk)
     servis_method.write_commands(ser, claster, number, 170, 0)  # AA
     servis_method.write_commands(ser, claster, number, 166, 204)  # A6 CC
     servis_method.write_commands(ser, claster, number, 166, 68)  # A6 44
-    servis_method.write_commands(ser, claster, number, 165, 60)  # A5 #time.sleep(3)
+
+
+def read_temp_activ(number_mk):
+    global ser
+    claster, number = servis_method.serch_claster_and_number(number_mk)
     servis_method.write_commands(ser, claster, number, 170, 0)  # AA
     servis_method.write_commands(ser, claster, number, 166, 204)  # A6 CC
     servis_method.write_commands(ser, claster, number, 166, 190)  # A6 BE
-    temp_cod = read_data_in_mk(claster, number, 2)
+    temp_cod = read_data_in_mk(claster, number, 2, True)
 
 
 def read_address(number_mk):
@@ -65,59 +86,63 @@ def read_address(number_mk):
     address_mk = read_data_in_mk(claster, number, 8)
 
 
-def read_data_in_mk(claster, number, kolvo_byte):
+def pr(number_mk):
     global ser
-    servis_method.write_commands(ser, claster, number, 164, kolvo_byte)  # A4
-    buf = []
-    t_cod = 0
-    temperature = 0
-    for i in range(kolvo_byte):
-        data = ser.read()
-        print(data)
-        buf.append(data)
-    if len(buf) == 2:
-        t_cod = (int.from_bytes(buf[0], "big") | (int.from_bytes(buf[1], "big") << 8))
-        print("T_code: " + str(t_cod))
-        #temperature = float(t_cod * 0.0625)
-        #print("Temperature: " + str(temperature))
-    else:
-        print(int.from_bytes(buf, "big"))
-    '''lowb = ser.read()
-    #lowb = package.hex()
-    print(lowb)
-    #print(type(lowb))
-    highb = ser.read()
-    #highb = package.hex()
-    print(highb)
-    t_cod = (int.from_bytes(lowb, "big") | (int.from_bytes(highb, "big") << 8));
-    print("T_code: " + str(t_cod))
-    temperature = float(t_cod * 0.0625)
-    print("Temperature: " + str(temperature))'''
+    claster, number = servis_method.serch_claster_and_number(number_mk)
+    servis_method.write_commands(ser, claster, number, 168, 0)  # A8
+    sleep_slave(number, 250)
+    servis_method.write_commands(ser, claster, number, 165, 5)  # A5 #time.sleep(3)
+    servis_method.write_commands(ser, claster, number, 169, 0)  # A9
 
-    '''if len(package) < 12:
-        print(package.hex())
-        servis_method.write_commands(ser, claster, number, 164)
-        package = ser.readlines()
-        print(package)'''
-    # print("READ COD TEST: " + package)
+
+def read_data_in_mk(claster, number, number_of_bytes, read_flag):
+    global ser
+    servis_method.write_commands(ser, claster, number, 164, number_of_bytes)  # A4
+    start_stack_execution()
+    buf = []
+    address = []
+    temperature = 0
+    flag_ok = True
+    while flag_ok:
+        for i in range(number_of_bytes):
+            data = ser.read()
+            print(data)
+            if data != b'':
+                buf.append(data)
+        if len(buf) == 2 and not read_flag:
+            t_cod = (int.from_bytes(buf[0], "big") | (int.from_bytes(buf[1], "big") << 8))
+            print("T_code: " + str(t_cod))
+            flag_ok = False
+            temperature = float(t_cod * 0.0625)
+            print("Temperature: " + str(temperature))
+        elif len(buf) == 2 and read_flag:
+            t_cod = (int.from_bytes(buf[0], "big") | ((int.from_bytes(buf[1], "big") & 0x0f) << 8))
+            print("T_code_otp: " + str(t_cod))
+            flag_ok = False
+        else:
+            for j in range(len(buf)):
+                address.append(int.from_bytes(buf[j], "big"))
+            print("Address: " + str(address))
+            flag_ok = False
     return temperature
 
 
-def vdd(number_mk, switcher):
+# Если приходит Ложь, включить питание, иначе включить
+def all_vdd(switcher, first_mk, last_mk):
     global ser
-    if switcher == "on":
+    claster_first, number_first = servis_method.serch_claster_and_number(first_mk)
+    claster_last, number_last = servis_method.serch_claster_and_number(last_mk)
+    print(claster_first)
+    print(claster_last)
+    if not switcher:
         commands = 161
-    elif switcher == "off":
-        commands = 160
+        switcher = True
     else:
-        # Need print exeption
-        print("Error command vdd " + switcher)
-        return
-    claster, number = servis_method.serch_claster_and_number(number_mk)
-    # print(claster)
-    # print(number)
-    # print(commands)
-    servis_method.write_commands(ser, claster, number, commands, 0)
+        commands = 160
+        switcher = False
+    for iterator in range(claster_first, claster_last + 1):
+        servis_method.write_commands(ser, iterator, 10, commands, 0)
+    return switcher
 
 
 def get_number_mk():
@@ -125,34 +150,24 @@ def get_number_mk():
     return int(input())
 
 
+def start_stack_execution():
+    servis_method.write_commands(ser, 255, 255, 167, 0)  # A7
+
+
+def sleep_slave_all(first_mk, last_mk, timer):
+    claster_first, number_first = servis_method.serch_claster_and_number(first_mk)
+    claster_last, number_last = servis_method.serch_claster_and_number(last_mk)
+    time = int(timer / 50)
+    for iterator in range(claster_first, claster_last + 1):
+        servis_method.write_commands(ser, iterator, 10, 165, time)
+
+
+def sleep_slave(number_mk, timer):
+    claster, number = servis_method.serch_claster_and_number(number_mk)
+    time = int(timer / 50)
+    servis_method.write_commands(ser, claster, 10, 165, time)
+
+
 # ??
-ser = servis_method.get_ser_com()
-while True:
-    print("1 - read temp cod;")
-    print("2 - read address;")
-    print("3 - VDD on")
-    print("4 - VDD off")
-    print("enter commands:")
-    commands = str(input())
-    if commands == "1":
-        number_mk = get_number_mk()
-        read_temp(number_mk)
-        servis_method.write_commands(ser, 255, 255, 167, 0)  # A7
-    elif commands == "2":
-        number_mk = get_number_mk()
-        read_address(number_mk)
-        servis_method.write_commands(ser, 255, 255, 167, 0)  # A7
-    elif commands == "3":
-        number_mk = get_number_mk()
-        vdd(number_mk, "on")
-        servis_method.write_commands(ser, 255, 255, 167, 0)  # A7
-    elif commands == "4":
-        number_mk = get_number_mk()
-        vdd(number_mk, "off")
-        servis_method.write_commands(ser, 255, 255, 167, 0)  # A7
-    elif commands == "5":
-        vdd(number_mk, "on")
-        read_otp_address(number_mk)
-        servis_method.write_commands(ser, 255, 255, 167, 0)  # A7
-    else:
-        break
+# ser = servis_method.get_ser_com()
+ser = 12
