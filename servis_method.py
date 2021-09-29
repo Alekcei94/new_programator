@@ -6,20 +6,20 @@ import time
 def write_commands(ser, byte_0, byte_1, byte_2, byte_3):
     crc = form_crc(byte_0, byte_1, byte_2, byte_3)
     ser.write(bytes([byte_0]))
-    ser.flush()
+    #ser.flush()
     ser.write(bytes([byte_1]))
-    ser.flush()
+    #ser.flush()
     ser.write(bytes([byte_2]))
-    ser.flush();
+    #ser.flush();
     ser.write(bytes([byte_3]))
-    ser.flush();
+    #ser.flush();
     ser.write(bytes([crc]))
-    ser.flush();
-    print(bytes([byte_0]))
-    print(bytes([byte_1]))
-    print(bytes([byte_2]))
-    print(bytes([byte_3]))
-    print(bytes([crc]))
+    #ser.flush();
+    #print(bytes([byte_0]))
+    #print(bytes([byte_1]))
+    #print(bytes([byte_2]))
+    #print(bytes([byte_3]))
+    #print(bytes([crc]))
 
 
 def form_list_byte(pac):
@@ -30,7 +30,7 @@ def form_list_byte(pac):
 
 
 def get_ser_com():
-    ser = serial.Serial('COM3', 115200, timeout=1)
+    ser = serial.Serial('COM3', 115200, timeout=4)
     time.sleep(2)
     return ser
 
@@ -51,7 +51,7 @@ def get_com_port():
 
 def serch_claster_and_number(number_mk):
     if number_mk % 8 == 0:
-        claster = (number_mk // 8) - 1
+        claster = (number_mk // 8) - 1 + 16
         number = 8
     else:
         claster = number_mk // 8

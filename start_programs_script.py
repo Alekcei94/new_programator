@@ -37,19 +37,25 @@ class CommandsWindow(QtWidgets.QMainWindow):
         main.start_stack_execution()
 
     def readTemp(self):
-        for iterator_mk in range(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk') + 1):
+        for iterator_mk in range(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk')+1):
             main.form_temp_cod_not_activ(iterator_mk)
-        main.sleep_slave_all(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk'), 3000)
-        main.start_stack_execution()
-        for iterator_mk in range(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk') + 1):
+        main.sleep_slave_1(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk'), 3000)
+        #main.start_stack_execution()
+        for iterator_mk in range(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk')+1):
             main.read_temp_activ(iterator_mk)
 
     def readOTP(self):
-        iterator_step = 0
-        while iterator_step < 8:
-            for iterator_mk in range(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk')):
+
+        for iterator_mk in range(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk')+1):
+            iterator_step = 0
+            flag = main.all_vdd(getattr(saveOption, 'voltage_state'), getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk'))
+            setattr(saveOption, 'voltage_state', flag)
+            while iterator_step < 256:
                 main.read_otp_address(iterator_mk, iterator_step)
-            iterator_step += 1
+                iterator_step += 1
+            print("new mk")
+            flag = main.all_vdd(getattr(saveOption, 'voltage_state'), getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk'))
+            setattr(saveOption, 'voltage_state', flag)
 
 
     def writeREZ(self):
@@ -62,7 +68,7 @@ class CommandsWindow(QtWidgets.QMainWindow):
         print("not work")
 
     def readID(self):
-        for iterator_mk in range(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk') + 1):
+        for iterator_mk in range(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk')+1):
             main.read_address(iterator_mk)
 
     def writeEN2(self):
