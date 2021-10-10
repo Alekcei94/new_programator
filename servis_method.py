@@ -2,7 +2,6 @@ import serial
 import sys
 import time
 
-
 def write_commands(ser, byte_0, byte_1, byte_2, byte_3):
     crc = form_crc(byte_0, byte_1, byte_2, byte_3)
     ser.write(bytes([byte_0]))
@@ -45,7 +44,7 @@ def search_claster_and_number(number_mk):
         number = 8
     else:
         claster = number_mk // 8
-        number = (number_mk - (claster) * 8)
+        number = (number_mk - claster * 8)
         claster = claster + 16
     return claster, number
 
@@ -114,7 +113,6 @@ def read_data_in_mk(claster, number, number_of_bytes, read_flag):
     while flag_ok:
         for i in range(number_of_bytes):
             data = ser.read()
-            # print(data)
             if data != b'':
                 buf.append(data)
         if len(buf) == 2 and not read_flag:

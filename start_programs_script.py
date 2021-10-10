@@ -56,20 +56,25 @@ class CommandsWindow(QtWidgets.QMainWindow):
             servis_method.all_vdd(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk'), saveOption)
 
     def writeREZ(self):
-        print("not work")
+        # Рализовать чтение всех данных с мк и передача его в метод массивом
+        for iterator_mk in range(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk') + 1):
+            basic_commands_onewire.write_REZ(iterator_mk)
 
     def writeID(self):
-        print("not work")
+        for iterator_mk in range(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk') + 1):
+            print("not work")
 
     def writeOTP(self):
-        print("not work")
+        for iterator_mk in range(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk') + 1):
+            print("not work")
 
     def readID(self):
         for iterator_mk in range(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk') + 1):
             basic_commands_onewire.read_address(iterator_mk)
 
     def writeEN2(self):
-        print("not work")
+        for iterator_mk in range(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk') + 1):
+            print("not work")
 
 
 class MainWindow(QtWidgets.QMainWindow):
@@ -89,7 +94,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.w1.show()
 
 
-saveOption = save_options.SaveOption(1, 6)
+saveOption = save_options.SaveOption()
 voltage_state = False
 if __name__ == '__main__':
     app = QApplication(sys.argv)

@@ -1,4 +1,5 @@
 import servis_method
+import program_logic
 import save_options
 import time
 
@@ -16,6 +17,7 @@ import time
 #     servis_method.write_commands(ser, claster, number, 166, 140)
 #     servis_method.write_commands(ser, claster, number, 166, 219)
 #     pr(number_mk)
+
 
 # формирование температурного кода без активатора
 def form_temp_cod_not_active(number_mk):
@@ -35,6 +37,7 @@ def read_temp_active(number_mk):
     servis_method.write_commands(ser, claster, number, 166, 190)  # A6 BE
     temp_cod = servis_method.read_data_in_mk(claster, number, 2, False)
 
+
 # чтеине ИД адреса микросхемы
 def read_address(number_mk):
     global ser
@@ -42,6 +45,7 @@ def read_address(number_mk):
     servis_method.write_commands(ser, claster, number, 170, 0)  # AA
     servis_method.write_commands(ser, claster, number, 166, 51)  # A6 33
     address_mk = servis_method.read_data_in_mk(claster, number, 8, True)
+
 
 # чтение адреса отп одной ячейки
 def read_otp_address(number_mk, number_OTP_mem):
@@ -87,6 +91,7 @@ def read_otp_address(number_mk, number_OTP_mem):
     address_otp_cod = servis_method.read_data_in_mk(claster, number, 2, True)
     return address_otp_cod
 
+
 # Записать REZ
 def write_REZ(number_mk):
     global ser
@@ -94,6 +99,7 @@ def write_REZ(number_mk):
     servis_method.write_commands(ser, claster, number, 170, 0)  # AA
     # команда страта записи REZ
     servis_method.write_commands(ser, claster, number, 166, 120)  # A6 78
+    servis_method.write_commands(ser, claster, number, 166, program_logic.write_REZ('''вставить сюда бинарный код'''))  # A6 бит записи REZ
 
 # Записаь ИД микросхемы (основного адреса)
 def write_ID(number_mk):
@@ -104,8 +110,13 @@ def write_ID(number_mk):
     servis_method.write_commands(ser, claster, number, 166, 56)  # A6 38
     # Запись данных
 
+
 # Запись памяти ОТП
 def write_OTP(number_mk):
+    global ser
+    claster, number = servis_method.search_claster_and_number(number_mk)
+    servis_method.write_commands(ser, claster, number, 170, 0)  # AA
+    servis_method.write_commands(ser, claster, number, 166, 0)  # A6 не настроенна команда
 
 
 # Запись коэффициентов К и В
@@ -115,8 +126,14 @@ def write_mem_K_and_B(number_mk):
     servis_method.write_commands(ser, claster, number, 170, 0)  # AA
     # Запись К и В
     servis_method.write_commands(ser, claster, number, 166, 56)  # A6 38
+
+
 # записать EN2 (переводит работу микросхему на память ОТП)
 def write_EN2(number_mk):
+    global ser
+    claster, number = servis_method.search_claster_and_number(number_mk)
+    servis_method.write_commands(ser, claster, number, 170, 0)  # AA
+    servis_method.write_commands(ser, claster, number, 166, 0)  # A6 не настроенна команда
 
 
 # Данное место необходимо переделать

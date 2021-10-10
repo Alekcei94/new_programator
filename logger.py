@@ -1,5 +1,5 @@
 
-def new_parth_logger(number):
+def new_path_logger(number):
     global path_in_data
     if number == 0:
         f = open(path_in_data + 'logger_user.lg', 'w')

@@ -1,166 +1,76 @@
 # -*- coding: utf-8 -*-
 import os.path
-import serial
 import time
-import datetime
 import os
-import shutil
-import re
 from scipy import interpolate
 from threading import Thread
+import other_devices
 
 '''
 COMMANDS MICROCHIP
 '''
 
-# READ MAIN ADDRESS CHIP
-def read_address(textbox):
-    global ser
-    write_log('Команда считать основной адрес микросхем ' + '\n', 0)
-    address_list = []
-    command = 7
-    for i in range(get_number_start_chip(), get_number_finish_chip() + 1):
-        # write_package( i, command, 0, 0, 0, 0, 0, 0, 0, 0, textbox )
-        for j in range(26):
-            write_package(i, command, 0, 0, 0, 0, 0, 0, 0, 0, textbox)
-            time.sleep(0.5)
-            address = ser.readlines()
-            print(address)
-            if len(address) > 0:
-                break
-        if len(address) == 0:
-            write_log('Считывание адреса с микросхемы номер ' + str(i) + ' неудалось ' + '\n', 1)
-            address_list.append(str(i) + ':' + str(0))
-            textbox.insert(END, "Chip " + str(i) + ' : ' + 'no address' + '\n')
-        else:
-            write_log('Считывание основного с микросхемы номер ' + str(i) + ' получили адрес ' + str(address) + '\n', 1)
-            address_list.append(str(i) + ':' + str(address))
-            textbox.insert(END, "Chip " + str(i) + ' : ' + str(address) + '\n')
-    return address_list
-
 
 # WRITE OTP MEMORY
-def write_OTP_block(textbox):
+def write_OTP_block():
     if check_click("Записать память ОТР?"):
-        write_package(255, 1, 0, 0, 0, 0, 0, 0, 0, 0, textbox)
-        time.sleep(0.5)
-        write_log('Команда записать память ОТП ' + '\n', 0)
         for i in range(get_number_start_chip(), get_number_finish_chip() + 1):
-            # ~write_package(i, 1, 1, 0, 0, 0, 0, 0, 0, 0, textbox)
-            # ~
+            calculation_ADDRESS_and_KOD(i)
             iter = 0
             while iter < 25:
-                write_package(i, 1, 1, 0, 0, 0, 0, 0, 0, 0, textbox)
-                time.sleep(1)
-                iter += 1
-                if check_mess_microchip():
-                    # print("Up voltage chip " + str(i))
-                    break
-
-            time.sleep(2)
-            calculation_ADDRESS_and_KOD(i, textbox)
-            # ~
-            iter = 0
-            while iter < 25:
-
                 write_package(i, 1, 0, 0, 0, 0, 0, 0, 0, 0, textbox)
                 time.sleep(1)
                 iter += 1
                 if check_mess_microchip():
-                    # print("Down voltage chip " + str(i))
                     break
-            # ~write_package( i, 1, 0, 0, 0, 0, 0, 0, 0, 0, textbox )
             time.sleep(1)
-        write_package(255, 1, 0, 0, 0, 0, 0, 0, 0, 0, textbox)
 
 
 # READ OTP MEMORY
-def read_OTP_block(textbox):
-    write_log('Команда считать память ОТП ' + '\n', 0)
+def read_OTP_block():
     for i in range(get_number_start_chip(), get_number_finish_chip() + 1):
-        give_me_OTP_address(i, textbox)
+        give_me_OTP_address(i)
 
 
 # WRITE MAIN ADDRESS CHIP
-def write_address(textbox):
-    textbox.insert(END, "Start write ADDRESS." + "\n")
+def write_address():
     if check_click("Записать основной адрес?"):
-        write_log('Команда записать основной адрес ' + '\n', 0)
         for i in range(get_number_start_chip(), get_number_finish_chip() + 1):
-            write_main_address(i, textbox)
-        textbox.insert(END, "Finish write ADDRESS." + "\n")
-
-
-# WRITE ENABLE 2
-def write_en_2(textbox):
-    if check_click("Записать бит enable_2 ?"):
-        write_log('Команда записать бить enable_2 ' + '\n', 0)
-        for i in range(get_number_start_chip(), get_number_finish_chip() + 1):
-            write_log('Команда записать бить enable_2 в микросхеме номер ' + str(i) + '\n', 1)
-            write_package(i, 10, 0, 0, 0, 0, 0, 0, 0, 0, textbox)
-            if not check_mess_microchip():
-                write_log('Команда записать бить enable_2 не прошла в микросхеме номер ' + str(i) + '\n', 1)
-                textbox.insert(END, 'Error, not write enable 2 in chip ' + str(i) + '\n')
-        print("Записать enable_2 завершена.")
-
-
-# WRITE REZ
-def write_rez(textbox):
-    textbox.insert(END, "Start write REZ.")
-    if check_click("записать rez?"):
-        write_log('Команда записать rez ' + '\n', 0)
-        form_temperature_in_all_chips(textbox)
-        if not check_mess_microchip():
-            return
-        time.sleep(3)
-        for i in range(get_number_start_chip(), get_number_finish_chip() + 1):
-            time.sleep(0.5)
-            binary_cod = give_me_temperature_chip(textbox, i)
-            print(binary_cod)
-            if len(binary_cod) < 12:
-                textbox.insert(END, 'Error length binary_cod < 12 in chip = ' + str(i) + '\n')
-            else:
-                write_main_rez(textbox, binary_cod, i)
-                if not check_mess_microchip():
-                    textbox.insert(END, 'Error not write REZ in chip ' + str(i) + '\n')
-                else:
-                    textbox.insert(END, 'Chip write REZ ' + str(i) + ' OK' + '\n')
-        textbox.insert(END, "Finish write REZ.")
+            write_main_address(i)
 
 
 # WRITE COEFFICIENT CHIP K AND B
-def write_coefficient_k_and_b(textbox):
+def write_coefficient_k_and_b():
     if check_click("Записать коэффициенты К и В"):
         for i in range(get_number_start_chip(), get_number_finish_chip() + 1):
             calculation_coefficients(i, textbox)
 
 
 # FINALY TEST ALL CHIP
-def finaly_test_all_chip(textbox):
+def finally_test_all_chip():
     quentity_mk = get_number_start_chip() + get_number_finish_chip() - 1
-    work_spec(125)
+    other_devices.work_spec(125)
     time.sleep(2400)
     i = 125
     while i >= -60:
         for step_200 in range(int(144 / quentity_mk)):
             list_temp = []
-            # list_temp = check_real_temperature(textbox)
             port = get_number_start_chip()
-            list_temp = check_real_temperature(textbox)
+            list_temp = check_real_temperature()
             print("List temp = " + str(list_temp))
-            while list_temp == None:
-                list_temp = check_real_temperature(textbox)
+            while list_temp is None:
+                list_temp = check_real_temperature()
             for temp in list_temp:
                 print("Step = " + str(step_200) + "; port = " + str(port) + "; temp chip = " + str(
                     temp) + "temp spec = " + str(i))
-                file_text = open('../finaly_test/' + str(port) + '.txt', 'a')
+                file_text = open('../finally_test/' + str(port) + '.txt', 'a')
                 file_text.write(str(temp) + '\n')
                 port += 1
         i -= 2
-        work_spec(i)
+        other_devices.work_spec(i)
 
     for i in range(get_number_start_chip(), get_number_finish_chip() + 1):
-        file_path_data = open('../finaly_test/' + str(i) + '.txt', 'r')
+        file_path_data = open('../finally_test/' + str(i) + '.txt', 'r')
         list_data_file = []
         for line in file_path_data:
             list_data_file.append(float(line))
@@ -171,68 +81,20 @@ def finaly_test_all_chip(textbox):
                     list_data_file[line + 1]):
                 print("Error work chip = " + str(i) + "; temp left = " + str(
                     list_data_file[line]) + ' temp last = ' + str(list_data_file[line + 1]) + '\n')
-                file_text = open('../finaly_test/ERROR_list.txt', 'a')
+                file_text = open('../finally_test/ERROR_list.txt', 'a')
                 file_text.write("Error work chip = " + str(i) + "; temp left = " + str(
                     list_data_file[line]) + ' temp last = ' + str(list_data_file[line + 1]) + '\n')
     print("Test finished!!!!")
 
 
 # WRITE DATA IN FILE
-'''
-def read_temperature_and_write_data_file(textbox):
-    global path_in_data
-    path_temperature_file = "C:/main_programs_micros/data/temperature.txt"
-    # for i in range(8):
-    if check_click("Начать измерения?"):
-        temperature_list = get_list_temperature()
-        for i in range(len(temperature_list)):
-            work_termostrim(i, temperature_list)
-            array_temperature = main_function_MIT(get_com_port_MIT(), form_array_list_port())
-            list_line_binary = read_temperature(textbox)
-            # if len(list_line_binary) == 0:
-            #    list_line_binary = read_temperature(textbox)
-            port = get_number_start_chip()
-            iterator = 0
-            while True:
-                time.sleep(0.5)
-                flag_read = True
-                for elem in list_line_binary:
-                    if len(elem) == 0:
-                        print("Double start read temperature")
-                        flag_read = False
-                        list_line_binary = read_temperature(textbox)
-                if flag_read:
-                    break
-            write_temperature(array_temperature)
-            for elem in list_line_binary:
-                try:
-                    if len(elem) == 0:
-                        print("ERROR" + str(port))
-                        port += 1
-                        continue
-                    real_temperature_12_bit = elem[4:len(elem)]
-                    # list_elem = list(elem)
-                    # for i in range(4, len(elem)):
-                    #    real_temperature_12_bit += str(list_elem[i])
-                    file_text = open(path_in_data + str(port) + '.txt', 'a')
-                    file_text.write(str(get_mid_number_array_temperature(array_temperature)) + " " + str(
-                        int(real_temperature_12_bit, 2)) + " " + str(elem) + '\n')
-                    file_text.close()
-                    port += 1
-                    iterator += 1
-                except:
-                    port += 1
-                    iterator += 1
-'''
-
-
 def read_temperature_and_write_data_file(textbox):
     global path_in_data
     if check_click("Начать измерения?"):
         temperature_list = get_list_temperature()
         for i in range(len(temperature_list)):
             # work_termostrim(temperature_list[i])
-            work_spec(temperature_list[i])
+            other_devices.work_spec(temperature_list[i])
             if i == 0:
                 for j in range(8):
                     # time.sleep(4800)
@@ -285,7 +147,7 @@ def read_temperature_and_write_data_file(textbox):
                 except:
                     port += 1
                     iterator += 1
-        work_spec(25)
+        other_devices.work_spec(25)
 
 
 def get_mid_number_array_temperature(array_temperature):
@@ -293,27 +155,17 @@ def get_mid_number_array_temperature(array_temperature):
     size = len(array_temperature) - 1
     for i in range(len(array_temperature) - 1):
         sum += array_temperature[i]
-    itog = sum / size
-    itog = round(itog, 2)
-    return itog
+    total = sum / size
+    total = round(total, 2)
+    return total
 
 
-def work_new_parth():
+def work_new_path():
     if check_click("Загрузили новую партию микросхем?"):
-        new_parth_logger(0)
-        new_parth_logger(1)
         new_file_main_address()
         new_parth_temp()
         f = open('../data/file_error.txt', 'w')
         f.close()
-
-
-def get_temperature_in_chip_on_MIT(array_temperature, port):
-    file = open('../configuration/map_MIT_and_chip.txt', 'r')
-    for line in file:
-        if int(line.split(':')[0]) == port:
-            return int(line.split(':')[1]) - 1
-    return 999
 
 
 '''
@@ -324,18 +176,18 @@ FORM ADDRESS FILE
 '''
 
 
-def form_address_file(textbox):
+def form_address_file():
     if check_click(
             "Запистаь все адреса микросхем в файл?" + "\n" + "ВАЖНО. Данная функция необходима только при работе с новой партией."):
-        str = read_address(textbox)
+        str = read_address()
         f = open('../data/address.txt', 'w')
         for i in str:
             f.write(i + '\n')
         f.close
 
 
-def check_address(textbox):
-    str = read_address(textbox)
+def check_address():
+    str = read_address()
     str_check = []
     f = open('./address.txt', 'r')
     for i in f:
@@ -354,47 +206,9 @@ END FORM ADDRESS FILE
 TEST BLOCK 
 '''
 
-'''
-def give_real_temperature(number_chip, textbox):
-    global ser
-    command = 2
-    parameters = 0  # ? OR 2
-    write_package(number_chip, command, parameters, 0, 0, 0, 0, 0, 0, 0, textbox)
-    str_bit_in_chip = ""
-    iterator_commands = 0
-    for i in range(25):
-        if iterator_commands == 10:
-            write_package(number_chip, command, parameters, 0, 0, 0, 0, 0, 0, 0)
-        time.sleep(0.5)
-        bit_in_chip = ser.readlines()
-        # print(bit_in_chip)
-        if len(bit_in_chip) > 0:
-            # str_bit_in_chip = str( bit_in_chip )[2:len( str( bit_in_chip ) ) - 4]
-            break
-        iterator_commands += 1
-    new_bit = (str(bit_in_chip)[6:len(bit_in_chip) - 5])
-    if len(bit_in_chip) == 0:
-        print('Chip ' + str(number_chip) + ' : ' + 'no temperature' + '\n')
-        return 0
-    temperature = 1
-    if new_bit[0] == '1':
-        temperature = -1
-        test = []
-        for iter_bit in range(1, len(new_bit)):
-            if new_bit[iter_bit] == "1":
-                test.append('0')
-            else:
-                test.append('1')
-        str_test = "".join(test)
-        return temperature * int(str_test, 2) * 0.0625
-    textbox.insert(END, 'Chip ' + str(number_chip) + ' : ' + str(temperature * int(new_bit, 2) * 0.0625) + '\n')
-    print(temperature * int(new_bit, 2) * 0.0625)
-    return temperature * int(new_bit, 2) * 0.0625
-'''
 
-
-def check_real_temperature(textbox):
-    form_temperature_in_all_chips(textbox)
+def check_real_temperature():
+    form_temperature_in_all_chips()
     if not check_mess_microchip():
         return
     time.sleep(3)
@@ -402,14 +216,14 @@ def check_real_temperature(textbox):
     for i in range(get_number_start_chip(), get_number_finish_chip() + 1):
         time.sleep(0.3)
         try:
-            list_temp.append(give_real_temperature(i, textbox))
+            list_temp.append(give_real_temperature(i))
         except:
             list_temp.append(-999)
-            print('chip ' + str(i) + ' no worck')
+            print('chip ' + str(i) + ' no work')
     return list_temp
 
 
-def give_real_temperature(number_chip, textbox):
+def give_real_temperature(number_chip):
     global ser
     command = 2
     parameters = 0  # ? OR 2
@@ -425,7 +239,7 @@ def give_real_temperature(number_chip, textbox):
             break
     new_byte = (str(bit_in_chip)[6:len(bit_in_chip) - 5])
     if len(new_byte) == 0:
-        textbox.insert(END, 'Chip ' + str(number_chip) + ' : ' + 'no temperature' + '\n')
+        print('Chip ' + str(number_chip) + ' : ' + 'no temperature' + '\n')
     temperature = 1
     if new_byte[0] == '1':
         temperature = -1
@@ -438,11 +252,9 @@ def give_real_temperature(number_chip, textbox):
         str_test = "".join(test)
         temperature = temperature * int(str_test, 2) * 0.0625
         print(temperature)
-        textbox.insert(END, 'Chip ' + str(number_chip) + ' : ' + str(temperature) + '\n')
     else:
         temperature = temperature * int(new_byte, 2) * 0.0625
         print(temperature)
-        textbox.insert(END, 'Chip ' + str(number_chip) + ' : ' + str(temperature) + '\n')
     return temperature
 
 
@@ -452,7 +264,7 @@ BLOCK VERIFICATION WORK CHIPS
 
 
 # VERIFICATION CHIPS
-def verification_chips(textbox):
+def verification_chips():
     global max_current
     write_package(255, 1, 0, 0, 0, 0, 0, 0, 0, 0, textbox)
     time.sleep(0.5)
@@ -478,92 +290,9 @@ def verification_chips(textbox):
         time.sleep(0.5)
     write_package(255, 1, 0, 0, 0, 0, 0, 0, 0, 0, textbox)
 
-
-def block_check_current_chip(i, textbox):
-    global max_current
-    name_source = get_number_source()
-    # print(name_source)
-    if "1" in str(name_source):
-        current = read_current_yokogawa()
-    elif "2" in str(name_source):
-        current = read_current_regol()
-    else:
-        textbox.insert(END, "ERROR NOT WORK CONNECTION SOURCE!")
-    if current >= max_current:
-        textbox.insert(END, "ERROR current MAX limit " + str(i) + " " + '\n')
-    return current
-
-
 '''
 END BLOCK VERIFICATION WORK CHIPS 
 '''
-
-'''
-BLOCK SOURCE
-'''
-
-
-# YOKOGAWA
-def read_current_yokogawa():
-    print(var)
-    return "0.254"
-
-
-# REGOL
-def read_current_regol():
-    rm = visa.ResourceManager()
-    lst = rm.list_resources('?*')
-    # print(lst)
-    my_instrument = rm.open_resource(lst[0])
-    # print(my_instrument)
-
-    my_instrument.write(":MEAS:CURR?")
-    current_variable = my_instrument.read()
-    # print(str(current_variable))
-    return float(current_variable)
-
-
-'''
-END BLOCK SOURCE
-'''
-
-'''
-BLOCK TERMOSTRIM
-'''
-
-
-def work_spec(temperature):
-    rm = visa.ResourceManager()
-    lst = rm.list_resources()
-    print(lst)
-    my_instrument = rm.open_resource(lst[0])
-    my_instrument.write('01,MODE,CONSTANT')
-    my_instrument.write('01,TEMP,S' + str(temperature))
-    print("Test")
-
-
-# my_instrument.write('01,TEMP,S129')
-
-def work_termostrim(temperature):
-    rm = visa.ResourceManager()
-    lst = rm.list_resources()
-    print(lst)
-    for name_connection_device in lst:
-        match = re.findall('GPIB\d+::\d+::INSTR', name_connection_device)
-        if match:
-            break
-    my_instrument = rm.open_resource(match[0])
-    if temperature < 20:
-        my_instrument.write('SETN 2')
-    elif temperature < 35:
-        my_instrument.write('SETN 1')
-    else:
-        my_instrument.write('SETN 0')
-    time.sleep(5)
-    commands = "SETP " + str(temperature)
-    my_instrument.write(commands)
-    time.sleep(5)
-
 
 '''
 BLOCK WRITE REZ
@@ -571,7 +300,7 @@ BLOCK WRITE REZ
 
 
 # WRITE REZ
-def write_main_rez(textbox, binary_cod, number_chip):
+def write_REZ(binary_cod):
     switch_case = {
         23: 0,
         22: 1,
@@ -593,10 +322,9 @@ def write_main_rez(textbox, binary_cod, number_chip):
             try:
                 data_1 = switch_case[28 - i]
                 print(data_1)
-                write_package(number_chip, 5, data_1, 0, 0, 0, 0, 0, 0, 0, textbox)
-                break
+                return data_1
             except:
-                textbox.insert(END, 'Error REZ not True in chip ' + str(number_chip) + '\n')
+                print('Error REZ not True in chip ' + str(number_chip) + '\n')
 
 
 '''
@@ -606,38 +334,6 @@ END BLOCK WRITE REZ
 '''
 BLOCK SAVE ARCHIVE
 '''
-
-
-def main_save_archive():
-    if check_click("Сохранить все данные в архив и удалить файлы в текущих папках?"):
-        now = datetime.datetime.now()
-        form_path = str(now.day) + "_" + str(now.month) + "_" + str(now.year)
-        try:
-            os.mkdir("../archive/" + form_path)
-        except:
-            print("Создать директорию не удалось")
-        path_data_archive = "../archive/" + form_path + "/data/"
-        path_address_archive = "../archive/" + form_path + "/address/"
-        path_finaly_test_archive = "../archive/" + form_path + "/finaly_test/"
-        try:
-            os.mkdir(path_data_archive)
-            os.mkdir(path_address_archive)
-            os.mkdir(path_finaly_test_archive)
-        except:
-            print("Создать директорию не удалось")
-
-        list_file_data = os.listdir("../data/")
-        for i in list_file_data:
-            shutil.copyfile("../data/" + i, path_data_archive + i)
-            os.remove("../data/" + i)
-        list_file_address = os.listdir("../address/")
-        for i in list_file_address:
-            shutil.copyfile("../address/" + i, path_address_archive + i)
-            os.remove("../address/" + i)
-        list_file_finaly_test = os.listdir("../finaly_test/")
-        for i in list_file_finaly_test:
-            shutil.copyfile("../finaly_test/" + i, path_finaly_test_archive + i)
-            os.remove("../finaly_test/" + i)
 
 
 '''
@@ -650,12 +346,10 @@ BLOCK WRITE COEFFICIENTS
 
 
 # MAIN COEFFICIENT CALCULATION METHOD
-def calculation_coefficients(number_chip, textbox):
+def calculation_coefficients(number_chip):
     x_list_in_file, y_list_in_file = readFile(str(number_chip))
 
-    # ~all_x_in_interpol, all_y_in_interpol = interpol(x_list_in_file, y_list_in_file)
     k, b = get_k_and_b(x_list_in_file, y_list_in_file)
-    # k, b = min_kv(all_x_in_interpol, all_y_in_interpol)
 
     k_ideal, b_ideal = get_ideal_k_and_b()
     k_real = round(float(k_ideal / k), 4)
@@ -665,12 +359,12 @@ def calculation_coefficients(number_chip, textbox):
 
 
 # METHOD OF RECORDING THE COEFFICIENTS OF K AND B IN CHIP
-def write_coefficient(coefK, coefB, number_chip, textbox):
+def write_coefficient(coefK, coefB, number_chip):
     try:
         print('Chip = ' + str(number_chip) + ' coefK = ' + str(coefK) + ' coefB = ' + str(coefB) + '\n')
         bin_code_coef_b = []
         bin_code_corf_k = []
-        # for ele in coefB:
+
         x = int(coefB)
         bin_code_ele_b = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
         i = 0
@@ -694,7 +388,6 @@ def write_coefficient(coefK, coefB, number_chip, textbox):
             coef_b_text = coef_b_text + str(z)
         print("b = " + coef_b_text)
 
-        # for ele in coefK:
         x = float(coefK)
         bin_code_ele_k = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
         int_x = int(x)
@@ -722,6 +415,7 @@ def write_coefficient(coefK, coefB, number_chip, textbox):
             pacet.append(bin_code_corf_k[i])
         for i in range(0, 14):
             pacet.append(bin_code_coef_b[i])
+
         # enable 1
         pacet.append(1)
         for i in range(4):
@@ -759,7 +453,7 @@ def write_coefficient(coefK, coefB, number_chip, textbox):
             elif "OK" in str(say_black_box):
                 break
             elif "ER" in str(say_black_box):
-                textbox.insert(END, 'Error coefficient K and B not write in chip ' + str(number_chip) + '\n')
+                print('Error coefficient K and B not write in chip ' + str(number_chip) + '\n')
                 break
     except:
         print("Микросхема " + str(number_chip) + " не запрограмммировалась.")
@@ -779,17 +473,17 @@ def get_k_and_b(x_list_in_file, y_list_in_file):
 # LAST SQUARES OPTIMIZATION METHOD
 def min_kv(x_list_interval, y_list_interval):
     summa_x = 0
-    kv_summ_x = 0
+    kv_sum_x = 0
     summa_y = 0
-    summ_x_y_proizv = 0
+    sum_x_y_proizv = 0
     for i in range(len(x_list_interval)):
         summa_x = summa_x + x_list_interval[i]
-        kv_summ_x = kv_summ_x + (x_list_interval[i] * x_list_interval[i])
+        kv_sum_x = kv_sum_x + (x_list_interval[i] * x_list_interval[i])
         summa_y = summa_y + y_list_interval[i]
-        summ_x_y_proizv = summ_x_y_proizv + (x_list_interval[i] * y_list_interval[i])
-    delta = (kv_summ_x * len(x_list_interval)) - (summa_x * summa_x)
-    delta_k = (summ_x_y_proizv * len(x_list_interval)) - (summa_y * summa_x)
-    delta_b = (kv_summ_x * summa_y) - (summ_x_y_proizv * summa_x)
+        sum_x_y_proizv = sum_x_y_proizv + (x_list_interval[i] * y_list_interval[i])
+    delta = (kv_sum_x * len(x_list_interval)) - (summa_x * summa_x)
+    delta_k = (sum_x_y_proizv * len(x_list_interval)) - (summa_y * summa_x)
+    delta_b = (kv_sum_x * summa_y) - (sum_x_y_proizv * summa_x)
 
     coef_k = float(delta_k / delta)
     coef_b = float(delta_b / delta)
@@ -831,20 +525,6 @@ def readFile(number_chip):
         pass
 
 
-# BUILD GRAPH
-def build_graph(xlist_test1, ylist_test1):
-    test_array = []
-    for i in range(len(xlist_test1)):
-        test_array.append(i)
-    plt.axis([-10, 160, -10000, 10000])
-    print(xlist_test1)
-    print(test_array)
-    print(ylist_test1)
-    plt.plot(test_array, xlist_test1, color='red')
-    plt.plot(test_array, ylist_test1, color='blue')
-    plt.show()
-
-
 '''
 END BLOCK WRITE COEFFICIENTS
 '''
@@ -854,13 +534,12 @@ BLOCK READ OTP
 '''
 
 
-def give_me_OTP_address(port, textbox):
+def give_me_OTP_address(port):
     global path_in_address_all_memory_otp_in_one_chip
     file_text = open(path_in_address_all_memory_otp_in_one_chip + str(port) + '.txt', 'w')
     file_text.close()
     command = 9
     for i in range(256):
-        # time.sleep(0.8)
         print('\n')
         print(i)
         bit_address = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1]
@@ -882,7 +561,6 @@ def give_me_OTP_address(port, textbox):
             else:
                 byte += str(bit)
                 iterator += 1
-            # print(package)
         time.sleep(0.1)
         write_package(port, command, package[0], package[1], 0, 0, 0, 0, 0, 0, textbox)
         iterator_break = 0
@@ -906,8 +584,6 @@ def form_KOD(all_lines, address, port):
     list = all_lines.split(" ")
     low = list[0]
     high = list[1]
-    # print(low)
-    # print(high)
     result_array = []
     for i in range(len(high) - 2):
         result_array.append(high[i])
@@ -923,7 +599,6 @@ def form_KOD(all_lines, address, port):
 def write_File_All_ADDRESS_In_One_Chip(address, kod, port):
     global path_in_address_all_memory_otp_in_one_chip
     file_text = open(path_in_address_all_memory_otp_in_one_chip + str(port) + '.txt', 'a')
-    # for i in range(acc.get_start_arduino_port(), acc.get_finish_arduino_port()+1):
     file_text.write(str(address) + " | " + str(kod) + '\n')
     file_text.close()
 
@@ -957,11 +632,9 @@ def read_file(number_chip):
     return text_in_file
 
 
-def main_check_OTP_memory(number_chip, flag_final_test, textbox):
+def main_check_OTP_memory(number_chip, flag_final_test):
     writer_file = read_file_writer(number_chip)
     data_file = read_file(number_chip)
-    # print(len(writer_file))
-    # print(len(data_file))
     if len(writer_file) != len(data_file):
         print("ERROR")
         return
@@ -970,11 +643,9 @@ def main_check_OTP_memory(number_chip, flag_final_test, textbox):
         line_data = data_file[iterator_line].split(' | ')
         byte_data = str(line_data[1])
         byte_data = byte_data[:12]
-        # print(byte_data)
         byte_writer = str(line_writer[1])
         byte_writer = byte_writer[11:23]
         byte_writer = byte_writer[::-1]
-        # print(byte_writer)
         value = ""
         address_memory = str(line_writer[0])
         for iterator in range(len(byte_writer)):
@@ -983,25 +654,24 @@ def main_check_OTP_memory(number_chip, flag_final_test, textbox):
             else:
                 value += "0"
         value_int = int(value, 2)
-        flag_rezelt = True
+        flag_result = True
         if value_int != 0:
-            if flag_final_test == False:
-                write_log(" Микросхема " + str(number_chip) + " память ОТП записанна не корректно ", 1)
+            if not flag_final_test:
                 print(" Микросхема " + str(number_chip) + " ошибка записи ячейки памяти " + str(
                     int(address_memory)) + "\n")
                 file_er = open('../data/file_error.txt', 'a')
                 file_er.write(" Микросхема " + str(number_chip) + " ошибка записи ячейки памяти " + str(
                     int(address_memory)) + "\n")
                 file_er.close()
-                write_OTP(int(address_memory), int(value, 2), number_chip, textbox, False)
+                write_OTP(int(address_memory), int(value, 2), number_chip, False)
                 time.sleep(0.5)
-                flag_rezelt = False
+                flag_result = False
             else:
                 file_er = open('../data/file_error.txt', 'a')
                 file_er.write(" Микросхема " + str(number_chip) + " память ОТП записанна не корректно" + "\n")
                 file_er.close()
-                flag_rezelt = False
-        return flag_rezelt
+                flag_result = False
+        return flag_result
 
 
 '''
@@ -1013,15 +683,11 @@ BLOCK WRITE OTP
 '''
 
 
-def calculation_ADDRESS_and_KOD(port, textbox):
+def calculation_ADDRESS_and_KOD(port):
     global path_in_address_all_memory_otp_in_one_chip_write
     try:
         x_list_in_file, y_list_in_file = readFile(port)
         all_x_in_interpol, all_y_in_interpol = interpol(x_list_in_file, y_list_in_file)
-        # print("TEST-->")
-        # print(all_x_in_interpol)
-        # print(all_y_in_interpol)
-        # print("<--")
         # not TRUE
         k, b = get_k_and_b(x_list_in_file, y_list_in_file)
         # k, b = min_kv(all_x_in_interpol, all_y_in_interpol)
@@ -1030,11 +696,8 @@ def calculation_ADDRESS_and_KOD(port, textbox):
         k_ideal, b_ideal = get_ideal_k_and_b()
         k_real = round(float(k_ideal / k), 4)
         b_real = -1 * ((k_ideal / k) * b) + b_ideal
-        iterator = 0
-        # address = []
         kod, address = form_array_in_read_file(all_x_in_interpol, all_y_in_interpol, x_list_in_file, y_list_in_file,
-                                               k_real,
-                                               b_real, k_line_kod, b_line_kod)
+                                               k_real, b_real, k_line_kod, b_line_kod)
         kod, address = check_formed_array(kod, address)
         kod, address = check_formed_array_2(kod, address)
         iterator_array_kod_and_address = 0
@@ -1042,44 +705,43 @@ def calculation_ADDRESS_and_KOD(port, textbox):
         finish_address = form_array_full_address_start_or_finish(address[-1])
         file_text = open(path_in_address_all_memory_otp_in_one_chip_write + str(port) + '.txt', 'w')
         file_text.close()
+        iterator = 0
         while iterator <= 255:
             time.sleep(0.1)
             if iterator == 0:
                 y_address = 0
                 y_kod = 15
-                write_OTP(int(y_address), int(y_kod), port, textbox, True)
+                write_OTP(int(y_address), int(y_kod), port, True)
             elif iterator < start_address:
                 y_address = iterator
                 y_kod = 15
-                write_OTP(int(y_address), int(y_kod), port, textbox, True)
+                write_OTP(int(y_address), int(y_kod), port, True)
             elif iterator > finish_address:
                 y_address = iterator
                 y_kod = 3039
-                write_OTP(int(y_address), int(y_kod), port, textbox, True)
+                write_OTP(int(y_address), int(y_kod), port, True)
             else:
                 y_address = address[iterator_array_kod_and_address]
-                y_kod = kod[
-                            iterator_array_kod_and_address] + 18  # ~+16 #Ожидаемая ошибка средняя ошибка 5 кодов. Максимальное отклонение 7. Важно! Данный график находиться выше на ошибку. Необходимо прибавить к числу данную ошибку!
+                y_kod = kod[iterator_array_kod_and_address] + 18
+                # ~+16 #Ожидаемая ошибка средняя ошибка 5 кодов. Максимальное отклонение 7. Важно! Данный график находиться выше на ошибку. Необходимо прибавить к числу данную ошибку!
                 if y_kod > 3039:
                     y_kod = 3039
                 if y_kod < 15:
                     y_kod = 15
-                write_OTP(int(y_address), int(y_kod), port, textbox, True)
+                write_OTP(int(y_address), int(y_kod), port, True)
                 iterator_array_kod_and_address = iterator_array_kod_and_address + 1
             print("Chip = " + str(port) + " ADDRESS  = " + str(iterator) + " KOD = " + str(y_kod))
-            textbox.insert(END, 'Chip ' + str(port) + ', address = ' + str(y_address) + ' : ' + 'KOD = ' + str(y_kod))
             iterator += 1
-        flag_chek_mem = False
         for i in range(3):
-            give_me_OTP_address(port, textbox)
-            flag_chek_mem = main_check_OTP_memory(port, False, textbox)
-            if flag_chek_mem == True:
+            give_me_OTP_address(port)
+            flag_chek_mem = main_check_OTP_memory(port, False)
+            if flag_chek_mem:
                 break
 
-        give_me_OTP_address(port, textbox)
+        give_me_OTP_address(port)
         check_number_file_otp_mem(port)
     except:
-        print("Chip " + str(port) + " not worck.")
+        print("Chip " + str(port) + " not work.")
 
 
 def check_number_file_otp_mem(number_file):
@@ -1108,7 +770,6 @@ def form_file_write_1(path, i):
         f_start = open(path + str(i) + '.txt', 'r')
         for line in f_start:
             data_file_start.append(line[-14:-2])
-
     except:
         data_file_start.append('-999')
 
@@ -1136,10 +797,8 @@ def form_array_in_read_file(x_list_interpol, y_list_interpol, x_list_in_file, y_
         print(" start temperature = " + str(x_list_in_file[i]) + " finish temperature = " + str(x_list_in_file[i - 1]))
         start_address = give_me_address_in_255(y_list_in_file[i], k_real, b_real)
         finish_address = give_me_address_in_255(y_list_in_file[i - 1], k_real, b_real)
-        # print(" finish = " + str(finish_address) + " start = " + str(start_address))
         minus = int(finish_address) - int(start_address)
         step_temperature = abs(round(((abs(x_list_in_file[i]) - abs(x_list_in_file[i - 1])) / minus), 2))
-        # print(" step temperature = " + str(step_temperature))
         temperature = x_list_in_file[i]
         kod_address = round(y_list_in_file[i], 0)
         for j in range(minus):
@@ -1168,7 +827,6 @@ def give_me_address_in_255(kod, k_test, b_test):
     address_bit = list(address_12_bit[2:len(address_12_bit)])
     print(address_bit)
     if len(address_bit) > 8:
-        # razn = len(address_bit) - 8
         for i in range(4):
             del address_bit[len(address_bit) - 1]
     address_255 = ""
@@ -1186,7 +844,6 @@ def check_formed_array(kod, address):
             break
         top_address = form_array_full_address_start_or_finish(address[iterator])
         bottom_address = form_array_full_address_start_or_finish(address[iterator + 1])
-        # print(str(top_address) + " !!! " + str(bottom_address))
         if top_address == bottom_address:
             flag = False
             del kod[iterator + 1]
@@ -1204,18 +861,14 @@ def check_formed_array_2(kod, address):
             break
         top_address = form_array_full_address_start_or_finish(address[iterator])
         bottom_address = form_array_full_address_start_or_finish(address[iterator + 1])
-        # print(str(top_address) + " !!! " + str(bottom_address))
         minus = bottom_address - top_address
         if minus > 1:
             step = (kod[iterator + 1] - kod[iterator]) / minus
-            # print(kod[iterator + 1])
-            # print(kod[iterator])
             new_kod = kod[iterator]
             new_address = top_address
             for i in range(minus - 1):
                 new_address += 1
                 new_kod += step
-                # print(str(new_address) + " _#_ " + str(new_kod))
                 kod.insert(iterator + 1 + i, new_kod)
                 address.insert(iterator + 1 + i, new_address << 3)
         iterator += 1
@@ -1270,9 +923,6 @@ def write_OTP(address, kod, port, textbox, flag_write_file):
         else:
             byte += str(bit)
             iterator += 1
-    # print(package[0])
-    # print(package[1])
-    # print(package[2])
     print_bin_code = str(bin_code)[1:len(str(bin_code)) - 1].split(", ")
     if flag_write_file == True:
         file_text.write(str(address) + " | " + str(''.join(print_bin_code)) + "\n")
@@ -1292,7 +942,7 @@ def write_OTP(address, kod, port, textbox, flag_write_file):
         elif "OK" in str(say_black_box):
             break
         elif "ER" in str(say_black_box):
-            textbox.insert(END, "ERROR OTP MAMMARY IN CHIP = " + str(port) + '\n')
+            print("ERROR OTP MAMMARY IN CHIP = " + str(port) + '\n')
             break
 
 
@@ -1342,43 +992,43 @@ BLOCK WRITE MAIN ADDRESS
 '''
 
 
-def write_main_address(port, textbox):
+def write_main_address(port):
     number_family = get_number_series()
     type_of_party = get_number_part()
-    set_address(number_family, type_of_party, textbox, port)
+    set_address(number_family, type_of_party, port)
 
 
 # SET ADDRESS
-def set_address(number_family, type_of_party, textbox, number_chip):
+def set_address(number_family, type_of_party, number_chip):
     global path_all_address
     number_family = int(number_family)
     if number_family == 1:
         bin_name = form_ADDRESS_SN(0)
-        crc1 = write_CRC(0, type_of_party, textbox, number_chip)
+        crc1 = write_CRC(0, type_of_party, number_chip)
         file_text = open(path_all_address + 'BMK_GEN.list', 'a')
         file_text.write("40" + " " + str(int(type_of_party)) + " " + str(bin_name) + " " + str(crc1) + "\n")
         file_text.close()
     elif number_family == 2:
         bin_name = form_ADDRESS_SN(1)
-        crc1 = write_CRC(1, type_of_party, textbox, number_chip)
+        crc1 = write_CRC(1, type_of_party, number_chip)
         file_text = open(path_all_address + 'BMK_DIODE.list', 'a')
         file_text.write("41" + " " + str(int(type_of_party)) + " " + str(bin_name) + " " + str(crc1) + "\n")
         file_text.close()
     elif number_family == 3:
         bin_name = form_ADDRESS_SN(2)
-        crc1 = write_CRC(2, type_of_party, textbox, number_chip)
+        crc1 = write_CRC(2, type_of_party, number_chip)
         file_text = open(path_all_address + 'CUSTOM_GEN.list', 'a')
         file_text.write("6" + " " + str(int(type_of_party)) + " " + str(bin_name) + " " + str(crc1) + "\n")
         file_text.close()
     elif number_family == 4:
         bin_name = form_ADDRESS_SN(3)
-        crc1 = write_CRC(3, type_of_party, textbox, number_chip)
+        crc1 = write_CRC(3, type_of_party, number_chip)
         file_text = open(path_all_address + 'CUSTOM_DIODE.list', 'a')
         file_text.write("7" + " " + str(int(type_of_party)) + " " + str(bin_name) + " " + str(crc1) + "\n")
         file_text.close()
     elif number_family == 5:
         bin_name = form_ADDRESS_SN(4)
-        crc1 = write_CRC(4, type_of_party, textbox, number_chip)
+        crc1 = write_CRC(4, type_of_party, number_chip)
         file_text = open(path_all_address + 'TEST_SAMPLE.list', 'a')
         file_text.write(
             "173" + " " + type_of_party[:len(type_of_party) - 1] + " " + str(int(bin_name)) + " " + str(crc1) + "\n")
@@ -1386,7 +1036,7 @@ def set_address(number_family, type_of_party, textbox, number_chip):
     elif number_family == 6:
         return
     else:
-        textbox.insert(END, 'Chip ' + str(number_chip) + ' incorrect value entered.')
+        print('Chip ' + str(number_chip) + ' incorrect value entered.')
 
 
 # WRITE IN FILE FULL ADDRESS
@@ -1430,26 +1080,18 @@ def write_CRC(number_file, type_of_party, number_chip):
         party = list(type_of_party)
     pace_address_sir = ""
     number_bit = 7 + 2  # 0 and 1 bit ("0b") 7+2
-    one = ""
     for i in range(2, len(fam)):
         code[number_bit - i] = int(fam[int(len(fam)) + 1 - i])
-        one = one + str(code[number_bit - i])
     number_bit = 11
     for i in range(4):
         code[number_bit - i] = int(party[3 - i])
-        one = one + str(code[number_bit - i])
     number_bit = 55 + 2
-    one = one + " "
     for i in range(2, len(sn)):
         code[number_bit - i] = int(sn[int(len(sn)) + 1 - i])
-        one = one + str(code[number_bit - i])
-    one = one + " "
     step_i = [7, 15, 23, 31, 39, 47, 55]
-    flag = True
     for i in step_i:
         number_i = i
         for j in range(8):
-            one = one + str(code[number_i - j])
             if crc[0] == code[number_i - j]:
                 x = 0
             else:
@@ -1486,7 +1128,6 @@ def write_CRC(number_file, type_of_party, number_chip):
             pace_address = int(pace, 2)
             full_pace_chr.append(pace_address)
             col_pace_data = col_pace_data + 1
-            # print (pace)
             if col_pace_data == 8:
                 break
             pace = ""
@@ -1496,12 +1137,7 @@ def write_CRC(number_file, type_of_party, number_chip):
         else:
             pace = pace + str(pace_list[number_element_list])
             number_element_list = number_element_list - 1
-    write_package(number_chip, 6, full_pace_chr[0], full_pace_chr[1], full_pace_chr[2], full_pace_chr[3],
-                  full_pace_chr[4], full_pace_chr[5], full_pace_chr[6], full_pace_chr[7], textbox)
-    time.sleep(0.5)
-    if not check_mess_microchip():
-        textbox.insert(END, 'Error, not write address in chip ' + str(number_chip) + '\n')
-    return ishod
+    return full_pace_chr
 
 
 '''
@@ -1672,77 +1308,6 @@ def get_number_finish_MIT():
 
 
 # GET NUMBER COM PORT MIT
-def get_com_port_MIT():
-    global path
-    if os.path.exists(path):
-        file_config = open(path, 'r')
-        iterator = 0
-        for list in file_config:
-            if iterator == 3:
-                com_port_data = int(list)
-            iterator += 1
-        file_config.close()
-        return com_port_data
-    else:
-        return 0
-
-
-# GET NUMBER COM PORT MICROCHIP AUTOMATIC
-def get_com_port_microchip():
-    if sys.platform.startswith('win'):
-        ports = ['COM%s' % (i + 1) for i in range(256)]
-    result = []
-    for port in ports:
-        try:
-            # print(port)
-            s = serial.Serial(port)
-            s.close()
-            result.append(port)
-        except (OSError, serial.SerialException):
-            pass
-    return result
-
-
-# Загрузить настроки
-def load_file_options():
-    global path
-    data_file = []
-    if os.path.exists(path):
-        file_config = open(path, 'r')
-        for line in file_config:
-            data_file.append(line)
-        file_config.close()
-    if len(data_file) != 10:
-        for i in range(10):
-            data_file.append(0)
-    return data_file
-
-
-# SAVE CONFIGURATION
-def save_file_options(options_windows, number_serii, number_part, number_com_por_microchip, number_start_chip,
-                      number_finish_chip,
-                      number_com_port_mit, number_start_sensor, number_finish_sensor, variable_source,
-                      temperature_termostrim):
-    global path
-    file_save = open(path, 'w')
-    if number_serii == '':
-        number_serii = 0
-    file_save.write(check_save_line(number_com_por_microchip) + '\n' + check_save_line(number_start_chip) + '\n'
-                    + check_save_line(number_finish_chip) + '\n' + check_save_line(number_com_port_mit) + '\n'
-                    + check_save_line(number_start_sensor) + '\n' + check_save_line(number_finish_sensor) + '\n'
-                    + check_save_line(number_part) + '\n' + check_save_line(str(int(number_serii) + 1)) + '\n'
-                    + check_save_line(variable_source) + '\n' + check_save_line(temperature_termostrim))
-    options_windows.destroy()
-    file_save.close()
-
-
-# CHECK LINE AND SAVE IN FILE
-def check_save_line(text):
-    if '\n' in text:
-        text = text.split('\n')[0]
-    if len(text) == 0:
-        return "0"
-    return text
 
 
 # FORM AND GET IDEAL CORFFICIENT K AND B
@@ -1754,21 +1319,6 @@ def get_ideal_k_and_b():
     k = float((y_1 - y_2)) / float((x_1 - x_2))
     b = y_2 - k * x_2
     return k, b
-
-
-# FORM USED COM PORT
-def form_ser_com_port_chip():
-    # ser = serial.Serial("COM" + str(get_com_port_microchip()), 115200, timeout=0)
-    ser = serial.Serial(str(get_com_port_microchip()[0]), 115200, timeout=0)
-    ser.close()
-    ser.open()
-    ser.isOpen()
-    return ser
-
-
-def check_click(text):
-    answer = tkMessageBox.askokcancel(title="check", message=text)
-    return answer
 
 
 def new_file_main_address():
@@ -1792,19 +1342,12 @@ def write_temperature(array_temperature):
     f.close()
 
 
-def check_read_temperature(k, b, x_kod):
-    temperature = ((x_kod * k + b) - 2047) / (-16)
-    print(': -> ' + str(temperature))
-
-
 '''
 END BLOCK ACCESSORY
 '''
 
-
 # GLOBAL VARIABLE
 parameter = 0  # ON/OFF SOURCE MICROCHIP
-path = "../configuration/save_config.txt"  # FILE SAVE CONFIG
 path_in_address_all_memory_otp_in_one_chip = '../address/all_address_otp_in_one_chip_'
 path_in_address_all_memory_otp_in_one_chip_write = '../address/all_address_otp_in_one_chip_write_'
 path_in_data = '../data/'
