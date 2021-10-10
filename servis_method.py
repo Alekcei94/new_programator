@@ -6,20 +6,10 @@ import time
 def write_commands(ser, byte_0, byte_1, byte_2, byte_3):
     crc = form_crc(byte_0, byte_1, byte_2, byte_3)
     ser.write(bytes([byte_0]))
-    #ser.flush()
     ser.write(bytes([byte_1]))
-    #ser.flush()
     ser.write(bytes([byte_2]))
-    #ser.flush();
     ser.write(bytes([byte_3]))
-    #ser.flush();
     ser.write(bytes([crc]))
-    #ser.flush();
-    #print(bytes([byte_0]))
-    #print(bytes([byte_1]))
-    #print(bytes([byte_2]))
-    #print(bytes([byte_3]))
-    #print(bytes([crc]))
 
 
 def form_list_byte(pac):
@@ -49,7 +39,7 @@ def get_com_port():
     return result
 
 
-def serch_claster_and_number(number_mk):
+def search_claster_and_number(number_mk):
     if number_mk % 8 == 0:
         claster = (number_mk // 8) - 1 + 16
         number = 8
@@ -100,3 +90,86 @@ def form_crc(data_0, data_1, data_2, data_3):
     for i in list_Test:
         crc = crc8Table[crc ^ i]
     return crc
+
+
+# Запуск команды прожига, висит задержка в 250 милли секунд
+def pr(number_mk, ser):
+    claster, number = search_claster_and_number(number_mk)
+    write_commands(ser, claster, number, 168, 0)  # A8
+    sleep_slave(number, 250)
+    write_commands(ser, claster, number, 165, 5)  # A5 #time.sleep(3)
+    write_commands(ser, claster, number, 169, 0)  # A9
+
+
+#  Получение данных из мк, необходимо осмыслить его и переделать
+def read_data_in_mk(claster, number, number_of_bytes, read_flag):
+    global ser
+    write_commands(ser, claster, number, 164, number_of_bytes)  # A4
+    start_stack_execution()
+    # time.sleep(5)
+    buf = []
+    address = []
+    temperature = 0
+    flag_ok = True
+    while flag_ok:
+        for i in range(number_of_bytes):
+            data = ser.read()
+            # print(data)
+            if data != b'':
+                buf.append(data)
+        if len(buf) == 2 and not read_flag:
+            t_cod = (int.from_bytes(buf[0], "big") | (int.from_bytes(buf[1], "big") << 8))
+            print("T_code: " + str(t_cod))
+            flag_ok = False
+            temperature = float(t_cod * 0.0625)
+            print("Temperature: " + str(temperature))
+        elif len(buf) == 2 and read_flag:
+            t_cod = (int.from_bytes(buf[0], "big") | ((int.from_bytes(buf[1], "big") & 0x0f) << 8))
+            print("T_code_otp: " + str(t_cod))
+            flag_ok = False
+        else:
+            for j in range(len(buf)):
+                address.append(int.from_bytes(buf[j], "big"))
+            print("Address: " + str(address))
+            flag_ok = False
+    return temperature
+
+
+# Управление питанием
+# Если приходит Ложь, включить питание, иначе включить
+def all_vdd(first_mk, last_mk, option_object):
+    global ser
+    switcher = getattr(option_object, "voltage_state")
+    claster_first, number_first = search_claster_and_number(first_mk)
+    claster_last, number_last = search_claster_and_number(last_mk)
+    if not switcher:
+        commands = 161
+        switcher = True
+    else:
+        commands = 160
+        switcher = False
+    setattr(option_object, "voltage_state", switcher)
+    for iterator in range(claster_first, claster_last + 1):
+        write_commands(ser, iterator, 10, commands, 0)
+    return switcher
+
+
+# Функция активатор
+def start_stack_execution():
+    write_commands(ser, 255, 255, 167, 0)  # A7
+
+
+# повесить задержку на несколько кластеров
+def sleep_slave_1(first_mk, last_mk, timer):
+    claster_first, number_first = search_claster_and_number(first_mk)
+    claster_last, number_last = search_claster_and_number(last_mk)
+    time = int(timer / 50)
+    for iterator in range(claster_first, claster_last + 1):
+        write_commands(ser, iterator, 10, 165, time)
+
+
+# повесить задержку на один кластер
+def sleep_slave(number_mk, timer):
+    claster, number = search_claster_and_number(number_mk)
+    timer = int(timer / 50)
+    write_commands(ser, claster, 10, 165, timer)

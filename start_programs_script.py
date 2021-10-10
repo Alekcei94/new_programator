@@ -2,9 +2,11 @@ import sys
 
 from PyQt5 import QtWidgets, uic
 from PyQt5.QtWidgets import QApplication
-import save_options
 
-import main
+import save_options
+import servis_method
+
+from micros_old import basic_commands_onewire
 
 
 class ConfigurationWindow(QtWidgets.QMainWindow):
@@ -31,32 +33,27 @@ class CommandsWindow(QtWidgets.QMainWindow):
         self.WriteEn2Button.clicked.connect(self.writeEN2)
 
     def workVdd(self):
-        flag = main.all_vdd(getattr(saveOption, 'voltage_state'), getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk'))
-        setattr(saveOption, 'voltage_state', flag)
-        print(getattr(saveOption, 'voltage_state'))
-        main.start_stack_execution()
+        servis_method.all_vdd(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk'), saveOption)
+        servis_method.start_stack_execution()
 
     def readTemp(self):
-        for iterator_mk in range(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk')+1):
-            main.form_temp_cod_not_activ(iterator_mk)
-        main.sleep_slave_1(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk'), 3000)
-        #main.start_stack_execution()
-        for iterator_mk in range(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk')+1):
-            main.read_temp_activ(iterator_mk)
+        for iterator_mk in range(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk') + 1):
+            basic_commands_onewire.form_temp_cod_not_active(iterator_mk)
+        servis_method.sleep_slave_1(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk'), 3000)
+        # main.start_stack_execution()
+        for iterator_mk in range(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk') + 1):
+            basic_commands_onewire.read_temp_active(iterator_mk)
 
     def readOTP(self):
-
-        for iterator_mk in range(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk')+1):
+        for iterator_mk in range(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk') + 1):
             iterator_step = 0
-            flag = main.all_vdd(getattr(saveOption, 'voltage_state'), getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk'))
-            setattr(saveOption, 'voltage_state', flag)
+            servis_method.all_vdd(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk'), saveOption)
             while iterator_step < 256:
-                main.read_otp_address(iterator_mk, iterator_step)
+                basic_commands_onewire.read_otp_address(iterator_mk, iterator_step)
                 iterator_step += 1
             print("new mk")
-            flag = main.all_vdd(getattr(saveOption, 'voltage_state'), getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk'))
-            setattr(saveOption, 'voltage_state', flag)
 
+            servis_method.all_vdd(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk'), saveOption)
 
     def writeREZ(self):
         print("not work")
@@ -68,8 +65,8 @@ class CommandsWindow(QtWidgets.QMainWindow):
         print("not work")
 
     def readID(self):
-        for iterator_mk in range(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk')+1):
-            main.read_address(iterator_mk)
+        for iterator_mk in range(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk') + 1):
+            basic_commands_onewire.read_address(iterator_mk)
 
     def writeEN2(self):
         print("not work")
@@ -92,7 +89,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.w1.show()
 
 
-saveOption = save_options.SaveOption()
+saveOption = save_options.SaveOption(1, 6)
 voltage_state = False
 if __name__ == '__main__':
     app = QApplication(sys.argv)
