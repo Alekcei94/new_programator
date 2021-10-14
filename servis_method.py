@@ -11,13 +11,6 @@ def write_commands(ser, byte_0, byte_1, byte_2, byte_3):
     ser.write(bytes([crc]))
 
 
-def form_list_byte(pac):
-    byte_pac = []
-    for i in range(0, len(pac), 2):
-        byte_pac.append(chr(int(pac[i] + pac[i + 1], 16)))
-    return byte_pac
-
-
 def get_ser_com():
     ser = serial.Serial('COM3', 115200, timeout=4)
     time.sleep(2)

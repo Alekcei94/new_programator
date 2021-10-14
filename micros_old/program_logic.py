@@ -290,6 +290,7 @@ def verification_chips():
         time.sleep(0.5)
     write_package(255, 1, 0, 0, 0, 0, 0, 0, 0, 0, textbox)
 
+
 '''
 END BLOCK VERIFICATION WORK CHIPS 
 '''
@@ -335,7 +336,6 @@ END BLOCK WRITE REZ
 BLOCK SAVE ARCHIVE
 '''
 
-
 '''
 END BLOCK SAVE ARCHIVE
 '''
@@ -355,7 +355,7 @@ def calculation_coefficients(number_chip):
     k_real = round(float(k_ideal / k), 4)
     b_real = round((-1 * ((k_ideal / k) * b) + b_ideal), 0)
 
-    write_coefficient(k_real, b_real, number_chip, textbox)
+    write_coefficient(k_real, b_real, number_chip)
 
 
 # METHOD OF RECORDING THE COEFFICIENTS OF K AND B IN CHIP
@@ -991,52 +991,50 @@ END BLOCK WRITE OTP
 BLOCK WRITE MAIN ADDRESS
 '''
 
+# переделать записи в файл
+# SET ADDRESS
+def set_address(number_chip):
+    global path_all_address
 
-def write_main_address(port):
     number_family = get_number_series()
     type_of_party = get_number_part()
-    set_address(number_family, type_of_party, port)
 
-
-# SET ADDRESS
-def set_address(number_family, type_of_party, number_chip):
-    global path_all_address
     number_family = int(number_family)
+    full_ID = []
     if number_family == 1:
         bin_name = form_ADDRESS_SN(0)
-        crc1 = write_CRC(0, type_of_party, number_chip)
-        file_text = open(path_all_address + 'BMK_GEN.list', 'a')
-        file_text.write("40" + " " + str(int(type_of_party)) + " " + str(bin_name) + " " + str(crc1) + "\n")
-        file_text.close()
+        full_ID = write_CRC(0, type_of_party)
+        # file_text = open(path_all_address + 'BMK_GEN.list', 'a')
+        # file_text.write("40" + " " + str(int(type_of_party)) + " " + str(bin_name) + " " + str(full_ID) + "\n")
+        # file_text.close()
     elif number_family == 2:
         bin_name = form_ADDRESS_SN(1)
-        crc1 = write_CRC(1, type_of_party, number_chip)
-        file_text = open(path_all_address + 'BMK_DIODE.list', 'a')
-        file_text.write("41" + " " + str(int(type_of_party)) + " " + str(bin_name) + " " + str(crc1) + "\n")
-        file_text.close()
+        full_ID = write_CRC(1, type_of_party)
+        # file_text = open(path_all_address + 'BMK_DIODE.list', 'a')
+        # file_text.write("41" + " " + str(int(type_of_party)) + " " + str(bin_name) + " " + str(full_ID) + "\n")
+        # file_text.close()
     elif number_family == 3:
         bin_name = form_ADDRESS_SN(2)
-        crc1 = write_CRC(2, type_of_party, number_chip)
-        file_text = open(path_all_address + 'CUSTOM_GEN.list', 'a')
-        file_text.write("6" + " " + str(int(type_of_party)) + " " + str(bin_name) + " " + str(crc1) + "\n")
-        file_text.close()
+        full_ID = write_CRC(2, type_of_party)
+        # file_text = open(path_all_address + 'CUSTOM_GEN.list', 'a')
+        # file_text.write("6" + " " + str(int(type_of_party)) + " " + str(bin_name) + " " + str(full_ID) + "\n")
+        # file_text.close()
     elif number_family == 4:
         bin_name = form_ADDRESS_SN(3)
-        crc1 = write_CRC(3, type_of_party, number_chip)
-        file_text = open(path_all_address + 'CUSTOM_DIODE.list', 'a')
-        file_text.write("7" + " " + str(int(type_of_party)) + " " + str(bin_name) + " " + str(crc1) + "\n")
-        file_text.close()
+        full_ID = write_CRC(3, type_of_party)
+        # file_text = open(path_all_address + 'CUSTOM_DIODE.list', 'a')
+        # file_text.write("7" + " " + str(int(type_of_party)) + " " + str(bin_name) + " " + str(full_ID) + "\n")
+        # file_text.close()
     elif number_family == 5:
         bin_name = form_ADDRESS_SN(4)
-        crc1 = write_CRC(4, type_of_party, number_chip)
-        file_text = open(path_all_address + 'TEST_SAMPLE.list', 'a')
-        file_text.write(
-            "173" + " " + type_of_party[:len(type_of_party) - 1] + " " + str(int(bin_name)) + " " + str(crc1) + "\n")
-        file_text.close()
-    elif number_family == 6:
-        return
+        full_ID = write_CRC(4, type_of_party)
+        # file_text = open(path_all_address + 'TEST_SAMPLE.list', 'a')
+        # file_text.write(
+        #     "173" + " " + type_of_party[:len(type_of_party) - 1] + " " + str(int(bin_name)) + " " + str(full_ID) + "\n")
+        # file_text.close()
     else:
         print('Chip ' + str(number_chip) + ' incorrect value entered.')
+    return full_ID
 
 
 # WRITE IN FILE FULL ADDRESS
@@ -1056,7 +1054,7 @@ def form_ADDRESS_SN(series_chip):
 
 
 # FORM CRC8 AND WRITE FULL ADDRESS IN CHIP
-def write_CRC(number_file, type_of_party, number_chip):
+def write_CRC(number_file, type_of_party):
     global path_all_address
     crc = [0, 0, 0, 0, 0, 0, 0, 0]
     ishod = ""
