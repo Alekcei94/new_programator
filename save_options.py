@@ -7,7 +7,7 @@ class SaveOption:
     first_mk = 1  # Номер первой микросхемы
     last_mk = 3  # Номер последней микросхемы
     voltage_state = False  # Сосотояние наличиние питания на мк Ложь - нету, Истина - есть.
-    type_mk = 1
+    type_mk = 1  # тип микросхемы. 1 - старый OneWire; 2 - старый SPI; 3 - новый OneWire; 4 - новый SPI; 5 - новый ???
     list_voltage = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
     list_type_mk = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
     com_port_mit = 1
@@ -18,11 +18,12 @@ class SaveOption:
     def __init__(self):
         file_setting = open('./options/setting.txt', 'r')
         for line in file_setting:
+            line = line.replace("\n", "")
             if ":" in line:
                 data_line = line.split(":")
                 voltage_and_type = data_line[1].split("|")
-                list_voltage[int(data_line[0])] = int(voltage_and_type[0])
-                list_type_mk[int(data_line[0])] = int(voltage_and_type[1])
+                self.list_voltage[int(data_line[0]) - 1] = int(voltage_and_type[0])
+                self.list_type_mk[int(data_line[0]) - 1] = int(voltage_and_type[1])
             elif "firstMk" in line:
                 self.first_mk = int(line.split(" ")[1])
             elif "lastMk" in line:
@@ -33,7 +34,7 @@ class SaveOption:
                 self.first_mit = int(line.split(" ")[1])
             elif "lastMIT" in line:
                 self.last_mit = int(line.split(" ")[1])
-            file_setting.close()
+        file_setting.close()
 
     # @staticmethod
     # def main_save_archive():

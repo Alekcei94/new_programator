@@ -1,5 +1,5 @@
 import servis_method
-import program_logic
+import micros_old.program_logic
 import save_options
 import time
 
@@ -99,7 +99,7 @@ def write_REZ(number_mk):
     servis_method.write_commands(ser, claster, number, 170, 0)  # AA
     # команда страта записи REZ
     servis_method.write_commands(ser, claster, number, 166, 120)  # A6 78
-    servis_method.write_commands(ser, claster, number, 166, program_logic.write_REZ('''вставить сюда бинарный код'''))  # A6 бит записи REZ
+    servis_method.write_commands(ser, claster, number, 166, micros_old.program_logic.write_REZ('''вставить сюда бинарный код'''))  # A6 бит записи REZ
 
 # Записаь ИД микросхемы (основного адреса)
 def write_ID(number_mk):
@@ -135,6 +135,15 @@ def write_EN2(number_mk):
     servis_method.write_commands(ser, claster, number, 170, 0)  # AA
     servis_method.write_commands(ser, claster, number, 166, 0)  # A6 не настроенна команда
 
+# Запись памяти в новый микрос OneWire интерфейсом
+# Важно number_mem берется из карты памяти по формуле номер строки - 1.
+def write_mem_new_micros_OneWire(number_mk, number_mem, data):
+    global ser
+    claster, number = servis_method.search_claster_and_number(number_mk)
+    servis_method.write_commands(ser, claster, number, 170, 0)  # AA
+    servis_method.write_commands(ser, claster, number, 166, 12)  # A6 12 Команда записи памяти
+    servis_method.write_commands(ser, claster, number, 166, number_mem)  # A6 12
+    servis_method.write_commands(ser, claster, number, 166, data)  # A6 12
 
 # Данное место необходимо переделать
 #ser = servis_method.get_ser_com()
