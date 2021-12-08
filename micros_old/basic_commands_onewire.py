@@ -1,7 +1,8 @@
 import servis_method
-import micros_old.program_logic
+import micros_old.program_logic as program_logic
 import save_options
 import time
+
 
 #
 # def queue_test_teams(number_mk):
@@ -99,7 +100,9 @@ def write_REZ(number_mk):
     servis_method.write_commands(ser, claster, number, 170, 0)  # AA
     # команда страта записи REZ
     servis_method.write_commands(ser, claster, number, 166, 120)  # A6 78
-    servis_method.write_commands(ser, claster, number, 166, micros_old.program_logic.write_REZ('''вставить сюда бинарный код'''))  # A6 бит записи REZ
+    servis_method.write_commands(ser, claster, number, 166,
+                                 program_logic.write_REZ('''вставить сюда бинарный код'''))  # A6 бит записи REZ
+
 
 # Записаь ИД микросхемы (основного адреса)
 def write_ID(number_mk):
@@ -107,8 +110,16 @@ def write_ID(number_mk):
     claster, number = servis_method.search_claster_and_number(number_mk)
     servis_method.write_commands(ser, claster, number, 170, 0)  # AA
     # команда страта записи ИД
-    servis_method.write_commands(ser, claster, number, 166, 56)  # A6 38
-    # Запись данных
+    servis_method.write_commands(ser, claster, number, 166, 56)  # A6 38 проверить поссылку
+    id = program_logic.set_address(number_mk)
+    servis_method.write_commands(ser, claster, number, 166, id[0])  # A6 data_0
+    servis_method.write_commands(ser, claster, number, 166, id[1])  # A6 data_1
+    servis_method.write_commands(ser, claster, number, 166, id[2])  # A6 data_2
+    servis_method.write_commands(ser, claster, number, 166, id[3])  # A6 data_3
+    servis_method.write_commands(ser, claster, number, 166, id[4])  # A6 data_4
+    servis_method.write_commands(ser, claster, number, 166, id[5])  # A6 data_5
+    servis_method.write_commands(ser, claster, number, 166, id[6])  # A6 data_6
+    servis_method.write_commands(ser, claster, number, 166, id[7])  # A6 data_7
 
 
 # Запись памяти ОТП
@@ -125,7 +136,7 @@ def write_mem_K_and_B(number_mk):
     claster, number = servis_method.search_claster_and_number(number_mk)
     servis_method.write_commands(ser, claster, number, 170, 0)  # AA
     # Запись К и В
-    servis_method.write_commands(ser, claster, number, 166, 56)  # A6 38
+    servis_method.write_commands(ser, claster, number, 166, 56)  # A6 38 проверить поссылку
 
 
 # записать EN2 (переводит работу микросхему на память ОТП)
@@ -146,5 +157,5 @@ def write_mem_new_micros_OneWire(number_mk, number_mem, data):
     servis_method.write_commands(ser, claster, number, 166, data)  # A6 12
 
 # Данное место необходимо переделать
-#ser = servis_method.get_ser_com()
+# ser = servis_method.get_ser_com()
 ser = 12

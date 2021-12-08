@@ -63,7 +63,7 @@ class CommandsWindow(QtWidgets.QMainWindow):
 
     def writeID(self):
         for iterator_mk in range(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk') + 1):
-            print("not work")
+            basic_commands_onewire.write_ID(iterator_mk)
 
     def writeOTP(self):
         for iterator_mk in range(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk') + 1):
