@@ -43,7 +43,8 @@ class Commands_Window_OneWire_New(QtWidgets.QMainWindow):
 
     def readOTP(self):
         for iterator_mk in range(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk') + 1):
-            print()
+            print("not work")
+            print(iterator_mk)
 
     def readID(self):
         for iterator_mk in range(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk') + 1):
