@@ -2,13 +2,36 @@ import serial
 import sys
 import time
 
+import basic_commands_onewire
+
+
 def write_commands(ser, byte_0, byte_1, byte_2, byte_3):
     crc = form_crc(byte_0, byte_1, byte_2, byte_3)
+    print("Commands " + str(byte_0) + "_" + str(byte_1) + "_" + str(byte_2) + "_" + str(byte_3) + "_" + str(crc))
     ser.write(bytes([byte_0]))
     ser.write(bytes([byte_1]))
     ser.write(bytes([byte_2]))
     ser.write(bytes([byte_3]))
     ser.write(bytes([crc]))
+    print("Waiting for the master's response")
+    while True:
+        if ser.waitForReadyRead(4):
+            if (int.from_bytes(ser.read(), "big")) == 51:
+                print("Master confirmed")
+                break
+            elif (int.from_bytes(ser.read(), "big")) == 54:
+                write_commands(ser, byte_0, byte_1, byte_2, byte_3)
+            else:
+                print("Master's answer " + str(int.from_bytes(ser.read(), "big")))
+        else:
+            ser.write(bytes([0]))
+    print("Waiting for a slave's response")
+    while True:
+        if ser.waitForReadyRead(4):
+            if (int.from_bytes(ser.read(), "big")) == 68:
+                print("Slave's confirmed")
+                break
+        print("Slave's's answer " + str(int.from_bytes(ser.read(), "big")))
 
 
 def get_ser_com():
@@ -85,19 +108,18 @@ def form_crc(data_0, data_1, data_2, data_3):
 
 
 # Запуск команды прожига, висит задержка в 250 милли секунд
-def pr(number_mk, ser):
-    claster, number = search_claster_and_number(number_mk)
-    write_commands(ser, claster, number, 168, 0)  # A8
-    sleep_slave(number, 250)
-    write_commands(ser, claster, number, 165, 5)  # A5 #time.sleep(3)
-    write_commands(ser, claster, number, 169, 0)  # A9
+def pr(ser, claster, number):
+    write_commands(ser, claster, number, 208, 0)  # D0 опустить линию DQ
+    write_commands(ser, claster, number, 168, 0)  # A8 поднять линию PR
+    write_commands(ser, claster, number, 165, 13)  # A5 задержка 260мС
+    write_commands(ser, claster, number, 169, 0)  # A9 опустить линию PR
+    write_commands(ser, claster, number, 209, 0)  # D1 поднять линию DQ
 
 
 #  Получение данных из мк, необходимо осмыслить его и переделать
 def read_data_in_mk(claster, number, number_of_bytes, read_flag):
     global ser
-    write_commands(ser, claster, number, 164, number_of_bytes)  # A4
-    start_stack_execution()
+    write_commands(ser, claster, number, 167, number_of_bytes)  # A7 передача из master на ПК
     # time.sleep(5)
     buf = []
     address = []
@@ -128,9 +150,11 @@ def read_data_in_mk(claster, number, number_of_bytes, read_flag):
 
 # Управление питанием
 # Если приходит Ложь, включить питание, иначе включить
-def all_vdd(first_mk, last_mk, option_object):
-    global ser
-    switcher = getattr(option_object, "voltage_state")
+def all_vdd(first_mk, last_mk, save_object):
+    ser = basic_commands_onewire.get_ser()
+    choose_voltage_level(ser, save_object)
+    select_operating_mode(ser, save_object)
+    switcher = getattr(save_object, "voltage_state")
     claster_first, number_first = search_claster_and_number(first_mk)
     claster_last, number_last = search_claster_and_number(last_mk)
     if not switcher:
@@ -139,28 +163,34 @@ def all_vdd(first_mk, last_mk, option_object):
     else:
         commands = 160
         switcher = False
-    setattr(option_object, "voltage_state", switcher)
+    setattr(save_object, "voltage_state", switcher)
     for iterator in range(claster_first, claster_last + 1):
         write_commands(ser, iterator, 10, commands, 0)
     return switcher
 
 
-# Функция активатор
-def start_stack_execution():
-    write_commands(ser, 255, 255, 167, 0)  # A7
+# Установить напряжения по всем микросхемам
+def choose_voltage_level(ser, save_object):
+    list_voltage = getattr(save_object, "list_voltage")
+    for iterator in range(len(list_voltage)):
+        if int(list_voltage[iterator]) == 3:
+            write_commands(ser, iterator, 10, 179, 0)
+        elif int(list_voltage[iterator]) == 5:
+            write_commands(ser, iterator, 10, 181, 0)
+
+
+# Выбрать режим работы микросхем
+def select_operating_mode(ser, save_object):
+    list_voltage = getattr(save_object, "list_voltage")
+    for iterator in range(len(list_voltage)):
+        if int(list_voltage[iterator]) == 1 or int(list_voltage[iterator]) == 2 or int(list_voltage[iterator]) == 3:
+            write_commands(ser, iterator, 10, 192, int(list_voltage[iterator]))
 
 
 # повесить задержку на несколько кластеров
 def sleep_slave_1(first_mk, last_mk, timer):
     claster_first, number_first = search_claster_and_number(first_mk)
     claster_last, number_last = search_claster_and_number(last_mk)
-    time = int(timer / 50)
+    time = int(timer / 20)
     for iterator in range(claster_first, claster_last + 1):
         write_commands(ser, iterator, 10, 165, time)
-
-
-# повесить задержку на один кластер
-def sleep_slave(number_mk, timer):
-    claster, number = search_claster_and_number(number_mk)
-    timer = int(timer / 50)
-    write_commands(ser, claster, 10, 165, timer)

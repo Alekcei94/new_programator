@@ -7,9 +7,9 @@ class SaveOption:
     first_mk = 1  # Номер первой микросхемы
     last_mk = 3  # Номер последней микросхемы
     voltage_state = False  # Сосотояние наличиние питания на мк Ложь - нету, Истина - есть.
-    type_mk = 1  # тип микросхемы. 1 - старый OneWire; 2 - старый SPI; 3 - новый OneWire; 4 - новый SPI; 5 - новый ???
+    type_mk = 1  # тип микросхемы. 1 - старый OneWire; 2 - старый SPI; 3 - новый OneWire_10; 4 - новый SPI; 5 - новый I2C; 6 - новый OneWire_ANALOG
     list_voltage = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-    list_type_mk = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+    list_type_mk = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]  # 1 - OneWire; 2 - SPI: 3 - I2C
     com_port_mit = 1
     first_mit = 1
     last_mit = 4
@@ -34,6 +34,8 @@ class SaveOption:
                 self.first_mit = int(line.split(" ")[1])
             elif "lastMIT" in line:
                 self.last_mit = int(line.split(" ")[1])
+            elif "type_mk" in line:
+                self.type_mk = int(line.split(" ")[1])
         file_setting.close()
 
     # @staticmethod
