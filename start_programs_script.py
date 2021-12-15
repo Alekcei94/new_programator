@@ -1,4 +1,5 @@
 import sys
+import time
 
 from PyQt5 import QtWidgets, uic
 from PyQt5.QtWidgets import QApplication
@@ -30,6 +31,7 @@ class Commands_Window_OneWire_New(QtWidgets.QMainWindow):
         self.writeKAndBButton.clicked.connect(self.writeEN2)
         self.writeOTPButton.clicked.connect(self.writeEN2)
         self.writeEN2Button.clicked.connect(self.writeEN2)
+        self.startButton.clicked.connect(self.startRead)
 
     def workVdd(self):
         servis_method.all_vdd(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk'), saveOption)
@@ -37,7 +39,8 @@ class Commands_Window_OneWire_New(QtWidgets.QMainWindow):
     def readTemp(self):
         for iterator_mk in range(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk') + 1):
             basic_commands_onewire.form_temp_cod_not_active(iterator_mk)
-        servis_method.sleep_slave_1(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk'), 3000)
+        time.sleep(2)
+        #servis_method.sleep_slave_1(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk'), 3000)
         for iterator_mk in range(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk') + 1):
             basic_commands_onewire.read_temp_active(iterator_mk)
 
@@ -54,6 +57,18 @@ class Commands_Window_OneWire_New(QtWidgets.QMainWindow):
         for iterator_mk in range(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk') + 1):
             basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 1, 123)
 
+    def startRead(self):
+        list_temp = []
+        temp_mit = input()
+        for iterator_mk in range(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk') + 1):
+            basic_commands_onewire.form_temp_cod_not_active(iterator_mk)
+        time.sleep(2)
+        #servis_method.sleep_slave_1(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk'), 3000)
+        for iterator_mk in range(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk') + 1):
+            list_temp.append(basic_commands_onewire.read_temp_active(iterator_mk))
+        for iterator_mk in range(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk') + 1):
+            file_path_data = open('../data/' + str(iterator_mk) + '.txt', 'a')
+            file_path_data.write(str(temp_mit) + " " + str(list_temp[iterator_mk]))
 
 class Commands_Window_OneWire_Old(QtWidgets.QMainWindow):
     global saveOption

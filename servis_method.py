@@ -14,9 +14,13 @@ def write_commands(ser, byte_0, byte_1, byte_2, byte_3):
     ser.write(bytes([crc]))
     print("Waiting for the master's response")
     while True:
+        va12 = []
         # if ser.waitForReadyRead(4):
         if (int.from_bytes(ser.read(), "big")) == 51:
             print("Master confirmed")
+            for i in range(5):
+                va12.append(int.from_bytes(ser.read(), "big"))
+            print(va12)
             break
         elif (int.from_bytes(ser.read(), "big")) == 54:
             print("crc_not_ok")

@@ -43,6 +43,7 @@ def read_temp_active(number_mk):
     servis_method.write_commands(ser, claster, number, 164, 9)  # A4 сообщить slave сколько байт считать надо будет
     servis_method.write_commands(ser, claster, number, 42, 0)  # 2A конец записи стека, выполнение
     temp_cod = servis_method.read_data_in_mk(claster, number, 9, True)
+    return temp_cod
 
 
 # чтеине ИД адреса микросхемы
