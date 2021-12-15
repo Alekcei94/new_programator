@@ -1,6 +1,8 @@
-import serial
 import sys
 import time
+
+import serial
+
 
 def write_commands(ser, byte_0, byte_1, byte_2, byte_3):
     crc = form_crc(byte_0, byte_1, byte_2, byte_3)

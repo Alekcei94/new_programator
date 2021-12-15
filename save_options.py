@@ -1,8 +1,3 @@
-import os
-import shutil
-from datetime import datetime
-
-
 class SaveOption:
     first_mk = 1  # Номер первой микросхемы
     last_mk = 3  # Номер последней микросхемы
@@ -21,8 +16,8 @@ class SaveOption:
             if ":" in line:
                 data_line = line.split(":")
                 voltage_and_type = data_line[1].split("|")
-                list_voltage[int(data_line[0])] = int(voltage_and_type[0])
-                list_type_mk[int(data_line[0])] = int(voltage_and_type[1])
+                SaveOption.list_voltage[int(data_line[0])] = int(voltage_and_type[0])
+                SaveOption.list_type_mk[int(data_line[0])] = int(voltage_and_type[1])
             elif "firstMk" in line:
                 self.first_mk = int(line.split(" ")[1])
             elif "lastMk" in line:
@@ -33,7 +28,7 @@ class SaveOption:
                 self.first_mit = int(line.split(" ")[1])
             elif "lastMIT" in line:
                 self.last_mit = int(line.split(" ")[1])
-            file_setting.close()
+        file_setting.close()
 
     # @staticmethod
     # def main_save_archive():

@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
+import os
 import os.path
 import time
-import os
-from scipy import interpolate
 from threading import Thread
+
+from scipy import interpolate
+
 import other_devices
 
 '''
@@ -43,7 +45,7 @@ def write_address():
 def write_coefficient_k_and_b():
     if check_click("Записать коэффициенты К и В"):
         for i in range(get_number_start_chip(), get_number_finish_chip() + 1):
-            calculation_coefficients(i, textbox)
+            calculation_coefficients(i)
 
 
 # FINALY TEST ALL CHIP
@@ -114,9 +116,9 @@ def read_temperature_and_write_data_file(textbox):
                         temperature_list[i]) + "Full time = 60 minutes.")
                     time.sleep(600)
             array_temperature = main_function_MIT(get_com_port_MIT(), form_array_list_port())
-            list_line_binary = read_temperature(textbox)
+            list_line_binary = read_temperature()
             if list_line_binary == None:
-                list_line_binary = read_temperature(textbox)
+                list_line_binary = read_temperature()
             port = get_number_start_chip()
             iterator = 0
             while True:
@@ -126,7 +128,7 @@ def read_temperature_and_write_data_file(textbox):
                     if len(elem) == 0:
                         print("Double start read temperature")
                         flag_read = False
-                        list_line_binary = read_temperature(textbox)
+                        list_line_binary = read_temperature()
                 if flag_read:
                     break
             write_temperature(array_temperature)
@@ -192,7 +194,6 @@ def check_address():
     f = open('./address.txt', 'r')
     for i in f:
         str_check.append(i)
-
     for i in range(len(str)):
         if str[i] != str_check[i]:
             print(str[i] + " --> " + str_check[i])
@@ -224,18 +225,14 @@ def check_real_temperature():
 
 
 def give_real_temperature(number_chip):
-    global ser
     command = 2
     parameters = 0  # ? OR 2
-    bin_list = []  # number chip:bin code
     write_package(number_chip, command, parameters, 0, 0, 0, 0, 0, 0, 0, textbox)
-    str_bit_in_chip = ""
     for i in range(25):
         time.sleep(0.3)
         bit_in_chip = ser.readlines()
         print(str(bit_in_chip))
         if len(bit_in_chip) > 0:
-            str_bit_in_chip = str(bit_in_chip)[2:len(str(bit_in_chip)) - 4]
             break
     new_byte = (str(bit_in_chip)[6:len(bit_in_chip) - 5])
     if len(new_byte) == 0:
@@ -272,20 +269,20 @@ def verification_chips():
         # print (i)
         write_package(i, 1, 1, 0, 0, 0, 0, 0, 0, 0, textbox)
         time.sleep(0.5)
-        current = block_check_current_chip(i, textbox)
+        current = block_check_current_chip(i)
         if current >= max_current:
             continue
         current_array = []
-        thread_current = Thread(target=form_temperature_in_all_chips, args=(textbox,))
+        thread_current = Thread(target=form_temperature_in_all_chips, args=())
         for j in range(16):
             if j == 4:
                 thread_current.start()
-            current_array.append(block_check_current_chip(i, textbox))
+            current_array.append(block_check_current_chip(i))
             time.sleep(0.2)
         thread_current.join()
         print(current_array)
         if max(current_array) >= max_current:
-            textbox.insert(END, "ERROR current chip " + str(i) + " = " + current)
+            print("ERROR current chip " + str(i) + " = " + str(current))
         write_package(i, 1, 0, 0, 0, 0, 0, 0, 0, 0, textbox)
         time.sleep(0.5)
     write_package(255, 1, 0, 0, 0, 0, 0, 0, 0, 0, textbox)
@@ -849,7 +846,7 @@ def check_formed_array(kod, address):
             del kod[iterator + 1]
             del address[iterator + 1]
         iterator += 1
-    if (flag == False):
+    if flag:
         kod, address = check_formed_array(kod, address)
     return kod, address
 
@@ -891,7 +888,7 @@ def give_me_address_in_25_test(kod):
 # METHOD OF RECORDING THE COEFFICIENTS OF K AND B IN THE CHIP
 def write_OTP(address, kod, port, textbox, flag_write_file):
     global path_in_address_all_memory_otp_in_one_chip_write
-    if flag_write_file == True:
+    if flag_write_file:
         file_text = open(path_in_address_all_memory_otp_in_one_chip_write + str(port) + '.txt', 'a')
     command = 8
     bit_address = str(bin(address))
@@ -924,7 +921,7 @@ def write_OTP(address, kod, port, textbox, flag_write_file):
             byte += str(bit)
             iterator += 1
     print_bin_code = str(bin_code)[1:len(str(bin_code)) - 1].split(", ")
-    if flag_write_file == True:
+    if flag_write_file:
         file_text.write(str(address) + " | " + str(''.join(print_bin_code)) + "\n")
         file_text.close()
     write_package(port, command, package[0], package[1], package[2], 0, 0, 0, 0, 0, textbox)
@@ -990,6 +987,7 @@ END BLOCK WRITE OTP
 '''
 BLOCK WRITE MAIN ADDRESS
 '''
+
 
 # переделать записи в файл
 # SET ADDRESS
@@ -1154,9 +1152,9 @@ def get_list_temperature():
         file_config = open(path, 'r')
         iterator = 0
         number_start_chip = []
-        for list in file_config:
+        for line in file_config:
             if iterator == 9:
-                number_start_chip = list
+                number_start_chip = line
             iterator += 1
         file_config.close()
         temperature_list = [int(x) for x in number_start_chip.split(", ")]

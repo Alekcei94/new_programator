@@ -1,5 +1,9 @@
-import serial
 import time
+
+import serial
+
+import save_options
+
 
 # GET TEMPERATURE WITH MIT8
 # transfer ['2:1.32012E+01B '] -> 13.20
@@ -12,12 +16,12 @@ def get_temperature_with_mit(lineBinary):
     return round(temperature, 2)
 
 
-def main_function_MIT(number_COM_port_MIT, list_port_mit):
-    global time_sleep_MIT
-    ser = serial.Serial('COM' + str(number_COM_port_MIT), 9600, timeout=0)
+def main_function_MIT():
+    ser = serial.Serial('COM' + str(getattr(save_options, "com_port_mit")), 9600, timeout=0)
     ser.close()
     ser.open()
     ser.isOpen()
+    list_port_mit = getattr(save_options, "last_mit")
     flag = False
     main_temperature = []
     for i in range(len(list_port_mit)):
@@ -62,8 +66,7 @@ def check_MIT(main_temperature, array_temperature):
 
 
 def form_array_list_port():
-    global path_map_mit_ports
-    file_text = open(path_map_mit_ports, 'r')
+    file_text = open('../configuration/map_MIT_and_chip.txt', 'r')
     hash_map_number_chip_and_port_mit = {}
     for line in file_text:
         number_chip_and_number_port_mit = line.split(':')
@@ -71,7 +74,7 @@ def form_array_list_port():
             number_chip_and_number_port_mit[1])
     file_text.close()
     list_port_mit = []
-    for i in range(get_number_start_MIT(), get_number_finish_MIT() + 1):
+    for i in range(getattr(save_options, "first_mit"), getattr(save_options, "last_mit") + 1):
         list_port_mit.append(i)
     return list_port_mit
 

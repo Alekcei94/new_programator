@@ -5,7 +5,6 @@ from PyQt5.QtWidgets import QApplication
 
 import save_options
 import servis_method
-
 from micros_old import basic_commands_onewire
 
 
