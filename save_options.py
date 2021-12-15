@@ -1,6 +1,7 @@
 import os
 import shutil
 from datetime import datetime
+import basic_commands_onewire
 
 
 class SaveOption:
@@ -14,9 +15,11 @@ class SaveOption:
     first_mit = 1
     last_mit = 4
     path = "../configuration/save_config.txt"  # FILE SAVE CONFIG
+    ser = 0
 
     def __init__(self):
         file_setting = open('./options/setting.txt', 'r')
+        self.ser = basic_commands_onewire.get_ser()
         for line in file_setting:
             line = line.replace("\n", "")
             if ":" in line:

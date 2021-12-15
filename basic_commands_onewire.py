@@ -163,7 +163,7 @@ def write_mem_new_micros_OneWire(number_mk, number_mem, data):
     servis_method.write_commands(ser, claster, number, 162, 0)  # A2 следующие команды выполняются стеком
     servis_method.write_commands(ser, claster, number, 170, 0)  # AA reset
     servis_method.write_commands(ser, claster, number, 166, 24)  # A6 24(0x18) Команда записи памяти
-    servis_method.write_commands(ser, claster, number, 166, number_mem)  # A6 addr
+    servis_method.write_commands(ser, claster, number, 166, number_mem)  # A6 номер микросхемы
     servis_method.write_commands(ser, claster, number, 166, data)  # A6 data
     servis_method.write_commands(ser, claster, number, 90, 4)  # 5A задержка в 80мкС
     servis_method.pr(ser, claster, number)
@@ -176,5 +176,5 @@ def get_ser():
 
 
 # Данное место необходимо переделать
-# ser = servis_method.get_ser_com()
-ser = 12
+ser = servis_method.get_ser_com()
+#ser = 12

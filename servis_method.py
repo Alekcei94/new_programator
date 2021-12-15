@@ -2,8 +2,6 @@ import serial
 import sys
 import time
 
-import basic_commands_onewire
-
 
 def write_commands(ser, byte_0, byte_1, byte_2, byte_3):
     crc = form_crc(byte_0, byte_1, byte_2, byte_3)
@@ -15,23 +13,24 @@ def write_commands(ser, byte_0, byte_1, byte_2, byte_3):
     ser.write(bytes([crc]))
     print("Waiting for the master's response")
     while True:
-        if ser.waitForReadyRead(4):
-            if (int.from_bytes(ser.read(), "big")) == 51:
-                print("Master confirmed")
-                break
-            elif (int.from_bytes(ser.read(), "big")) == 54:
-                write_commands(ser, byte_0, byte_1, byte_2, byte_3)
-            else:
-                print("Master's answer " + str(int.from_bytes(ser.read(), "big")))
+        # if ser.waitForReadyRead(4):
+        if (int.from_bytes(ser.read(), "big")) == 51:
+            print("Master confirmed")
+            break
+        elif (int.from_bytes(ser.read(), "big")) == 54:
+            print("crc_not_ok")
+            write_commands(ser, byte_0, byte_1, byte_2, byte_3)
         else:
-            ser.write(bytes([0]))
-    print("Waiting for a slave's response")
-    while True:
-        if ser.waitForReadyRead(4):
-            if (int.from_bytes(ser.read(), "big")) == 68:
-                print("Slave's confirmed")
-                break
-        print("Slave's's answer " + str(int.from_bytes(ser.read(), "big")))
+            print("Master's answer " + str(int.from_bytes(ser.read(), "big")))
+    # else:
+    # ser.write(bytes([0]))
+    # print("Waiting for a slave's response")
+    # while True:
+    #     # if ser.waitForReadyRead(4):
+    #     if (int.from_bytes(ser.read(), "big")) == 68:
+    #         print("Slave's confirmed")
+    #         break
+    #print("Slave's's answer " + str(int.from_bytes(ser.read(), "big")))
 
 
 def get_ser_com():
@@ -151,15 +150,17 @@ def read_data_in_mk(claster, number, number_of_bytes, read_flag):
 # Управление питанием
 # Если приходит Ложь, включить питание, иначе включить
 def all_vdd(first_mk, last_mk, save_object):
-    ser = basic_commands_onewire.get_ser()
-    choose_voltage_level(ser, save_object)
-    select_operating_mode(ser, save_object)
+    ser = getattr(save_object, "ser")
+
     switcher = getattr(save_object, "voltage_state")
     claster_first, number_first = search_claster_and_number(first_mk)
     claster_last, number_last = search_claster_and_number(last_mk)
     if not switcher:
         commands = 161
         switcher = True
+        choose_voltage_level(ser, save_object)
+        select_operating_mode(ser, save_object)
+        time.sleep(1)
     else:
         commands = 160
         switcher = False
@@ -174,17 +175,17 @@ def choose_voltage_level(ser, save_object):
     list_voltage = getattr(save_object, "list_voltage")
     for iterator in range(len(list_voltage)):
         if int(list_voltage[iterator]) == 3:
-            write_commands(ser, iterator, 10, 179, 0)
+            write_commands(ser, (iterator + 1)*16, 10, 179, 0)
         elif int(list_voltage[iterator]) == 5:
-            write_commands(ser, iterator, 10, 181, 0)
+            write_commands(ser, (iterator+1)*16, 10, 181, 0)
 
 
 # Выбрать режим работы микросхем
 def select_operating_mode(ser, save_object):
-    list_voltage = getattr(save_object, "list_voltage")
-    for iterator in range(len(list_voltage)):
-        if int(list_voltage[iterator]) == 1 or int(list_voltage[iterator]) == 2 or int(list_voltage[iterator]) == 3:
-            write_commands(ser, iterator, 10, 192, int(list_voltage[iterator]))
+    list_type_mk = getattr(save_object, "list_type_mk")
+    for iterator in range(len(list_type_mk)):
+        if int(list_type_mk[iterator]) == 1 or int(list_type_mk[iterator]) == 2 or int(list_type_mk[iterator]) == 3:
+            write_commands(ser, (iterator + 1) * 16, 10, 192, int(list_type_mk[iterator]))
 
 
 # повесить задержку на несколько кластеров

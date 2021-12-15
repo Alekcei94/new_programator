@@ -52,7 +52,7 @@ class Commands_Window_OneWire_New(QtWidgets.QMainWindow):
 
     def writeEN2(self):
         for iterator_mk in range(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk') + 1):
-            print("not work")
+            basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 1, 123)
 
 
 class Commands_Window_OneWire_Old(QtWidgets.QMainWindow):
