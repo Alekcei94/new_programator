@@ -46,8 +46,10 @@ class Commands_Window_OneWire_New(QtWidgets.QMainWindow):
 
     def readOTP(self):
         for iterator_mk in range(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk') + 1):
-            print("not work")
             print(iterator_mk)
+            for i in range(30):
+                print(str(i) + " : " + str(basic_commands_onewire.read_mem_new_micros_OneWire(iterator_mk, i)))
+
 
     def readID(self):
         for iterator_mk in range(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk') + 1):

@@ -121,8 +121,7 @@ def pr(ser, claster, number):
 
 
 #  Получение данных из мк, необходимо осмыслить его и переделать
-def read_data_in_mk(claster, number, number_of_bytes, read_flag):
-    global ser
+def read_data_in_mk(ser, claster, number, number_of_bytes, read_flag):
     write_commands(ser, claster, number, 167, number_of_bytes)  # A7 передача из master на ПК
     # time.sleep(5)
     buf = []

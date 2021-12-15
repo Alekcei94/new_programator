@@ -42,7 +42,7 @@ def read_temp_active(number_mk):
     servis_method.write_commands(ser, claster, number, 166, 190)  # A6 BE
     servis_method.write_commands(ser, claster, number, 164, 9)  # A4 сообщить slave сколько байт считать надо будет
     servis_method.write_commands(ser, claster, number, 42, 0)  # 2A конец записи стека, выполнение
-    temp_cod = servis_method.read_data_in_mk(claster, number, 9, True)
+    temp_cod = servis_method.read_data_in_mk(ser, claster, number, 9, True)
     return temp_cod
 
 
@@ -55,7 +55,8 @@ def read_address(number_mk):
     servis_method.write_commands(ser, claster, number, 166, 51)  # A6 33
     servis_method.write_commands(ser, claster, number, 164, 8)  # A4 сообщить slave сколько байт считать надо будет
     servis_method.write_commands(ser, claster, number, 42, 0)  # 2A конец записи стека, выполнение
-    address_mk = servis_method.read_data_in_mk(claster, number, 8, True)
+    address_mk = servis_method.read_data_in_mk(ser, claster, number, 8, True)
+    return address_mk
 
 
 # чтение адреса отп одной ячейки
@@ -171,6 +172,17 @@ def write_mem_new_micros_OneWire(number_mk, number_mem, data):
     servis_method.pr(ser, claster, number)
     servis_method.write_commands(ser, claster, number, 42, 0)  # 2A конец записи стека, выполнение
 
+def read_mem_new_micros_OneWire(number_mk, number_mem):
+    global ser
+    claster, number = servis_method.search_claster_and_number(number_mk)
+    servis_method.write_commands(ser, claster, number, 162, 0)  # A2 следующие команды выполняются стеком
+    servis_method.write_commands(ser, claster, number, 170, 0)  # AA reset
+    servis_method.write_commands(ser, claster, number, 166, 153)  # A6 24(0x99) Команда записи памяти
+    servis_method.write_commands(ser, claster, number, 166, number_mem)  # A6 номер микросхемы
+    servis_method.write_commands(ser, claster, number, 164, 1)  # A4 сообщить slave сколько байт считать надо будет
+    servis_method.write_commands(ser, claster, number, 42, 0)  # 2A конец записи стека, выполнение
+    mem = servis_method.read_data_in_mk(ser, claster, number, 1, True)
+    return mem
 
 def get_ser():
     global ser
