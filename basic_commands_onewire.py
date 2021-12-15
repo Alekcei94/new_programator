@@ -1,5 +1,8 @@
 import micros_old.program_logic as program_logic
 import servis_method
+import micros_old.program_logic as program_logic
+import save_options
+import time
 
 
 #
@@ -18,31 +21,39 @@ import servis_method
 #     pr(number_mk)
 
 
-# формирование температурного кода без активатора
+# формирование температурного кода
 def form_temp_cod_not_active(number_mk):
     global ser
     claster, number = servis_method.search_claster_and_number(number_mk)
-    servis_method.write_commands(ser, claster, number, 170, 0)  # AA
+    servis_method.write_commands(ser, claster, number, 162, 0)  # A2 следующие команды выполняются стеком
+    servis_method.write_commands(ser, claster, number, 170, 0)  # AA reset
     servis_method.write_commands(ser, claster, number, 166, 204)  # A6 CC
     servis_method.write_commands(ser, claster, number, 166, 68)  # A6 44
+    servis_method.write_commands(ser, claster, number, 42, 0)  # 2A конец записи стека, выполнение
 
 
 # чтение температурного кода
 def read_temp_active(number_mk):
     global ser
     claster, number = servis_method.search_claster_and_number(number_mk)
-    servis_method.write_commands(ser, claster, number, 170, 0)  # AA
+    servis_method.write_commands(ser, claster, number, 162, 0)  # A2 следующие команды выполняются стеком
+    servis_method.write_commands(ser, claster, number, 170, 0)  # AA reset
     servis_method.write_commands(ser, claster, number, 166, 204)  # A6 CC
     servis_method.write_commands(ser, claster, number, 166, 190)  # A6 BE
-    temp_cod = servis_method.read_data_in_mk(claster, number, 2, False)
+    servis_method.write_commands(ser, claster, number, 164, 9)  # A4 сообщить slave сколько байт считать надо будет
+    servis_method.write_commands(ser, claster, number, 42, 0)  # 2A конец записи стека, выполнение
+    temp_cod = servis_method.read_data_in_mk(claster, number, 9, True)
 
 
 # чтеине ИД адреса микросхемы
 def read_address(number_mk):
     global ser
     claster, number = servis_method.search_claster_and_number(number_mk)
-    servis_method.write_commands(ser, claster, number, 170, 0)  # AA
+    servis_method.write_commands(ser, claster, number, 162, 0)  # A2 следующие команды выполняются стеком
+    servis_method.write_commands(ser, claster, number, 170, 0)  # AA reset
     servis_method.write_commands(ser, claster, number, 166, 51)  # A6 33
+    servis_method.write_commands(ser, claster, number, 164, 8)  # A4 сообщить slave сколько байт считать надо будет
+    servis_method.write_commands(ser, claster, number, 42, 0)  # 2A конец записи стека, выполнение
     address_mk = servis_method.read_data_in_mk(claster, number, 8, True)
 
 
@@ -145,6 +156,26 @@ def write_EN2(number_mk):
     servis_method.write_commands(ser, claster, number, 166, 0)  # A6 не настроенна команда
 
 
+# Запись памяти в новый микрос OneWire интерфейсом
+# Важно number_mem берется из карты памяти по формуле номер строки - 1.
+def write_mem_new_micros_OneWire(number_mk, number_mem, data):
+    global ser
+    claster, number = servis_method.search_claster_and_number(number_mk)
+    servis_method.write_commands(ser, claster, number, 162, 0)  # A2 следующие команды выполняются стеком
+    servis_method.write_commands(ser, claster, number, 170, 0)  # AA reset
+    servis_method.write_commands(ser, claster, number, 166, 24)  # A6 24(0x18) Команда записи памяти
+    servis_method.write_commands(ser, claster, number, 166, number_mem)  # A6 номер микросхемы
+    servis_method.write_commands(ser, claster, number, 166, data)  # A6 data
+    servis_method.write_commands(ser, claster, number, 90, 4)  # 5A задержка в 80мкС
+    servis_method.pr(ser, claster, number)
+    servis_method.write_commands(ser, claster, number, 42, 0)  # 2A конец записи стека, выполнение
+
+
+def get_ser():
+    global ser
+    return ser
+
+
 # Данное место необходимо переделать
-# ser = servis_method.get_ser_com()
-ser = 12
+ser = servis_method.get_ser_com()
+#ser = 12

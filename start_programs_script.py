@@ -5,31 +5,72 @@ from PyQt5.QtWidgets import QApplication
 
 import save_options
 import servis_method
-from micros_old import basic_commands_onewire
+
+import basic_commands_onewire
 
 
 class ConfigurationWindow(QtWidgets.QMainWindow):
     def __init__(self):
         super(ConfigurationWindow, self).__init__()
-        uic.loadUi('./ui/config.ui', self)
+        uic.loadUi('./ui/Setting.ui', self)
         self.show()
 
 
-class CommandsWindow(QtWidgets.QMainWindow):
+class Commands_Window_OneWire_New(QtWidgets.QMainWindow):
     global saveOption
 
     def __init__(self):
-        super(CommandsWindow, self).__init__()
-        uic.loadUi('./ui/commands.ui', self)
+        super(Commands_Window_OneWire_New, self).__init__()
+        uic.loadUi('./ui/commands_OneWire_New.ui', self)
         self.show()
-        self.VddButton.clicked.connect(self.workVdd)
-        self.ReadTempButton.clicked.connect(self.readTemp)
-        self.ReadOTPButton.clicked.connect(self.readOTP)
-        self.WriteREZButton.clicked.connect(self.writeREZ)
-        self.WriterIDButton.clicked.connect(self.writeID)
-        self.WriteOTPButton.clicked.connect(self.writeOTP)
-        self.ReadIDButton.clicked.connect(self.readID)
-        self.WriteEn2Button.clicked.connect(self.writeEN2)
+        self.vddButton.clicked.connect(self.workVdd)
+        self.readTempButton.clicked.connect(self.readTemp)
+        self.readAddressButton.clicked.connect(self.readID)
+        self.readOTPButton.clicked.connect(self.readOTP)
+        self.writeKAndBButton.clicked.connect(self.writeEN2)
+        self.writeOTPButton.clicked.connect(self.writeEN2)
+        self.writeEN2Button.clicked.connect(self.writeEN2)
+
+    def workVdd(self):
+        servis_method.all_vdd(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk'), saveOption)
+
+    def readTemp(self):
+        for iterator_mk in range(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk') + 1):
+            basic_commands_onewire.form_temp_cod_not_active(iterator_mk)
+        servis_method.sleep_slave_1(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk'), 3000)
+        for iterator_mk in range(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk') + 1):
+            basic_commands_onewire.read_temp_active(iterator_mk)
+
+    def readOTP(self):
+        for iterator_mk in range(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk') + 1):
+            print("not work")
+            print(iterator_mk)
+
+    def readID(self):
+        for iterator_mk in range(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk') + 1):
+            basic_commands_onewire.read_address(iterator_mk)
+
+    def writeEN2(self):
+        for iterator_mk in range(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk') + 1):
+            basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 1, 123)
+
+
+class Commands_Window_OneWire_Old(QtWidgets.QMainWindow):
+    global saveOption
+
+    def __init__(self):
+        super(Commands_Window_OneWire_Old, self).__init__()
+        uic.loadUi('./ui/commandsOneWireOld.ui', self)
+        self.show()
+        self.vddButton.clicked.connect(self.workVdd)
+        self.readTempButton.clicked.connect(self.readTemp)
+        self.readAddressButton.clicked.connect(self.readID)
+        self.readOTPButton.clicked.connect(self.readOTP)
+        self.writeREZButton.clicked.connect(self.writeREZ)
+        self.writeAddressButton.clicked.connect(self.writeID)
+        self.writeKAndBButton.clicked.connect(self.writeID)
+        self.writeOTPButton.clicked.connect(self.writeOTP)
+        self.writeEN2Button.clicked.connect(self.writeEN2)
 
     def workVdd(self):
         servis_method.all_vdd(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk'), saveOption)
@@ -79,17 +120,37 @@ class CommandsWindow(QtWidgets.QMainWindow):
 class MainWindow(QtWidgets.QMainWindow):
     def __init__(self):
         super(MainWindow, self).__init__()
-        uic.loadUi('./ui/main.ui', self)
+        uic.loadUi('./ui/Main.ui', self)
         self.setWindowTitle('MainWindow')
-        self.comands.clicked.connect(self.show_CommandsWindow)
-        # self.options.clicked.connect(self.show_ConfigurationWindow)
+        type_mk = getattr(saveOption, "type_mk")
+        if type_mk == 1:  # 1 - старый OneWire; ;
+            self.comands.clicked.connect(self.show_CommandsWindow_OneWire_Old)
+        elif type_mk == 2:  # 2 - старый SPI;
+            print()
+        elif type_mk == 3 or type_mk == 6:  # 3 - новый OneWire_10; 6 - новый OneWire_ANALOG
+            self.comands.clicked.connect(self.show_CommandsWindow_OneWire_New)
+        elif type_mk == 4:  # 4 - новый SPI;
+            print()
+        elif type_mk == 5:  # 5 - новый ???;
+            print()
+        else:
+            print("ERROR type_mk")
+            pass
 
-    # def show_ConfigurationWindow(self):
-    #     self.w1 = ConfigurationWindow()
-    #     self.w1.show()
+        self.options.clicked.connect(self.show_ConfigurationWindow)
 
-    def show_CommandsWindow(self):
-        self.w1 = CommandsWindow()
+    def show_ConfigurationWindow(self):
+        self.w1 = ConfigurationWindow()
+        self.w1.show()
+
+    # Старый OneWire
+    def show_CommandsWindow_OneWire_Old(self):
+        self.w1 = Commands_Window_OneWire_Old()
+        self.w1.show()
+
+    # Новый OneWire
+    def show_CommandsWindow_OneWire_New(self):
+        self.w1 = Commands_Window_OneWire_New()
         self.w1.show()
 
 
