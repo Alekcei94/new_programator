@@ -39,7 +39,7 @@ def write_commands(ser, byte_0, byte_1, byte_2, byte_3):
 
 
 def get_ser_com():
-    ser = serial.Serial('COM3', 115200, timeout=4)
+    ser = serial.Serial('COM3', 115200, timeout=2)
     time.sleep(2)
     return ser
 
@@ -154,9 +154,11 @@ def form_crc(data_0, data_1, data_2, data_3):
 # Запуск команды прожига, висит задержка в 250 милли секунд
 def pr(ser, claster, number):
     write_commands(ser, claster, number, 208, 0)  # D0 опустить линию DQ
+    write_commands(ser, claster, number, 165, 13)  # A5 задержка 260мС
     write_commands(ser, claster, number, 168, 0)  # A8 поднять линию PR
     write_commands(ser, claster, number, 165, 13)  # A5 задержка 260мС
     write_commands(ser, claster, number, 169, 0)  # A9 опустить линию PR
+    write_commands(ser, claster, number, 165, 13)  # A5 задержка 260мС
     write_commands(ser, claster, number, 209, 0)  # D1 поднять линию DQ
 
 

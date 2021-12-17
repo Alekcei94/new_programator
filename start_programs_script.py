@@ -1,5 +1,6 @@
 import sys
 import time
+import micros_new_OneWire.math_new_micros_OneWire as mathNewOneWire
 
 from PyQt5 import QtWidgets, uic
 from PyQt5.QtWidgets import QApplication
@@ -28,7 +29,7 @@ class Commands_Window_OneWire_New(QtWidgets.QMainWindow):
         self.readTempButton.clicked.connect(self.readTemp)
         self.readAddressButton.clicked.connect(self.readID)
         self.readOTPButton.clicked.connect(self.readOTP)
-        self.writeKAndBButton.clicked.connect(self.writeEN2)
+        self.writeKAndBButton.clicked.connect(self.writeMem)
         self.writeOTPButton.clicked.connect(self.writeEN2)
         self.writeEN2Button.clicked.connect(self.writeEN2)
         self.startButton.clicked.connect(self.startRead)
@@ -37,12 +38,21 @@ class Commands_Window_OneWire_New(QtWidgets.QMainWindow):
         servis_method.all_vdd(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk'), saveOption)
 
     def readTemp(self):
+        list_temp = []
         for iterator_mk in range(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk') + 1):
             basic_commands_onewire.form_temp_cod_not_active(iterator_mk)
         time.sleep(2)
         #servis_method.sleep_slave_1(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk'), 3000)
         for iterator_mk in range(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk') + 1):
-            basic_commands_onewire.read_temp_active(iterator_mk)
+            temp_cod = basic_commands_onewire.read_temp_active(iterator_mk)
+            if temp_cod[8] == servis_method.test_crc(temp_cod[0], temp_cod[1], temp_cod[2], temp_cod[3], temp_cod[4],
+                                                     temp_cod[5], temp_cod[6], temp_cod[7]):
+                list_temp.append(temp_cod[0] | (temp_cod[1] << 8))
+            else:
+                list_temp.append("ER")
+
+        print(list_temp)
+
 
     def readOTP(self):
         for iterator_mk in range(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk') + 1):
@@ -58,6 +68,11 @@ class Commands_Window_OneWire_New(QtWidgets.QMainWindow):
     def writeEN2(self):
         for iterator_mk in range(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk') + 1):
             basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 1, 123)
+
+    def writeMem(self):
+        for iterator_mk in range(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk') + 1):
+            list_data = []
+            mathNewOneWire.coefficients(iterator_mk)
 
     def startRead(self):
         list_temp = []

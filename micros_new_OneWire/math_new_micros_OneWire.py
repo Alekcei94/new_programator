@@ -1,19 +1,26 @@
 import matplotlib.pyplot as plt
 from scipy import interpolate
 
+# Micros 10
 
-# from scipy.interpolate import interp1d
-
-def coefficients(xlist, ylist):
-    xlistNew = xlist
+def coefficients(number_mk):
+    file = open('./data/' + str(number_mk) + '.txt', 'r')
+    xlistNew = []
+    ylist = []
+    for line in file:
+        line.replace("\n", "")
+        data = line.split(' ')
+        if len(data) > 0:
+            xlistNew.append(float(data[0]))
+            ylist.append(int(data[1]))
+    file.close()
     ylistNew = []
-    all_minus = ylist[0] - 200
+    all_minus = ylist[-1] - 200 # ERROR
     for i in ylist:
-        ylistNew.append(round((i - all_minus) / 1))
+        ylistNew.append(round((i - all_minus) / 4))
     print(xlistNew)
     print(ylistNew)
     calculationOfCoefficients(xlistNew, ylistNew, all_minus)
-    # calculationOfCoefficients(xlist, ylist)
 
 
 def form_interval(xlist, x_list_interval_data, y_list_interval_data, i, k):
@@ -23,21 +30,17 @@ def form_interval(xlist, x_list_interval_data, y_list_interval_data, i, k):
     interval_delete = 0
     start = xlist[i]
     stop = xlist[k]
-    # print ("start = " + str(start) + " stop = " + str(stop))
     test_flag = False
     for f in range(len(x_list_interval_data)):
         interval_delete += 1
         if test_flag == True:
             x_list_interval_data1.append(round(x_list_interval_data[f], 2))
             y_swich = float(y_list_interval_data[f])
-            # y_list_interval_data1.append(round(y_swich, 3))  # !!!!!!!!!!
             y_list_interval_data1.append(y_swich)  # !!!!!!!!!!
             if round(x_list_interval_data[f], 2) >= stop:
                 break
         if round(x_list_interval_data[f], 2) >= round(start, 2):
-            # print(x_list_interval_data[f])
             test_flag = True
-    # print(str(interval_delete))
     interval_data1.append(x_list_interval_data1)
     interval_data1.append(y_list_interval_data1)
     interval_data1.append(interval_delete)
@@ -45,14 +48,12 @@ def form_interval(xlist, x_list_interval_data, y_list_interval_data, i, k):
 
 
 def minimum(xlist, ylist):
-    xlist_test = xlist
-    ylist_test = ylist
 
     interval_data = interpol(xlist, ylist)
     x_list_interval_data = interval_data[0]
     y_list_interval_data = interval_data[1]
 
-    max_step_number = 10
+    max_step_number = 8
 
     xlist_test = []
     ylist_test = []
@@ -64,7 +65,6 @@ def minimum(xlist, ylist):
     xlist_test.append(round(x_list_interval_data[-1], 1))
     for i in xlist_test:
         test = float(y_list_interval_data[x_list_interval_data.index(i)])
-        # ylist_test.append(round(test, 3))!!
         ylist_test.append(test)
 
     # plt.axis([minElement(xlist)-10, maxElement(xlist)+10, minElement(ylist)-200, maxElement(ylist)+200])
@@ -94,7 +94,7 @@ def minimum(xlist, ylist):
             x_list_test = []
             for k in range(len(y_list_interval) - 1):
                 x_list_test.append(k)
-                kv_sum = abs(x_list_interval[k] * k_real + b_real) - abs(y_list_interval[k])
+                kv_sum = abs(x_list_interval[k] * k_real + b_real) - abs(y_list_interval[k]) # Hmmmm  math is not real
                 difference.append(pow(kv_sum, 2))
             sum = 0
             for k in difference:
@@ -114,7 +114,6 @@ def minimum(xlist, ylist):
         ylist_test[i + 1] = y_real
         xlist_test[i + 1] = x_real
 
-    new_list_x_temperature = []
     new_list_y_KOD = []
 
     new_list_x_test = []
@@ -126,43 +125,16 @@ def minimum(xlist, ylist):
     print("New X = " + str(xlist_test))
     print("New Y = " + str(new_list_y_KOD))
     print("OLD Y = " + str(ylist_test))
-    return new_list_x_test, new_list_y_KOD
+    return xlist_test, new_list_y_KOD
 
 
 def serch_temp_in_data_list_interpolation(x_list_interval_data, y_list_interval_data, data_y):
-    i = 0
     try:
         for i in range(len(y_list_interval_data)):
             if y_list_interval_data[i] > data_y:
                 return x_list_interval_data[i - 1]
     except:
         exit("Not work")
-
-
-def min_kv(xlist, ylist, interval_left, interval_right):
-    interval = interpol(xlist, ylist)
-    x_list_interval = interval[0]
-    y_list_interval = interval[1]
-
-    summa_x = 0
-    kv_summ_x = 0
-    summa_y = 0
-    summ_x_y_proizv = 0
-    for i in range(len(x_list_interval)):
-        summa_x = summa_x + x_list_interval[i]
-        kv_summ_x = kv_summ_x + (x_list_interval[i] * x_list_interval[i])
-        summa_y = summa_y + y_list_interval[i]
-        summ_x_y_proizv = summ_x_y_proizv + (x_list_interval[i] * y_list_interval[i])
-    delta = (kv_summ_x * len(x_list_interval)) - (summa_x * summa_x)
-    delta_k = (summ_x_y_proizv * len(x_list_interval)) - (summa_y * summa_x)
-    delta_b = (kv_summ_x * summa_y) - (summ_x_y_proizv * summa_x)
-
-    coef_k = delta_k / delta
-    coef_b = delta_b / delta
-
-    coef_all = [coef_k, coef_b]
-
-    return coef_all
 
 
 def interpol(xlist_test, ylist_test):
@@ -173,9 +145,8 @@ def interpol(xlist_test, ylist_test):
     interval_y = []
     interval_x = []
     interval = []
-    # print("Temp stop = " + str(stop_step))
+
     while round(temperaturerite, 2) <= stop_step:
-        # print("Temp = " + str(round(temperaturerite,2)))
         interval_x.append(round(temperaturerite, 2))
         interval_y.append(interpolate.splev(temperaturerite, tck))
         temperaturerite = temperaturerite + step
@@ -187,36 +158,26 @@ def interpol(xlist_test, ylist_test):
 def calculationOfCoefficients(xlist, ylist, all_minus):
     coefB = []
     coefK = []
-    kIdeal = 18.427
-    bIdeal = 1453.62
+    kIdeal = -16
+    bIdeal = 1145
     i = 0
     print("\n" + "-------------------------" + "\n" + "RESULT:")
-    x_new_list = []
-    y_new_list = []
-    # new_list = minimum(xlist, ylist)
+
     x_new_list, y_new_list = minimum(xlist, ylist)
-    # x_new_list = new_list[0]
-    # y_new_list = new_list[1]
     test_k = []
     test_b = []
     while i < len(x_new_list) - 1:
-        k_real = 0
-        b_real = 0
-        k_ideal = 0
-        b_ideal = 0
-        # k_real = float((y_new_list[i - 1] - y_new_list[i]) / (x_new_list[i - 1] - x_new_list[i]))
         k_real = float((y_new_list[i] - y_new_list[i + 1]) / (x_new_list[i] - x_new_list[i + 1]))
         b_real = y_new_list[i] - k_real * x_new_list[i]
+
         print("b_real in interval " + str(x_new_list[i]) + " : " + str(x_new_list[i + 1]) + " = " + str(b_real))
         print("k_real in interval " + str(x_new_list[i]) + " : " + str(x_new_list[i + 1]) + " = " + str(k_real))
-        # k_ideal = round(float(kIdeal / k_real), 4)
-        k_ideal = float(kIdeal / k_real)
-        # b_ideal = int(-1 * ((kIdeal / k_real) * b_real) + bIdeal)!!
+
         b_ideal = -1 * ((kIdeal / k_real) * b_real) + bIdeal
 
         test_k.append(k_real)
         test_b.append(b_real)
-        # coefK.append(k_ideal)!!
+
         b_round = round(float(b_ideal) / 32) * 32
         print(" old b = " + str(b_ideal) + " __ " + str(b_round))
         coefB.append(b_round)
@@ -251,7 +212,6 @@ def calculationOfCoefficients(xlist, ylist, all_minus):
                     test_y.append(sett * coefK[i - 1] + coefB[i - 1])
                     break
         test_temperature_list.append(sttt_temperature)
-        # sttt_temperature = round(sttt_temperature + step_test, 2)!!
         sttt_temperature = sttt_temperature + step_test
 
     min_delta_temperature = 0
@@ -266,7 +226,7 @@ def calculationOfCoefficients(xlist, ylist, all_minus):
     print("<<--- " + str(min_delta_temperature) + " __ " + str(max_delta_temperature))
     plt.axis([minElement(test_x) - 10, maxElement(test_x) + 10, minElement(test_y) - 200, maxElement(test_y) + 200])
     plt.plot(test_x, test_y, color='blue')
-    plt.plot([-60, 125], [348, 3757], color='red')
+    plt.plot([-60, 125], [2927, 47], color='red')
     plt.show()
     '''
     # NEW BLOCK
@@ -281,41 +241,7 @@ def calculationOfCoefficients(xlist, ylist, all_minus):
         print("-----")
 
     print("FINISH")
-    sttt_temperature = -60
-    test_x = []
-    test_y = []
-    test_temperature_list = []
-    while True:
-        if sttt_temperature > 125:
-            break
-        test_x.append(sttt_temperature)
-        if sttt_temperature > x_new_list[-1]:
-            sett = sttt_temperature * test_k[-1] + test_b[-1]
-            ideal_KOD = kIdeal * sttt_temperature + bIdeal
-            me_KOD = sett * coefK[-1] + coefB[-1]
-            test_y.append(me_KOD)
-        else:
-            for i in range(1, len(x_new_list)):
-                if sttt_temperature <= x_new_list[i]:
-                    sett = sttt_temperature * test_k[i - 1] + test_b[i - 1]
-                    ideal_KOD = kIdeal * sttt_temperature + bIdeal
-                    me_KOD = sett * coefK[i - 1] + coefB[i - 1]
-                    test_y.append(sett * coefK[i - 1] + coefB[i - 1])
-                    break
-        test_temperature_list.append(sttt_temperature)
-        sttt_temperature = round(sttt_temperature + step_test, 2)
-    min_delta_temperature = 0
-    max_delta_temperature = 0
-    for i in range(len(test_temperature_list)):
-        deltaa = (test_temperature_list[i] * (kIdeal) + bIdeal) - test_y[i]
-        if deltaa > 0:
-            max_delta_temperature = max_delta_temperature + deltaa
-        if deltaa < 0:
-            min_delta_temperature = min_delta_temperature + deltaa
-    plt.axis([minElement(test_x) - 10, maxElement(test_x) + 10, minElement(test_y) - 200, maxElement(test_y) + 200])
-    plt.plot(test_x, test_y, color='blue')
-    plt.plot([-60, 125], [185, 3885], color='red')
-    plt.show()
+    
     '''
 
     for j in range(len(y_new_list)):
@@ -334,11 +260,9 @@ def calculationOfCoefficients(xlist, ylist, all_minus):
     list_m_new = []
     for i in range(1, len(y_new_list) - 1):
         binCodeEleM = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-        # binCodeEleM = [0, 0, 0, 0, 0, 0, 0, 0]
         x = int(y_new_list[i])
         i = 0
         while i < 12:
-            # while i < 8:
             y = str(x % 2)
             binCodeEleM[i] = int(y)
             i = i + 1
@@ -350,9 +274,8 @@ def calculationOfCoefficients(xlist, ylist, all_minus):
         string_test = ""
         for i in range(8):
             string_test += str(binCodeEleM[len(binCodeEleM) - 1 - i])
-        # print("m = " + coefmm)
         list_m_new.append(string_test)
-        # print("m_test_8_bit =  0b'" + string_test)
+
     print("//M")
     print(list_m_new[0] + " //M0")
     print(list_m_new[1] + " //M1")
@@ -361,8 +284,8 @@ def calculationOfCoefficients(xlist, ylist, all_minus):
     print(list_m_new[4] + " //M4")
     print(list_m_new[5] + " //M5")
     print(list_m_new[6] + " //M6")
-    print(list_m_new[7] + " //M7")
-    print(list_m_new[8] + " //M8")
+    # print(list_m_new[7] + " //M7")
+    # print(list_m_new[8] + " //M8")
 
     list_b_new = []
     for ele in coefB:
@@ -406,8 +329,8 @@ def calculationOfCoefficients(xlist, ylist, all_minus):
     print(list_b_new[5] + " //B5")
     print(list_b_new[6] + " //B6")
     print(list_b_new[7] + " //B7")
-    print(list_b_new[8] + " //B8")
-    print(list_b_new[9] + " //B9")
+    # print(list_b_new[8] + " //B8")
+    # print(list_b_new[9] + " //B9")
     list_k_new = []
     for ele in coefK:
         x = float(ele)
@@ -448,8 +371,8 @@ def calculationOfCoefficients(xlist, ylist, all_minus):
     print(list_k_new[5] + " //K5")
     print(list_k_new[6] + " //K6")
     print(list_k_new[7] + " //K7")
-    print(list_k_new[8] + " //K8")
-    print(list_k_new[9] + " //K9")
+    # print(list_k_new[8] + " //K8")
+    # print(list_k_new[9] + " //K9")
 
     step = 0
     stepK = 0
@@ -566,24 +489,3 @@ def maxElement(list):
         if int(element) > max:
             max = int(element)
     return max
-
-
-def readFile(i):
-    try:
-        file = open('c:/micros/data/' + i + '.txt', 'r')
-        say = []
-        col_list = []
-        for line in file:
-            say = line.split(' ')
-            if len(say) > 0:
-                col_list.append(say[0])
-                col_list.append(say[1])
-        file.close()
-        print(col_list)
-        return col_list
-    except:
-        pass
-
-
-
-coefficients()

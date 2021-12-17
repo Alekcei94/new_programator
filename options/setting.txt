@@ -21,7 +21,7 @@
 ------
 *далее идут номера первой и последней мк
 firstMk 1
-lastMk 8
+lastMk 1
 comMIT 2
 firstMIT 1
 lastMIT 8
