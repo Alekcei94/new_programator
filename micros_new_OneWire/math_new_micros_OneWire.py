@@ -159,7 +159,7 @@ def calculationOfCoefficients(xlist, ylist, all_minus):
     coefB = []
     coefK = []
     kIdeal = -16
-    bIdeal = 1145
+    bIdeal = 2047
     i = 0
     print("\n" + "-------------------------" + "\n" + "RESULT:")
 
