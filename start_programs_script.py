@@ -67,7 +67,11 @@ class Commands_Window_OneWire_New(QtWidgets.QMainWindow):
         time.sleep(2)
         #servis_method.sleep_slave_1(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk'), 3000)
         for iterator_mk in range(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk') + 1):
-            list_temp.append(basic_commands_onewire.read_temp_active(iterator_mk))
+            temp_cod = basic_commands_onewire.read_temp_active(iterator_mk)
+            if temp_cod[8] == servis_method.test_crc(temp_cod[0], temp_cod[1], temp_cod[2], temp_cod[3], temp_cod[4], temp_cod[5], temp_cod[6], temp_cod[7]):
+                list_temp.append(temp_cod[0] | (temp_cod[1] << 8))
+            else:
+                list_temp.append("ER")
         for iterator_mk in range(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk') + 1):
             file_path_data = open('../data/' + str(iterator_mk) + '.txt', 'a')
             file_path_data.write(str(temp_mit) + " " + str(list_temp[iterator_mk]))
