@@ -1,8 +1,5 @@
-import micros_old.program_logic as program_logic
 import servis_method
 import micros_old.program_logic as program_logic
-import save_options
-import time
 
 
 #
