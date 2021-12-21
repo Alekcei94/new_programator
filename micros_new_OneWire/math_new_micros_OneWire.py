@@ -1,10 +1,13 @@
 import matplotlib.pyplot as plt
 from scipy import interpolate
 
+# Micros 10
+
 
 # Micros 10
 
 def coefficients(number_mk, chip):
+
     file = open('./data/' + str(number_mk) + '.txt', 'r')
     xlistNew = []
     ylist = []
@@ -16,12 +19,14 @@ def coefficients(number_mk, chip):
             ylist.append(int(data[1]))
     file.close()
     ylistNew = []
-    all_minus = ylist[-1] - 200  # ERROR
+    all_minus = ylist[-1] - 200 # ERROR
+
     for i in ylist:
         ylistNew.append(round((i - all_minus) / 4))
     print(xlistNew)
     print(ylistNew)
     calculationOfCoefficients(xlistNew, ylistNew, all_minus, chip)
+
 
 
 def form_interval(xlist, x_list_interval_data, y_list_interval_data, i, k):
@@ -224,10 +229,12 @@ def calculationOfCoefficients(xlist, ylist, all_minus, chip):
             min_delta_temperature = min_delta_temperature + deltaa
 
     print("<<--- " + str(min_delta_temperature) + " __ " + str(max_delta_temperature))
+
     # plt.axis([minElement(test_x) - 10, maxElement(test_x) + 10, minElement(test_y) - 200, maxElement(test_y) + 200])
     # plt.plot(test_x, test_y, color='blue')
     # plt.plot([-60, 125], [2927, 47], color='red')
     # plt.show()
+
     '''
     # NEW BLOCK
     print("START")
@@ -512,3 +519,4 @@ def maxElement(list):
         if int(element) > max:
             max = int(element)
     return max
+
