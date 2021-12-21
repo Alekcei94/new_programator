@@ -1,3 +1,5 @@
+import time
+
 import servis_method
 import micros_old.program_logic as program_logic
 
@@ -159,6 +161,7 @@ def write_EN2(number_mk):
 # Важно number_mem берется из карты памяти по формуле номер строки - 1.
 def write_mem_new_micros_OneWire(number_mk, number_mem, data):
     global ser
+    time.sleep(2)
     claster, number = servis_method.search_claster_and_number(number_mk)
     servis_method.write_commands(ser, claster, number, 162, 0)  # A2 следующие команды выполняются стеком
     servis_method.write_commands(ser, claster, number, 170, 0)  # AA reset

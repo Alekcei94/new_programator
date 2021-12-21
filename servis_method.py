@@ -6,21 +6,21 @@ import serial
 
 def write_commands(ser, byte_0, byte_1, byte_2, byte_3):
     crc = form_crc(byte_0, byte_1, byte_2, byte_3)
-    print("Commands " + str(byte_0) + "_" + str(byte_1) + "_" + str(byte_2) + "_" + str(byte_3) + "_" + str(crc))
+    #print("Commands " + str(byte_0) + "_" + str(byte_1) + "_" + str(byte_2) + "_" + str(byte_3) + "_" + str(crc))
     ser.write(bytes([byte_0]))
     ser.write(bytes([byte_1]))
     ser.write(bytes([byte_2]))
     ser.write(bytes([byte_3]))
     ser.write(bytes([crc]))
-    print("Waiting for the master's response")
+    #print("Waiting for the master's response")
     while True:
         va12 = []
         # if ser.waitForReadyRead(4):
         if (int.from_bytes(ser.read(), "big")) == 51:
-            print("Master confirmed")
+            #print("Master confirmed")
             for i in range(5):
                 va12.append(int.from_bytes(ser.read(), "big"))
-            print(va12)
+            #print(va12)
             break
         elif (int.from_bytes(ser.read(), "big")) == 54:
             print("crc_not_ok")
@@ -39,7 +39,7 @@ def write_commands(ser, byte_0, byte_1, byte_2, byte_3):
 
 
 def get_ser_com():
-    ser = serial.Serial('COM3', 115200, timeout=4)
+    ser = serial.Serial('COM4', 115200, timeout=1)
     time.sleep(2)
     return ser
 
@@ -154,9 +154,11 @@ def form_crc(data_0, data_1, data_2, data_3):
 # Запуск команды прожига, висит задержка в 250 милли секунд
 def pr(ser, claster, number):
     write_commands(ser, claster, number, 208, 0)  # D0 опустить линию DQ
+    write_commands(ser, claster, number, 90, 4)  # 5A задержка в 80мкС
     write_commands(ser, claster, number, 168, 0)  # A8 поднять линию PR
     write_commands(ser, claster, number, 165, 13)  # A5 задержка 260мС
     write_commands(ser, claster, number, 169, 0)  # A9 опустить линию PR
+    write_commands(ser, claster, number, 165, 13)  # A5 задержка 260мС
     write_commands(ser, claster, number, 209, 0)  # D1 поднять линию DQ
 
 
@@ -186,9 +188,9 @@ def read_data_in_mk(ser, claster, number, number_of_bytes, read_flag):
         else:
             for j in range(len(buf)):
                 address.append(int.from_bytes(buf[j], "big"))
-            print("Address: " + str(address))
+            print("COD: " + str(address))
             flag_ok = False
-    return temperature
+    return address
 
 
 # Управление питанием
