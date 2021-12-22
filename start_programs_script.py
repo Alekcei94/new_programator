@@ -124,12 +124,6 @@ class Commands_Window_OneWire_New(QtWidgets.QMainWindow):
             basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 26, 2)  # делитель
             print("2 __ 26")
 
-
-    def writeMem(self):
-        for iterator_mk in range(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk') + 1):
-            list_data = []
-            mathNewOneWire.coefficients(iterator_mk)
-
     def startRead(self):
         list_temp = []
         temp_mit = input()

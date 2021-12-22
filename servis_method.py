@@ -7,12 +7,12 @@ import serial
 def write_commands(ser, byte_0, byte_1, byte_2, byte_3):
     crc = form_crc(byte_0, byte_1, byte_2, byte_3)
     #print("Commands " + str(byte_0) + "_" + str(byte_1) + "_" + str(byte_2) + "_" + str(byte_3) + "_" + str(crc))
-    ser.write(bytes([byte_0]))
-    ser.write(bytes([byte_1]))
-    ser.write(bytes([byte_2]))
-    ser.write(bytes([byte_3]))
-    ser.write(bytes([crc]))
-    #print("Waiting for the master's response")
+    #ser.write(bytes([byte_0]))
+    #ser.write(bytes([byte_1]))
+    #ser.write(bytes([byte_2]))
+    #ser.write(bytes([byte_3]))
+    #ser.write(bytes([crc]))
+    print("Waiting for the master's response")
     while True:
         va12 = []
         # if ser.waitForReadyRead(4):

@@ -146,7 +146,7 @@ def interpol(xlist_test, ylist_test):
     tck = interpolate.splrep(xlist_test, ylist_test)
     temperaturerite = xlist_test[0]
     stop_step = xlist_test[len(xlist_test) - 1]
-    step = 0.01
+    step = 0.1
     interval_y = []
     interval_x = []
     interval = []
@@ -169,6 +169,11 @@ def calculationOfCoefficients(xlist, ylist, all_minus, chip):
     print("\n" + "-------------------------" + "\n" + "RESULT:")
 
     x_new_list, y_new_list = minimum(xlist, ylist)
+
+    interval_data = interpol(xlist, ylist)
+    x_list_interval_data = interval_data[0]
+    y_list_interval_data = interval_data[1]
+
     test_k = []
     test_b = []
     while i < len(x_new_list) - 1:
@@ -195,61 +200,53 @@ def calculationOfCoefficients(xlist, ylist, all_minus, chip):
     # coefB.append(b_ideal)
 
     sttt_temperature = -60
-    step_test = 0.1
+    step_test = 1
     test_x = []
     test_y = []
     test_temperature_list = []
-    while True:
-        if sttt_temperature > 125:
-            break
-        test_x.append(sttt_temperature)
-        if sttt_temperature > x_new_list[-1]:
-            sett = sttt_temperature * test_k[-1] + test_b[-1]
-            ideal_KOD = kIdeal * sttt_temperature + bIdeal
-            me_KOD = sett * coefK[-1] + coefB[-1]
-            test_y.append(me_KOD)
-        else:
-            for i in range(1, len(x_new_list)):
-                if sttt_temperature <= x_new_list[i]:
-                    sett = sttt_temperature * test_k[i - 1] + test_b[i - 1]
-                    ideal_KOD = kIdeal * sttt_temperature + bIdeal
-                    me_KOD = sett * coefK[i - 1] + coefB[i - 1]
-                    test_y.append(sett * coefK[i - 1] + coefB[i - 1])
-                    break
-        test_temperature_list.append(sttt_temperature)
-        sttt_temperature = sttt_temperature + step_test
+    print("ERROR START")
+    for iter_temp in range(len(y_list_interval_data)):
+        cod_ideal = x_list_interval_data[iter_temp] * (-16) + 2047
+        if y_list_interval_data[iter_temp] > y_new_list[1]:
+            cod_mk = y_list_interval_data[iter_temp] * coefK[0] + coefB[0]
+        elif y_list_interval_data[iter_temp] < y_new_list[1] and y_list_interval_data[iter_temp] > y_new_list[2]:
+            cod_mk = y_list_interval_data[iter_temp] * coefK[1] + coefB[1]
+        elif y_list_interval_data[iter_temp] < y_new_list[2] and y_list_interval_data[iter_temp] > y_new_list[3]:
+            cod_mk = y_list_interval_data[iter_temp] * coefK[2] + coefB[2]
+        elif y_list_interval_data[iter_temp] < y_new_list[3] and y_list_interval_data[iter_temp] > y_new_list[4]:
+            cod_mk = y_list_interval_data[iter_temp] * coefK[3] + coefB[3]
+        elif y_list_interval_data[iter_temp] < y_new_list[4] and y_list_interval_data[iter_temp] > y_new_list[5]:
+            cod_mk = y_list_interval_data[iter_temp] * coefK[4] + coefB[4]
+        elif y_list_interval_data[iter_temp] < y_new_list[6] and y_list_interval_data[iter_temp] > y_new_list[7]:
+            cod_mk = y_list_interval_data[iter_temp] * coefK[5] + coefB[5]
+        elif y_list_interval_data[iter_temp] < y_new_list[7] and y_list_interval_data[iter_temp] > y_new_list[8]:
+            cod_mk = y_list_interval_data[iter_temp] * coefK[6] + coefB[6]
+        elif y_list_interval_data[iter_temp] < y_new_list[8]:
+            cod_mk = y_list_interval_data[iter_temp] * coefK[7] + coefB[7]
+        print(str(x_list_interval_data[iter_temp]) + " --> " + str(cod_ideal - cod_mk) )
+    # for iter_temp in range(len(y_list_interval_data)):
+    #     if x_list_interval_data[iter_temp] > 125:
+    #         break
+    #     test_x.append(x_list_interval_data[iter_temp])
+    #     if x_list_interval_data[iter_temp] > x_new_list[-1]:
+    #         me_KOD = y_list_interval_data[iter_temp] * coefK[-1] + coefB[-1]
+    #         print(str(x_list_interval_data[iter_temp]) + " --> " + str(x_list_interval_data[iter_temp] + " __ "  + str(me_KOD * 0.0625)))
+    #         test_y.append(me_KOD)
+    #     else:
+    #         for i in range(1, len(x_new_list)):
+    #             if x_list_interval_data[iter_temp] <= x_new_list[i]:
+    #                 me_KOD = y_list_interval_data[iter_temp] * coefK[i-1] + coefB[i-1]
+    #                 print(str(x_list_interval_data[iter_temp]) + " --> " + str(
+    #                     x_list_interval_data[iter_temp]) + " __ "  + str(me_KOD * 0.0625))
+    #                 test_y.append(me_KOD)
+    #                 break
 
-    min_delta_temperature = 0
-    max_delta_temperature = 0
-    for i in range(len(test_temperature_list)):
-        deltaa = (test_temperature_list[i] * (kIdeal) + bIdeal) - test_y[i]
-        if deltaa > 0:
-            max_delta_temperature = max_delta_temperature + deltaa
-        if deltaa < 0:
-            min_delta_temperature = min_delta_temperature + deltaa
-
-    print("<<--- " + str(min_delta_temperature) + " __ " + str(max_delta_temperature))
+    print("ERROR FINISH")
 
     # plt.axis([minElement(test_x) - 10, maxElement(test_x) + 10, minElement(test_y) - 200, maxElement(test_y) + 200])
     # plt.plot(test_x, test_y, color='blue')
     # plt.plot([-60, 125], [2927, 47], color='red')
     # plt.show()
-
-    '''
-    # NEW BLOCK
-    print("START")
-    for i in range(len(x_new_list)-1):
-        sett = x_new_list[i+1] * test_k[i] + test_b[i]
-        me_KOD = sett * coefK[i] + coefB[i]
-        ideal_KOD = kIdeal * x_new_list[i+1] + bIdeal
-        print(coefB[i])
-        coefB[i] = int(coefB[i] - (me_KOD - ideal_KOD)) #1 gradus = 11.5 KOD
-        print(coefB[i])
-        print("-----")
-
-    print("FINISH")
-    
-    '''
 
     for j in range(len(y_new_list)):
         print("M = " + str(y_new_list[j]))
