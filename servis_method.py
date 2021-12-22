@@ -156,7 +156,7 @@ def pr(ser, claster, number):
     write_commands(ser, claster, number, 208, 0)  # D0 опустить линию DQ
     write_commands(ser, claster, number, 90, 4)  # 5A задержка в 80мкС
     write_commands(ser, claster, number, 168, 0)  # A8 поднять линию PR
-    write_commands(ser, claster, number, 165, 13)  # A5 задержка 260мС
+    write_commands(ser, claster, number, 165, 3)  # A5 задержка 260мС 13
     write_commands(ser, claster, number, 169, 0)  # A9 опустить линию PR
     write_commands(ser, claster, number, 165, 13)  # A5 задержка 260мС
     write_commands(ser, claster, number, 209, 0)  # D1 поднять линию DQ

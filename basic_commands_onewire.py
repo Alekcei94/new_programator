@@ -49,9 +49,11 @@ def read_temp_active(number_mk):
 def read_address(number_mk):
     global ser
     claster, number = servis_method.search_claster_and_number(number_mk)
+    print(str(claster) + "__" + str(number))
     servis_method.write_commands(ser, claster, number, 162, 0)  # A2 следующие команды выполняются стеком
     servis_method.write_commands(ser, claster, number, 170, 0)  # AA reset
-    servis_method.write_commands(ser, claster, number, 166, 51)  # A6 33
+    servis_method.write_commands(ser, claster, number, 166, 204)  # A6 CC
+    servis_method.write_commands(ser, claster, number, 166, 190)  # A6 BE
     servis_method.write_commands(ser, claster, number, 164, 8)  # A4 сообщить slave сколько байт считать надо будет
     servis_method.write_commands(ser, claster, number, 42, 0)  # 2A конец записи стека, выполнение
     address_mk = servis_method.read_data_in_mk(ser, claster, number, 8, True)
@@ -190,5 +192,5 @@ def get_ser():
 
 
 # Данное место необходимо переделать
-#ser = servis_method.get_ser_com()
-ser = 12
+ser = servis_method.get_ser_com()
+#ser = 12
