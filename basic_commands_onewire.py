@@ -173,6 +173,7 @@ def write_mem_new_micros_OneWire(number_mk, number_mem, data):
     servis_method.write_commands(ser, claster, number, 90, 4)  # 5A задержка в 80мкС
     servis_method.pr(ser, claster, number)
     servis_method.write_commands(ser, claster, number, 42, 0)  # 2A конец записи стека, выполнение
+    print("Mem address : " + str(number_mem) + "; Data mem : " + str(data))
 
 def read_mem_new_micros_OneWire(number_mk, number_mem):
     global ser
@@ -192,5 +193,5 @@ def get_ser():
 
 
 # Данное место необходимо переделать
-ser = servis_method.get_ser_com()
-#ser = 12
+#ser = servis_method.get_ser_com()
+ser = 12
