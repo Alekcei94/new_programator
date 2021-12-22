@@ -6,12 +6,12 @@ import serial
 
 def write_commands(ser, byte_0, byte_1, byte_2, byte_3):
     crc = form_crc(byte_0, byte_1, byte_2, byte_3)
-    #print("Commands " + str(byte_0) + "_" + str(byte_1) + "_" + str(byte_2) + "_" + str(byte_3) + "_" + str(crc))
-    #ser.write(bytes([byte_0]))
-    #ser.write(bytes([byte_1]))
-    #ser.write(bytes([byte_2]))
-    #ser.write(bytes([byte_3]))
-    #ser.write(bytes([crc]))
+    print("Commands " + str(byte_0) + "_" + str(byte_1) + "_" + str(byte_2) + "_" + str(byte_3) + "_" + str(crc))
+    ser.write(bytes([byte_0]))
+    ser.write(bytes([byte_1]))
+    ser.write(bytes([byte_2]))
+    ser.write(bytes([byte_3]))
+    ser.write(bytes([crc]))
     print("Waiting for the master's response")
     while True:
         va12 = []
@@ -156,7 +156,7 @@ def pr(ser, claster, number):
     write_commands(ser, claster, number, 208, 0)  # D0 опустить линию DQ
     write_commands(ser, claster, number, 90, 4)  # 5A задержка в 80мкС
     write_commands(ser, claster, number, 168, 0)  # A8 поднять линию PR
-    write_commands(ser, claster, number, 165, 13)  # A5 задержка 260мС
+    write_commands(ser, claster, number, 165, 3)  # A5 задержка 260мС 13
     write_commands(ser, claster, number, 169, 0)  # A9 опустить линию PR
     write_commands(ser, claster, number, 165, 13)  # A5 задержка 260мС
     write_commands(ser, claster, number, 209, 0)  # D1 поднять линию DQ

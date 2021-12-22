@@ -53,6 +53,7 @@ class Commands_Window_OneWire_New(QtWidgets.QMainWindow):
             temp_cod = basic_commands_onewire.read_temp_active(iterator_mk)
             if temp_cod[8] == servis_method.test_crc(temp_cod[0], temp_cod[1], temp_cod[2], temp_cod[3], temp_cod[4],
                                                      temp_cod[5], temp_cod[6], temp_cod[7]):
+            #if 1 == 1:
                 temp = int(temp_cod[0]) | (int(temp_cod[1]) << 8)
                 if temp >= 63488:
                     temp = -1 * (temp - 63488)
@@ -72,11 +73,21 @@ class Commands_Window_OneWire_New(QtWidgets.QMainWindow):
 
     def readID(self):
         for iterator_mk in range(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk') + 1):
-            basic_commands_onewire.read_address(iterator_mk)
+
+            # basic_commands_onewire.read_address(iterator_mk)
+            # time.sleep(1)
+            print(iterator_mk)
+            address = ""
+            for i in range(31, 39):
+                address = address + str(basic_commands_onewire.read_mem_new_micros_OneWire(iterator_mk, i)) + " "
+            print(address)
 
     def writeEN2(self):
         for iterator_mk in range(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk') + 1):
-            basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 30, 139)
+            for i in range(40):
+                print(i)
+                basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 30, 179)
+                time.sleep(1)
             print("30")
 
     def writeMem(self):
@@ -133,13 +144,14 @@ class Commands_Window_OneWire_New(QtWidgets.QMainWindow):
         #servis_method.sleep_slave_1(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk'), 3000)
         for iterator_mk in range(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk') + 1):
             temp_cod = basic_commands_onewire.read_temp_active(iterator_mk)
-            if temp_cod[8] == servis_method.test_crc(temp_cod[0], temp_cod[1], temp_cod[2], temp_cod[3], temp_cod[4], temp_cod[5], temp_cod[6], temp_cod[7]):
+            #if temp_cod[8] == servis_method.test_crc(temp_cod[0], temp_cod[1], temp_cod[2], temp_cod[3], temp_cod[4], temp_cod[5], temp_cod[6], temp_cod[7]):
+            if 1 == 1:
                 list_temp.append(temp_cod[0] | (temp_cod[1] << 8))
             else:
                 list_temp.append("ER")
         for iterator_mk in range(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk') + 1):
-            file_path_data = open('../data/' + str(iterator_mk) + '.txt', 'a')
-            file_path_data.write(str(temp_mit) + " " + str(list_temp[iterator_mk]))
+            file_path_data = open('./data/' + str(iterator_mk) + '.txt', 'a')
+            file_path_data.write(str(temp_mit) + " " + str(list_temp[iterator_mk - 1]))
 
 class Commands_Window_OneWire_Old(QtWidgets.QMainWindow):
     global saveOption
