@@ -151,7 +151,7 @@ class Commands_Window_OneWire_New(QtWidgets.QMainWindow):
                 list_temp.append("ER")
         for iterator_mk in range(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk') + 1):
             file_path_data = open('./data/' + str(iterator_mk) + '.txt', 'a')
-            file_path_data.write(str(temp_mit) + " " + str(list_temp[iterator_mk - 1]))
+            file_path_data.write(str(temp_mit) + " " + str(list_temp[iterator_mk - 1]) + "\n")
 
 class Commands_Window_OneWire_Old(QtWidgets.QMainWindow):
     global saveOption
