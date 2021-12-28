@@ -65,12 +65,12 @@ def minimum(xlist, ylist):
 
     xlist_test.append(round(x_list_interval_data[0], 1))
     for i in range(1, max_step_number):
-        new_temperature = round(xlist_test[i - 1] + (185 / max_step_number), 1)
+        new_temperature = float(round(xlist_test[i - 1] + (185 / max_step_number), 1))
         xlist_test.append(new_temperature)
     xlist_test.append(round(x_list_interval_data[-1], 1))
     for i in xlist_test:
         test = float(y_list_interval_data[x_list_interval_data.index(i)])
-        ylist_test.append(test)
+        ylist_test.append(round(test, 3))
 
     # plt.axis([minElement(xlist)-10, maxElement(xlist)+10, minElement(ylist)-200, maxElement(ylist)+200])
     # plt.plot(xlist_test, ylist_test, color = 'blue')
@@ -99,7 +99,7 @@ def minimum(xlist, ylist):
             x_list_test = []
             for k in range(len(y_list_interval) - 1):
                 x_list_test.append(k)
-                kv_sum = abs(x_list_interval[k] * k_real + b_real) - abs(y_list_interval[k])  # Hmmmm  math is not real
+                kv_sum = abs(x_list_interval[k] * k_real + b_real) - abs(y_list_interval[k])
                 difference.append(pow(kv_sum, 2))
             sum = 0
             for k in difference:
@@ -146,7 +146,7 @@ def interpol(xlist_test, ylist_test):
     tck = interpolate.splrep(xlist_test, ylist_test)
     temperaturerite = xlist_test[0]
     stop_step = xlist_test[len(xlist_test) - 1]
-    step = 0.1
+    step = 0.01
     interval_y = []
     interval_x = []
     interval = []
@@ -191,9 +191,10 @@ def calculationOfCoefficients(xlist, ylist, all_minus, chip):
         b_round = round(float(b_ideal) / 32) * 32
         print(" old b = " + str(b_ideal) + " __ " + str(b_round))
         coefB.append(b_round)
-        new_k_1_test = (kIdeal * x_new_list[i] + bIdeal - b_round) / (k_real * x_new_list[i] + b_real)
-        new_k_2_test = (kIdeal * x_new_list[i + 1] + bIdeal - b_round) / (k_real * x_new_list[i + 1] + b_real)
-        new_k_test = (new_k_1_test + new_k_2_test) / 2
+        # new_k_1_test = (kIdeal * x_new_list[i] + bIdeal - b_round) / (k_real * x_new_list[i] + b_real)
+        # new_k_2_test = (kIdeal * x_new_list[i + 1] + bIdeal - b_round) / (k_real * x_new_list[i + 1] + b_real)
+        # new_k_test = (new_k_1_test + new_k_2_test) / 2
+        new_k_test = kIdeal / k_real
         coefK.append(round(new_k_test, 4))
         i = i + 1
 
@@ -205,25 +206,25 @@ def calculationOfCoefficients(xlist, ylist, all_minus, chip):
     test_y = []
     test_temperature_list = []
     print("ERROR START")
-    for iter_temp in range(len(y_list_interval_data)):
-        cod_ideal = x_list_interval_data[iter_temp] * (-16) + 2047
-        if y_list_interval_data[iter_temp] > y_new_list[1]:
-            cod_mk = y_list_interval_data[iter_temp] * coefK[0] + coefB[0]
-        elif y_list_interval_data[iter_temp] < y_new_list[1] and y_list_interval_data[iter_temp] > y_new_list[2]:
-            cod_mk = y_list_interval_data[iter_temp] * coefK[1] + coefB[1]
-        elif y_list_interval_data[iter_temp] < y_new_list[2] and y_list_interval_data[iter_temp] > y_new_list[3]:
-            cod_mk = y_list_interval_data[iter_temp] * coefK[2] + coefB[2]
-        elif y_list_interval_data[iter_temp] < y_new_list[3] and y_list_interval_data[iter_temp] > y_new_list[4]:
-            cod_mk = y_list_interval_data[iter_temp] * coefK[3] + coefB[3]
-        elif y_list_interval_data[iter_temp] < y_new_list[4] and y_list_interval_data[iter_temp] > y_new_list[5]:
-            cod_mk = y_list_interval_data[iter_temp] * coefK[4] + coefB[4]
-        elif y_list_interval_data[iter_temp] < y_new_list[6] and y_list_interval_data[iter_temp] > y_new_list[7]:
-            cod_mk = y_list_interval_data[iter_temp] * coefK[5] + coefB[5]
-        elif y_list_interval_data[iter_temp] < y_new_list[7] and y_list_interval_data[iter_temp] > y_new_list[8]:
-            cod_mk = y_list_interval_data[iter_temp] * coefK[6] + coefB[6]
-        elif y_list_interval_data[iter_temp] < y_new_list[8]:
-            cod_mk = y_list_interval_data[iter_temp] * coefK[7] + coefB[7]
-        print(str(x_list_interval_data[iter_temp]) + " --> " + str(cod_ideal - cod_mk) )
+    # for iter_temp in range(len(y_list_interval_data)):
+    #     cod_ideal = x_list_interval_data[iter_temp] * (-16) + 2047
+    #     if y_list_interval_data[iter_temp] > y_new_list[1]:
+    #         cod_mk = y_list_interval_data[iter_temp] * coefK[0] + coefB[0]
+    #     elif y_list_interval_data[iter_temp] < y_new_list[1] and y_list_interval_data[iter_temp] > y_new_list[2]:
+    #         cod_mk = y_list_interval_data[iter_temp] * coefK[1] + coefB[1]
+    #     elif y_list_interval_data[iter_temp] < y_new_list[2] and y_list_interval_data[iter_temp] > y_new_list[3]:
+    #         cod_mk = y_list_interval_data[iter_temp] * coefK[2] + coefB[2]
+    #     elif y_list_interval_data[iter_temp] < y_new_list[3] and y_list_interval_data[iter_temp] > y_new_list[4]:
+    #         cod_mk = y_list_interval_data[iter_temp] * coefK[3] + coefB[3]
+    #     elif y_list_interval_data[iter_temp] < y_new_list[4] and y_list_interval_data[iter_temp] > y_new_list[5]:
+    #         cod_mk = y_list_interval_data[iter_temp] * coefK[4] + coefB[4]
+    #     elif y_list_interval_data[iter_temp] < y_new_list[6] and y_list_interval_data[iter_temp] > y_new_list[7]:
+    #         cod_mk = y_list_interval_data[iter_temp] * coefK[5] + coefB[5]
+    #     elif y_list_interval_data[iter_temp] < y_new_list[7] and y_list_interval_data[iter_temp] > y_new_list[8]:
+    #         cod_mk = y_list_interval_data[iter_temp] * coefK[6] + coefB[6]
+    #     elif y_list_interval_data[iter_temp] < y_new_list[8]:
+    #         cod_mk = y_list_interval_data[iter_temp] * coefK[7] + coefB[7]
+    #     print(str(x_list_interval_data[iter_temp]) + " --> " + str(cod_ideal - cod_mk) )
     # for iter_temp in range(len(y_list_interval_data)):
     #     if x_list_interval_data[iter_temp] > 125:
     #         break
@@ -286,15 +287,24 @@ def calculationOfCoefficients(xlist, ylist, all_minus, chip):
     setattr(chip, "m_list", list_m_int)
 
     print("//M")
-    print(list_m_new[0] + " //M0")
-    print(list_m_new[1] + " //M1")
-    print(list_m_new[2] + " //M2")
-    print(list_m_new[3] + " //M3")
-    print(list_m_new[4] + " //M4")
-    print(list_m_new[5] + " //M5")
-    print(list_m_new[6] + " //M6")
+    print("\'" + list_m_new[0] + "\',")
+    print("\'" + list_m_new[1] + "\',")
+    print("\'" + list_m_new[2] + "\',")
+    print("\'" + list_m_new[3] + "\',")
+    print("\'" + list_m_new[4] + "\',")
+    print("\'" + list_m_new[5] + "\',")
+    print("\'" + list_m_new[6] + "\'")
     # print(list_m_new[7] + " //M7")
     # print(list_m_new[8] + " //M8")
+
+    # coefB[0] = coefB[0] + 44
+    # coefB[1] = coefB[1] + 44
+    # coefB[2] = coefB[2] + 44
+    # coefB[3] = coefB[3] + 44
+    # coefB[4] = coefB[4] + 44
+    # coefB[5] = coefB[5] + 44
+    # coefB[6] = coefB[6] + 44
+    # coefB[7] = coefB[7] + 44
 
     list_b_new = []
     for ele in coefB:
@@ -336,14 +346,14 @@ def calculationOfCoefficients(xlist, ylist, all_minus, chip):
 
     print("//B")
     # print(list_b_new[1][1:] + " //B1")
-    print(list_b_new[0] + " //B0")
-    print(list_b_new[1] + " //B1")
-    print(list_b_new[2] + " //B2")
-    print(list_b_new[3] + " //B3")
-    print(list_b_new[4] + " //B4")
-    print(list_b_new[5] + " //B5")
-    print(list_b_new[6] + " //B6")
-    print(list_b_new[7] + " //B7")
+    print("\'" + list_b_new[0] + "\',")
+    print("\'" + list_b_new[1] + "\',")
+    print("\'" + list_b_new[2] + "\',")
+    print("\'" + list_b_new[3] + "\',")
+    print("\'" + list_b_new[4] + "\',")
+    print("\'" + list_b_new[5] + "\',")
+    print("\'" + list_b_new[6] + "\',")
+    print("\'" + list_b_new[7] + "\'")
     # print(list_b_new[8] + " //B8")
     # print(list_b_new[9] + " //B9")
     list_k_new = []
@@ -363,11 +373,12 @@ def calculationOfCoefficients(xlist, ylist, all_minus, chip):
         intY = float(ele) - int(ele)
         i = 9
         # i = 4
-        while i >= 0:
+        while i >= 5:
             z = intY * 2
             binCodeEleK[i] = int(z)
             intY = float(z) - int(z)
             i = i - 1
+        print(intY)
         coefkk = ""
         for ele in binCodeEleK:
             coefkk = coefkk + str(ele)
@@ -384,14 +395,14 @@ def calculationOfCoefficients(xlist, ylist, all_minus, chip):
     setattr(chip, "k_list", list_k_int)
 
     print("//K")
-    print(list_k_new[0] + " //K0")
-    print(list_k_new[1] + " //K1")
-    print(list_k_new[2] + " //K2")
-    print(list_k_new[3] + " //K3")
-    print(list_k_new[4] + " //K4")
-    print(list_k_new[5] + " //K5")
-    print(list_k_new[6] + " //K6")
-    print(list_k_new[7] + " //K7")
+    print("\'" + list_k_new[0] + "\',")
+    print("\'" + list_k_new[1] + "\',")
+    print("\'" + list_k_new[2] + "\',")
+    print("\'" + list_k_new[3] + "\',")
+    print("\'" + list_k_new[4] + "\',")
+    print("\'" + list_k_new[5] + "\',")
+    print("\'" + list_k_new[6] + "\',")
+    print("\'" + list_k_new[7] + "\'")
     # print(list_k_new[8] + " //K8")
     # print(list_k_new[9] + " //K9")
 

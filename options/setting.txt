@@ -26,4 +26,4 @@ lastMk 8
 comMIT 2
 firstMIT 1
 lastMIT 8
-type_mk 6
+type_mk 3

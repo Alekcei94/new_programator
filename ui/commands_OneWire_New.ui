@@ -161,7 +161,7 @@
      <string notr="true">background-color: rgb(255, 183, 180);</string>
     </property>
     <property name="text">
-     <string>OTP</string>
+     <string>3V</string>
     </property>
    </widget>
    <widget class="QPushButton" name="writeEN2Button">

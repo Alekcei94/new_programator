@@ -236,9 +236,9 @@ class Commands_Window_OneWire_New_10(QtWidgets.QMainWindow):
         self.readAddressButton.clicked.connect(self.readID)
         self.readOTPButton.clicked.connect(self.readOTP)
         self.writeKAndBButton.clicked.connect(self.writeMem)
-        self.writeOTPButton.clicked.connect(self.writeEN2)
+        self.writeOTPButton.clicked.connect(self.write3V)
         self.writeEN2Button.clicked.connect(self.writeEN2)
-        self.startButton.clicked.connect(self.startRead)
+        #self.startButton.clicked.connect(self.startRead)
 
     def workVdd(self):
         print("Start VDD")
@@ -285,74 +285,101 @@ class Commands_Window_OneWire_New_10(QtWidgets.QMainWindow):
 
     def writeEN2(self):
         for iterator_mk in range(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk') + 1):
-            for i in range(40):
-                print(i)
-                basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 30, 179)
-                time.sleep(1)
-            print("30")
+            en = basic_commands_onewire.read_mem_new_micros_OneWire(iterator_mk, 30)
+            print(str(en[0]) + " _ " + str(en[0] + 1))
+            en1 = en[0] + 1
+            basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 30, en1)
+            time.sleep(6)
+
+    def write3V(self):
+        for iterator_mk in range(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk') + 1):
+            en = basic_commands_onewire.read_mem_new_micros_OneWire(iterator_mk, 30)
+            print(str(en[0]) + " _ " + str(en[0] + 1))
+            en1 = en[0] + 2
+            basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 30, en1)
+            time.sleep(6)
 
     def writeMem(self):
         list_chip = []
         for iterator_mk in range(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk') + 1):
+            print("Chip : " + str(iterator_mk))
             new_chip = micros_chip.Chip(iterator_mk)
             list_chip.append(new_chip)
             mathNewOneWire.coefficients(iterator_mk, new_chip)
             number_mem_in_chip = 0
-            for data in getattr(new_chip, "k_list"):
-                print(str(data) + " __ " + str(number_mem_in_chip))
-                if data != 0:
-                    basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, number_mem_in_chip, data)
-                number_mem_in_chip += 1
-
-            for data in getattr(new_chip, "b_list"):
-                print(str(data) + " __ " + str(number_mem_in_chip))
-                if data != 0:
-                    basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, number_mem_in_chip, data)
-                number_mem_in_chip += 1
-
-            z = getattr(new_chip, "z")
-            print(str(z) + " __ " + str(number_mem_in_chip))
-            if z != 0:
-                basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, number_mem_in_chip, z)
-            number_mem_in_chip += 1
-
-            for data in getattr(new_chip, "m_list"):
-                print(str(data) + " __ " + str(number_mem_in_chip))
-                if data != 0:
-                    basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, number_mem_in_chip, data)
-                number_mem_in_chip += 1
-
+            list_k = getattr(new_chip, "k_list")
+            list_b = getattr(new_chip, "b_list")
+            list_m = getattr(new_chip, "m_list")
             om1 = getattr(new_chip, "om1")
-            print(str(om1) + " __ " + str(number_mem_in_chip))
-            if om1 != 0:
-                basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, number_mem_in_chip, om1)
-            number_mem_in_chip += 1
-
             om2 = getattr(new_chip, "om2")
-            print(str(om2) + " __ " + str(number_mem_in_chip))
-            if om2 != 0:
-                basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, number_mem_in_chip, om2)
+            z1 = getattr(new_chip, "z")
 
-            basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 26, 2)  # делитель
-            print("2 __ 26")
+            # K
+            if list_k[0] != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 0, list_k[0])
+            time.sleep(6)
+            if list_k[1] != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 1, list_k[1])
+            time.sleep(6)
+            if list_k[2] != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 2, list_k[2])
+            time.sleep(6)
+            if list_k[3] != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 3, list_k[3])
+            time.sleep(6)
+            if list_k[4] != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 4, list_k[4])
+            time.sleep(6)
+            if list_k[5] != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 5, list_k[5])
+            time.sleep(6)
+            if list_k[6] != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 6, list_k[6])
+            time.sleep(6)
+            if list_k[7] != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 7, list_k[7])
+            time.sleep(6)
 
-    def startRead(self):
-        list_temp = []
-        temp_mit = input()
-        for iterator_mk in range(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk') + 1):
-            basic_commands_onewire.form_temp_cod_not_active(iterator_mk)
-        time.sleep(2)
-        #servis_method.sleep_slave_1(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk'), 3000)
-        for iterator_mk in range(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk') + 1):
-            temp_cod = basic_commands_onewire.read_temp_active(iterator_mk)
-            #if temp_cod[8] == servis_method.test_crc(temp_cod[0], temp_cod[1], temp_cod[2], temp_cod[3], temp_cod[4], temp_cod[5], temp_cod[6], temp_cod[7]):
-            if 1 == 1:
-                list_temp.append(temp_cod[0] | (temp_cod[1] << 8))
-            else:
-                list_temp.append("ER")
-        for iterator_mk in range(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk') + 1):
-            file_path_data = open('./data/' + str(iterator_mk) + '.txt', 'a')
-            file_path_data.write(str(temp_mit) + " " + str(list_temp[iterator_mk - 1]) + "\n")
+            # # B
+            if list_b[0] != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 8, list_b[0])
+            time.sleep(6)
+            if list_b[1] != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 9, list_b[1])
+            time.sleep(6)
+            if list_b[2] != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 10, list_b[2])
+            time.sleep(6)
+            if list_b[3] != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 11, list_b[3])
+            time.sleep(6)
+            if list_b[4] != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 12, list_b[4])
+            time.sleep(6)
+            if list_b[5] != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 13, list_b[5])
+            time.sleep(6)
+            if list_b[6] != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 14, list_b[6])
+            time.sleep(6)
+            if list_b[7] != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 15, list_b[7])
+            time.sleep(6)
+
+            # Z1
+            if z1 != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 16, z1)
+            time.sleep(6)
+
+
+            # #M
+            if list_m[0] != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 17, list_m[0])
+            time.sleep(6)
+            if list_m[1] != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 18, list_m[1])
+            time.sleep(6)
+            if list_m[2] != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 19, list_m[2])
+            time.sleep(6)
+            if list_m[3] != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 20, list_m[3])
+            time.sleep(6)
+            if list_m[4] != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 21, list_m[4])
+            time.sleep(6)
+            if list_m[5] != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 22, list_m[5])
+            time.sleep(6)
+            if list_m[6] != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 23, list_m[6])
+            time.sleep(6)
+
+            # OM1
+            if om1 != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 24, om1)
+            time.sleep(6)
+            # OM2
+            if om2 != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 25, om2)
+            time.sleep(6)
+
+            # Del
+            basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 26, 2)
 
 class Commands_Window_OneWire_Old(QtWidgets.QMainWindow):
     global saveOption
@@ -422,7 +449,7 @@ class MainWindow(QtWidgets.QMainWindow):
         uic.loadUi('./ui/Main.ui', self)
         self.setWindowTitle('MainWindow')
         type_mk = getattr(saveOption, "type_mk")
-        if type_mk == 1:  # 1 - старый OneWire; ;
+        if type_mk == 1:  # 1 - старый OneWire;
             self.comands.clicked.connect(self.show_CommandsWindow_OneWire_Old)
         elif type_mk == 2:  # 2 - старый SPI;
             print()
