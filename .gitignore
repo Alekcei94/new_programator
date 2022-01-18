@@ -3,4 +3,5 @@ out/
 target/
 __pycache__/
 data/*
+setting.txt
 

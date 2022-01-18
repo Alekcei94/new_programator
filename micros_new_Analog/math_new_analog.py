@@ -54,7 +54,7 @@ def minimum(xlist, ylist):
     x_list_interval_data = interval_data[0]
     y_list_interval_data = interval_data[1]
 
-    max_step_number = 8
+    max_step_number = 10
 
     xlist_test = []
     ylist_test = []
@@ -289,8 +289,8 @@ def calculationOfCoefficients(xlist, ylist, all_minus, chip):
     print(list_m_new[4] + " //M4")
     print(list_m_new[5] + " //M5")
     print(list_m_new[6] + " //M6")
-    # print(list_m_new[7] + " //M7")
-    # print(list_m_new[8] + " //M8")
+    print(list_m_new[7] + " //M7")
+    print(list_m_new[8] + " //M8")
 
     list_b_new = []
     for ele in coefB:
@@ -340,8 +340,8 @@ def calculationOfCoefficients(xlist, ylist, all_minus, chip):
     print(list_b_new[5] + " //B5")
     print(list_b_new[6] + " //B6")
     print(list_b_new[7] + " //B7")
-    # print(list_b_new[8] + " //B8")
-    # print(list_b_new[9] + " //B9")
+    print(list_b_new[8] + " //B8")
+    print(list_b_new[9] + " //B9")
     list_k_new = []
     for ele in coefK:
         x = float(ele)
@@ -388,8 +388,8 @@ def calculationOfCoefficients(xlist, ylist, all_minus, chip):
     print(list_k_new[5] + " //K5")
     print(list_k_new[6] + " //K6")
     print(list_k_new[7] + " //K7")
-    # print(list_k_new[8] + " //K8")
-    # print(list_k_new[9] + " //K9")
+    print(list_k_new[8] + " //K8")
+    print(list_k_new[9] + " //K9")
 
     step = 0
     stepK = 0
@@ -466,12 +466,12 @@ def calculationOfCoefficients(xlist, ylist, all_minus, chip):
     print(Z1 + "//Z1")
     Z2 = ""
 
-    # Z2 += str(list(list_b_new[9])[0])
-    # Z2 += str(list(list_b_new[8])[0])
-    # for i in range(6):
-    #     Z2 += "0"
-    # setattr(chip, "z2", int(Z2, 2))
-    # print("8'b" + Z2 + ";")
+    Z2 += str(list(list_b_new[9])[0])
+    Z2 += str(list(list_b_new[8])[0])
+    for i in range(6):
+        Z2 += "0"
+    setattr(chip, "z2", int(Z2, 2))
+    print("8'b" + Z2 + ";")
     print("-------------------------" + "\n")
     pass
 
