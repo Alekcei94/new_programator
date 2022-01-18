@@ -26,5 +26,9 @@ lastMk 4
 comMIT 2
 firstMIT 1
 lastMIT 8
+<<<<<<< HEAD
 type_mk 6
 list_temperature -63 -40 -10 25 45 90 127
+=======
+type_mk 6
+>>>>>>> 44954ca242abfd274d1d187fcf84ce4d4c7c4659
