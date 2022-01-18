@@ -55,7 +55,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>2</string>
+     <string>Новая партия</string>
     </property>
    </widget>
    <widget class="QPushButton" name="test3Button">
@@ -68,7 +68,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>3</string>
+     <string>Добавить в архив</string>
     </property>
    </widget>
    <widget class="QPushButton" name="test4Button">
