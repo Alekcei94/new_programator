@@ -6,27 +6,27 @@ import serial
 
 def write_commands(ser, byte_0, byte_1, byte_2, byte_3):
     crc = form_crc(byte_0, byte_1, byte_2, byte_3)
-    #print("Commands " + str(byte_0) + "_" + str(byte_1) + "_" + str(byte_2) + "_" + str(byte_3) + "_" + str(crc))
-    ser.write(bytes([byte_0]))
-    ser.write(bytes([byte_1]))
-    ser.write(bytes([byte_2]))
-    ser.write(bytes([byte_3]))
-    ser.write(bytes([crc]))
-    #print("Waiting for the master's response")
-    while True:
-        va12 = []
-        # if ser.waitForReadyRead(4):
-        if (int.from_bytes(ser.read(), "big")) == 51:
-            #print("Master confirmed")
-            for i in range(5):
-                va12.append(int.from_bytes(ser.read(), "big"))
-            #print(va12)
-            break
-        elif (int.from_bytes(ser.read(), "big")) == 54:
-            print("crc_not_ok")
-            write_commands(ser, byte_0, byte_1, byte_2, byte_3)
-        else:
-            print("Master's answer " + str(int.from_bytes(ser.read(), "big")))
+    print("Commands " + str(byte_0) + "_" + str(byte_1) + "_" + str(byte_2) + "_" + str(byte_3) + "_" + str(crc))
+    # ser.write(bytes([byte_0]))
+    # ser.write(bytes([byte_1]))
+    # ser.write(bytes([byte_2]))
+    # ser.write(bytes([byte_3]))
+    # ser.write(bytes([crc]))
+    # #print("Waiting for the master's response")
+    # while True:
+    #     va12 = []
+    #     # if ser.waitForReadyRead(4):
+    #     if (int.from_bytes(ser.read(), "big")) == 51:
+    #         #print("Master confirmed")
+    #         for i in range(5):
+    #             va12.append(int.from_bytes(ser.read(), "big"))
+    #         #print(va12)
+    #         break
+    #     elif (int.from_bytes(ser.read(), "big")) == 54:
+    #         print("crc_not_ok")
+    #         write_commands(ser, byte_0, byte_1, byte_2, byte_3)
+    #     else:
+    #         print("Master's answer " + str(int.from_bytes(ser.read(), "big")))
     # else:
     # ser.write(bytes([0]))
     # print("Waiting for a slave's response")
@@ -60,12 +60,12 @@ def get_com_port():
 
 def search_claster_and_number(number_mk):
     if number_mk % 8 == 0:
-        claster = (number_mk // 8) - 1 + 16
+        claster = (number_mk // 8)  * 16
         number = 8
     else:
         claster = number_mk // 8
         number = (number_mk - claster * 8)
-        claster = claster + 16
+        claster = (claster + 1) * 16
     return claster, number
 
 def test_crc(data_0, data_1, data_2, data_3, data_4, data_5, data_6, data_7):
@@ -217,7 +217,7 @@ def all_vdd(first_mk, last_mk, save_object):
         commands = 160
         switcher = False
     setattr(save_object, "voltage_state", switcher)
-    for iterator in range(claster_first, claster_last + 1):
+    for iterator in range(claster_first, claster_last + 1, 16):
         write_commands(ser, iterator, 10, commands, 0)
     return switcher
 
