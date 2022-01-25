@@ -6,7 +6,7 @@ import serial
 
 def write_commands(ser, byte_0, byte_1, byte_2, byte_3):
     crc = form_crc(byte_0, byte_1, byte_2, byte_3)
-    #print("Commands " + str(byte_0) + "_" + str(byte_1) + "_" + str(byte_2) + "_" + str(byte_3) + "_" + str(crc))
+    # print("Commands " + str(byte_0) + "_" + str(byte_1) + "_" + str(byte_2) + "_" + str(byte_3) + "_" + str(crc))
     ser.write(bytes([byte_0]))
     ser.write(bytes([byte_1]))
     ser.write(bytes([byte_2]))
@@ -60,12 +60,12 @@ def get_com_port():
 
 def search_claster_and_number(number_mk):
     if number_mk % 8 == 0:
-        claster = (number_mk // 8) - 1 + 16
+        claster = (number_mk // 8)  * 16
         number = 8
     else:
         claster = number_mk // 8
         number = (number_mk - claster * 8)
-        claster = claster + 16
+        claster = (claster + 1) * 16
     return claster, number
 
 def test_crc(data_0, data_1, data_2, data_3, data_4, data_5, data_6, data_7):
@@ -217,7 +217,7 @@ def all_vdd(first_mk, last_mk, save_object):
         commands = 160
         switcher = False
     setattr(save_object, "voltage_state", switcher)
-    for iterator in range(claster_first, claster_last + 1):
+    for iterator in range(claster_first, claster_last + 1, 16):
         write_commands(ser, iterator, 10, commands, 0)
     return switcher
 
@@ -241,9 +241,9 @@ def select_operating_mode(ser, save_object):
 
 
 # повесить задержку на несколько кластеров
-def sleep_slave_1(first_mk, last_mk, timer):
-    claster_first, number_first = search_claster_and_number(first_mk)
-    claster_last, number_last = search_claster_and_number(last_mk)
-    time = int(timer / 20)
-    for iterator in range(claster_first, claster_last + 1):
-        write_commands(ser, iterator, 10, 165, time)
+# def sleep_slave_1(first_mk, last_mk, timer):
+#     claster_first, number_first = search_claster_and_number(first_mk)
+#     claster_last, number_last = search_claster_and_number(last_mk)
+#     time = int(timer / 20)
+#     for iterator in range(claster_first, claster_last + 1):
+#         write_commands(ser, iterator, 10, 165, time)

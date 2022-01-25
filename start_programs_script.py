@@ -14,6 +14,7 @@ import save_options
 import servis_method
 
 import basic_commands_onewire
+import test_clc
 
 
 class ConfigurationWindow(QtWidgets.QMainWindow):
@@ -50,14 +51,10 @@ class Commands_Window_OneWire_New_Analog(QtWidgets.QMainWindow):
         for iterator_mk in range(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk') + 1):
             basic_commands_onewire.form_temp_cod_not_active(iterator_mk)
         time.sleep(2)
-        #servis_method.sleep_slave_1(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk'), 3000)
         for iterator_mk in range(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk') + 1):
             temp_cod = basic_commands_onewire.read_temp_active(iterator_mk)
 
             temp = int(temp_cod[0]) | (int(temp_cod[1]) << 8)
-            # if temp >= 63488:
-            #     temp = -1 * (temp - 63488)
-            #list_temp.append("микросхема: " + str(iterator_mk) + "; COD: " + str(temp) + "; Temp: " + str(float(temp * 0.0625)))
             list_temp.append("микросхема: " + str(iterator_mk) + "; COD: " + str(temp))
 
         print(list_temp)
@@ -101,130 +98,130 @@ class Commands_Window_OneWire_New_Analog(QtWidgets.QMainWindow):
         list_chip = []
         for iterator_mk in range(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk') + 1):
             print("Chip : " + str(iterator_mk))
-            # new_chip = micros_chip.Chip(iterator_mk)
-            # list_chip.append(new_chip)
-            # mathAnalog.coefficients(iterator_mk, new_chip)
-            # number_mem_in_chip = 0
-            # list_k = getattr(new_chip, "k_list")
-            # list_b = getattr(new_chip, "b_list")
-            # list_m = getattr(new_chip, "m_list")
-            # om1 = getattr(new_chip, "om1")
-            # om2 = getattr(new_chip, "om2")
-            # z1 = getattr(new_chip, "z")
-            # #z2 = getattr(new_chip, "z2")
+            new_chip = micros_chip.Chip(iterator_mk)
+            list_chip.append(new_chip)
+            mathAnalog.coefficients(iterator_mk, new_chip)
+            number_mem_in_chip = 0
+            list_k = getattr(new_chip, "k_list")
+            list_b = getattr(new_chip, "b_list")
+            list_m = getattr(new_chip, "m_list")
+            om1 = getattr(new_chip, "om1")
+            om2 = getattr(new_chip, "om2")
+            z1 = getattr(new_chip, "z")
+            #z2 = getattr(new_chip, "z2")
             #
-            # # list_m = [28, 43, 56, 70, 81, 90, 97]
-            # # list_k = [40, 53, 61, 64, 76, 94, 120, 136]
-            # # list_b = [2, 14, 24, 30, 56, 102, 176, 224]
+            # list_m = [28, 43, 56, 70, 81, 90, 97]
+            # list_k = [40, 53, 61, 64, 76, 94, 120, 136]
+            # list_b = [2, 14, 24, 30, 56, 102, 176, 224]
             #
-            # # if len(list_k) != 10:
-            # #     print("Error, len(list_k) != 10 ")
-            # #     break
-            # # if len(list_b) != 10:
-            # #     print("Error, len(list_b) != 10 ")
-            # #     break
-            # # if len(list_m) != 9:
-            # #     print("Error, len(list_m) != 9 ")
-            # #     break
+            # if len(list_k) != 10:
+            #     print("Error, len(list_k) != 10 ")
+            #     break
+            # if len(list_b) != 10:
+            #     print("Error, len(list_b) != 10 ")
+            #     break
+            # if len(list_m) != 9:
+            #     print("Error, len(list_m) != 9 ")
+            #     break
             #
             # # K
-            # if list_k[0] != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 0, list_k[0])
-            # time.sleep(6)
-            # if list_k[1] != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 1, list_k[1])
-            # time.sleep(6)
-            # if list_k[2] != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 2, list_k[2])
-            # time.sleep(6)
-            # if list_k[3] != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 3, list_k[3])
-            # time.sleep(6)
-            # if list_k[4] != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 4, list_k[4])
-            # time.sleep(6)
-            # if list_k[5] != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 5, list_k[5])
-            # time.sleep(6)
-            # if list_k[6] != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 6, list_k[6])
-            # time.sleep(6)
-            # if list_k[7] != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 7, list_k[7])
-            # time.sleep(6)
+            if list_k[0] != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 0, list_k[0])
+            time.sleep(6)
+            if list_k[1] != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 1, list_k[1])
+            time.sleep(6)
+            if list_k[2] != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 2, list_k[2])
+            time.sleep(6)
+            if list_k[3] != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 3, list_k[3])
+            time.sleep(6)
+            if list_k[4] != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 4, list_k[4])
+            time.sleep(6)
+            if list_k[5] != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 5, list_k[5])
+            time.sleep(6)
+            if list_k[6] != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 6, list_k[6])
+            time.sleep(6)
+            if list_k[7] != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 7, list_k[7])
+            time.sleep(6)
             #
-            # # if list_k[8] != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 31, list_k[8])
-            # # time.sleep(6)
-            # # if list_k[9] != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 34, list_k[9])
-            # # time.sleep(6)
+            # if list_k[8] != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 31, list_k[8])
+            # time.sleep(6)
+            # if list_k[9] != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 34, list_k[9])
+            # time.sleep(6)
             #
             # basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 31, 32)
             # time.sleep(6)
             # basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 34, 32)
             # time.sleep(6)
-            # #
-            # # # # B
-            # if list_b[0] != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 8, list_b[0])
+            #
+            # B
+            if list_b[0] != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 8, list_b[0])
+            time.sleep(6)
+            if list_b[1] != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 9, list_b[1])
+            time.sleep(6)
+            if list_b[2] != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 10, list_b[2])
+            time.sleep(6)
+            if list_b[3] != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 11, list_b[3])
+            time.sleep(6)
+            if list_b[4] != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 12, list_b[4])
+            time.sleep(6)
+            if list_b[5] != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 13, list_b[5])
+            time.sleep(6)
+            if list_b[6] != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 14, list_b[6])
+            time.sleep(6)
+            if list_b[7] != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 15, list_b[7])
+            time.sleep(6)
+            #
+            # if list_b[8] != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 32, list_b[8])
             # time.sleep(6)
-            # if list_b[1] != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 9, list_b[1])
+            # if list_b[9] != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 35, list_b[9])
             # time.sleep(6)
-            # if list_b[2] != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 10, list_b[2])
-            # time.sleep(6)
-            # if list_b[3] != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 11, list_b[3])
-            # time.sleep(6)
-            # if list_b[4] != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 12, list_b[4])
-            # time.sleep(6)
-            # if list_b[5] != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 13, list_b[5])
-            # time.sleep(6)
-            # if list_b[6] != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 14, list_b[6])
-            # time.sleep(6)
-            # if list_b[7] != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 15, list_b[7])
-            # time.sleep(6)
-            # #
-            # # # if list_b[8] != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 32, list_b[8])
-            # # # time.sleep(6)
-            # # # if list_b[9] != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 35, list_b[9])
-            # # # time.sleep(6)
             #
             # basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 32, 62)
             # time.sleep(6)
             # basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 35, 62)
             # time.sleep(6)
-            # #
-            # #
-            # # # #M
-            # if list_m[0] != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 17, list_m[0])
+            #
+            #
+            #M
+            if list_m[0] != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 17, list_m[0])
+            time.sleep(6)
+            if list_m[1] != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 18, list_m[1])
+            time.sleep(6)
+            if list_m[2] != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 19, list_m[2])
+            time.sleep(6)
+            if list_m[3] != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 20, list_m[3])
+            time.sleep(6)
+            if list_m[4] != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 21, list_m[4])
+            time.sleep(6)
+            if list_m[5] != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 22, list_m[5])
+            time.sleep(6)
+            if list_m[6] != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 23, list_m[6])
+            time.sleep(6)
+            # if list_m[7] != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 33, list_m[7])
             # time.sleep(6)
-            # if list_m[1] != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 18, list_m[1])
+            # if list_m[8] != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 36, list_m[8])
             # time.sleep(6)
-            # if list_m[2] != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 19, list_m[2])
+            #
+            # basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 33, 255)
             # time.sleep(6)
-            # if list_m[3] != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 20, list_m[3])
+            # basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 36, 255)
             # time.sleep(6)
-            # if list_m[4] != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 21, list_m[4])
+            #
+            #Z1
+            if z1 != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 16, z1)
+            time.sleep(6)
+            #Z2
+            # if z2 != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 37, z2)
             # time.sleep(6)
-            # if list_m[5] != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 22, list_m[5])
-            # time.sleep(6)
-            # if list_m[6] != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 23, list_m[6])
-            # time.sleep(6)
-            # # if list_m[7] != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 33, list_m[7])
-            # # time.sleep(6)
-            # # if list_m[8] != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 36, list_m[8])
-            # # time.sleep(6)
-            # #
-            # # # basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 33, 255)
-            # # # time.sleep(6)
-            # # # basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 36, 255)
-            # # # time.sleep(6)
-            # #
-            # #Z1
-            # if z1 != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 16, z1)
-            # time.sleep(6)
-            # # #Z2
-            # # # if z2 != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 37, z2)
-            # # # time.sleep(6)
             #
             basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 37, 192)
             time.sleep(6)
             #
-            # #OM1
-            # if om1 != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 24, om1)
-            # time.sleep(6)
-            # #OM2
-            # if om2 != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 25, om2)
-            # time.sleep(6)
+            #OM1
+            if om1 != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 24, om1)
+            time.sleep(6)
+            #OM2
+            if om2 != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 25, om2)
+            time.sleep(6)
 
 
     def startRead(self):
@@ -293,8 +290,6 @@ class Commands_Window_OneWire_New_10(QtWidgets.QMainWindow):
     def readID(self):
         for iterator_mk in range(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk') + 1):
 
-            # basic_commands_onewire.read_address(iterator_mk)
-            # time.sleep(1)
             print(iterator_mk)
             address = ""
             for i in range(31, 39):
@@ -307,7 +302,7 @@ class Commands_Window_OneWire_New_10(QtWidgets.QMainWindow):
             print(str(en[0]) + " _ " + str(en[0] + 1))
             en1 = en[0] + 1
             basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 30, en1)
-            time.sleep(6)
+            time.sleep(2)
 
     def write3V(self):
         for iterator_mk in range(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk') + 1):
@@ -315,152 +310,102 @@ class Commands_Window_OneWire_New_10(QtWidgets.QMainWindow):
             print(str(en[0]) + " _ " + str(en[0] + 2))
             en1 = en[0] + 2
             basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 30, en1)
-            time.sleep(6)
+            time.sleep(2)
 
     def writeMem(self):
         list_chip = []
         for iterator_mk in range(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk') + 1):
             print("Chip : " + str(iterator_mk))
-            # new_chip = micros_chip.Chip(iterator_mk)
-            # list_chip.append(new_chip)
-            # mathNewOneWire.coefficients(iterator_mk, new_chip)
-            # number_mem_in_chip = 0
-            # list_k = getattr(new_chip, "k_list")
-            # list_b = getattr(new_chip, "b_list")
-            # list_m = getattr(new_chip, "m_list")
-            # om1 = getattr(new_chip, "om1")
-            # om2 = getattr(new_chip, "om2")
-            # z1 = getattr(new_chip, "z")
-            # print("K")
-            # print(list_k)
-            # print("B")
-            # print(list_b)
-            # print("M")
-            # print(list_m)
-            # print("Z")
-            # print(z1)
 
-
+            new_chip = micros_chip.Chip(iterator_mk)
+            list_chip.append(new_chip)
+            test_clc.clc(iterator_mk, new_chip)
+            #mathNewOneWire.coefficients(iterator_mk, new_chip)
+            number_mem_in_chip = 0
+            list_k = getattr(new_chip, "k_list")
+            list_b = getattr(new_chip, "b_list")
+            list_m = getattr(new_chip, "m_list")
+            om1 = getattr(new_chip, "om1")
+            om2 = getattr(new_chip, "om2")
+            z1 = getattr(new_chip, "z")
+            print("K")
+            print(list_k)
+            print("B")
+            print(list_b)
+            print("M")
+            print(list_m)
+            print("Z")
+            print(z1)
 
             # K
-            basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 0, 18)
+            if list_k[0] != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 0, list_k[0])
             time.sleep(2)
-            basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 1, 22)
+            if list_k[1] != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 1, list_k[1])
             time.sleep(2)
-            basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 2, 26)
+            if list_k[2] != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 2, list_k[2])
             time.sleep(2)
-            basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 3, 31)
+            if list_k[3] != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 3, list_k[3])
             time.sleep(2)
-            basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 4, 38)
+            if list_k[4] != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 4, list_k[4])
             time.sleep(2)
-            basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 5, 45)
+            if list_k[5] != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 5, list_k[5])
             time.sleep(2)
-            basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 6, 52)
+            if list_k[6] != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 6, list_k[6])
             time.sleep(2)
-            basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 7, 61)
+            if list_k[7] != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 7, list_k[7])
             time.sleep(2)
-            # if list_k[0] != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 0, list_k[0])
-            # time.sleep(6)
-            # if list_k[1] != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 1, list_k[1])
-            # time.sleep(6)
-            # if list_k[2] != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 2, list_k[2])
-            # time.sleep(6)
-            # if list_k[3] != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 3, list_k[3])
-            # time.sleep(6)
-            # if list_k[4] != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 4, list_k[4])
-            # time.sleep(6)
-            # if list_k[5] != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 5, list_k[5])
-            # time.sleep(6)
-            # if list_k[6] != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 6, list_k[6])
-            # time.sleep(6)
-            # if list_k[7] != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 7, list_k[7])
-            # time.sleep(6)
 
             # # B
-            basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 8, 82)
+            #list_b[7] = list_b[7]
+            if list_b[0] != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 8, list_b[0])
             time.sleep(2)
-            basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 9, 63)
+            if list_b[1] != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 9, list_b[1])
             time.sleep(2)
-            basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 10, 48)
+            if list_b[2] != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 10, list_b[2])
             time.sleep(2)
-            basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 11, 33)
+            if list_b[3] != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 11, list_b[3])
             time.sleep(2)
-            basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 12, 18)
+            if list_b[4] != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 12, list_b[4])
             time.sleep(2)
-            basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 13, 7)
+            if list_b[5] != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 13, list_b[5])
             time.sleep(2)
-            # basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 14, 0)
-            # time.sleep(2)
-            basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 15, 5)
+            if list_b[6] != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 14, list_b[6])
             time.sleep(2)
-            # if list_b[0] != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 8, list_b[0])
-            # time.sleep(6)
-            # if list_b[1] != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 9, list_b[1])
-            # time.sleep(6)
-            # if list_b[2] != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 10, list_b[2])
-            # time.sleep(6)
-            # if list_b[3] != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 11, list_b[3])
-            # time.sleep(6)
-            # if list_b[4] != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 12, list_b[4])
-            # time.sleep(6)
-            # if list_b[5] != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 13, list_b[5])
-            # time.sleep(6)
-            # if list_b[6] != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 14, list_b[6])
-            # time.sleep(6)
-            # if list_b[7] != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 15, list_b[7])
-            # time.sleep(6)
+            if list_b[7] != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 15, list_b[7])
+            time.sleep(2)
 
             # Z1
-            basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 16, 128)
+            if z1 != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 16, z1)
             time.sleep(2)
-            # if z1 != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 16, z1)
-            # time.sleep(6)
 
 
             # #M
-            basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 17, 150)
+            if list_m[0] != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 17, list_m[0])
             time.sleep(2)
-            basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 18, 117)
+            if list_m[1] != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 18, list_m[1])
             time.sleep(2)
-            basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 19, 90)
+            if list_m[2] != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 19, list_m[2])
             time.sleep(2)
-            basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 20, 67)
+            if list_m[3] != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 20, list_m[3])
             time.sleep(2)
-            basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 21, 47)
+            if list_m[4] != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 21, list_m[4])
             time.sleep(2)
-            basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 22, 31)
+            if list_m[5] != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 22, list_m[5])
             time.sleep(2)
-            basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 23, 17)
+            if list_m[6] != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 23, list_m[6])
             time.sleep(2)
-
-            # if list_m[0] != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 17, list_m[0])
-            # time.sleep(6)
-            # if list_m[1] != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 18, list_m[1])
-            # time.sleep(6)
-            # if list_m[2] != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 19, list_m[2])
-            # time.sleep(6)
-            # if list_m[3] != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 20, list_m[3])
-            # time.sleep(6)
-            # if list_m[4] != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 21, list_m[4])
-            # time.sleep(6)
-            # if list_m[5] != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 22, list_m[5])
-            # time.sleep(6)
-            # if list_m[6] != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 23, list_m[6])
-            # time.sleep(6)
 
             # OM1
-            basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 24, 182)
+            if om1 != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 24, om1)
             time.sleep(2)
-            # if om1 != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 24, om1)
-            # time.sleep(6)
             # OM2
-            basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 25, 53)
+            if om2 != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 25, om2)
             time.sleep(2)
-            # if om2 != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 25, om2)
-            # time.sleep(6)
+
 
             # Del
             basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 26, 2)
+            time.sleep(2)
 
 class Commands_Window_OneWire_Old(QtWidgets.QMainWindow):
     global saveOption
