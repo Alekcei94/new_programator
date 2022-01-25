@@ -21,6 +21,8 @@ class SaveOption:
         self.ser = basic_commands_onewire.get_ser()
         for line in file_setting:
             line = line.replace("\n", "")
+            if "*" in line:
+                continue
             if ":" in line:
                 data_line = line.split(":")
                 voltage_and_type = data_line[1].split("|")

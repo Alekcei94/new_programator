@@ -6,27 +6,27 @@ import serial
 
 def write_commands(ser, byte_0, byte_1, byte_2, byte_3):
     crc = form_crc(byte_0, byte_1, byte_2, byte_3)
-    print("Commands " + str(byte_0) + "_" + str(byte_1) + "_" + str(byte_2) + "_" + str(byte_3) + "_" + str(crc))
-    # ser.write(bytes([byte_0]))
-    # ser.write(bytes([byte_1]))
-    # ser.write(bytes([byte_2]))
-    # ser.write(bytes([byte_3]))
-    # ser.write(bytes([crc]))
-    # #print("Waiting for the master's response")
-    # while True:
-    #     va12 = []
-    #     # if ser.waitForReadyRead(4):
-    #     if (int.from_bytes(ser.read(), "big")) == 51:
-    #         #print("Master confirmed")
-    #         for i in range(5):
-    #             va12.append(int.from_bytes(ser.read(), "big"))
-    #         #print(va12)
-    #         break
-    #     elif (int.from_bytes(ser.read(), "big")) == 54:
-    #         print("crc_not_ok")
-    #         write_commands(ser, byte_0, byte_1, byte_2, byte_3)
-    #     else:
-    #         print("Master's answer " + str(int.from_bytes(ser.read(), "big")))
+    # print("Commands " + str(byte_0) + "_" + str(byte_1) + "_" + str(byte_2) + "_" + str(byte_3) + "_" + str(crc))
+    ser.write(bytes([byte_0]))
+    ser.write(bytes([byte_1]))
+    ser.write(bytes([byte_2]))
+    ser.write(bytes([byte_3]))
+    ser.write(bytes([crc]))
+    #print("Waiting for the master's response")
+    while True:
+        va12 = []
+        # if ser.waitForReadyRead(4):
+        if (int.from_bytes(ser.read(), "big")) == 51:
+            #print("Master confirmed")
+            for i in range(5):
+                va12.append(int.from_bytes(ser.read(), "big"))
+            #print(va12)
+            break
+        elif (int.from_bytes(ser.read(), "big")) == 54:
+            print("crc_not_ok")
+            write_commands(ser, byte_0, byte_1, byte_2, byte_3)
+        else:
+            print("Master's answer " + str(int.from_bytes(ser.read(), "big")))
     # else:
     # ser.write(bytes([0]))
     # print("Waiting for a slave's response")
@@ -241,9 +241,9 @@ def select_operating_mode(ser, save_object):
 
 
 # повесить задержку на несколько кластеров
-def sleep_slave_1(first_mk, last_mk, timer):
-    claster_first, number_first = search_claster_and_number(first_mk)
-    claster_last, number_last = search_claster_and_number(last_mk)
-    time = int(timer / 20)
-    for iterator in range(claster_first, claster_last + 1):
-        write_commands(ser, iterator, 10, 165, time)
+# def sleep_slave_1(first_mk, last_mk, timer):
+#     claster_first, number_first = search_claster_and_number(first_mk)
+#     claster_last, number_last = search_claster_and_number(last_mk)
+#     time = int(timer / 20)
+#     for iterator in range(claster_first, claster_last + 1):
+#         write_commands(ser, iterator, 10, 165, time)
