@@ -180,7 +180,7 @@ def clc(number_mk, chip):
     test_x = []
     test_y = []
 
-    tem = -60
+    tem = 125
     real_y = []
     while tem <= 125:
         x = int(ylistNew[new_x_list.index(tem)])
