@@ -51,7 +51,7 @@ class Commands_Window_OneWire_New_Analog(QtWidgets.QMainWindow):
         list_temp = []
         for iterator_mk in range(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk') + 1):
             basic_commands_onewire.form_temp_cod_not_active(iterator_mk)
-        time.sleep(2)
+        time.sleep(0.5)
         for iterator_mk in range(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk') + 1):
             temp_cod = basic_commands_onewire.read_temp_active(iterator_mk)
 
@@ -83,7 +83,7 @@ class Commands_Window_OneWire_New_Analog(QtWidgets.QMainWindow):
         for iterator_mk in range(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk') + 1):
             en = basic_commands_onewire.read_mem_new_micros_OneWire(iterator_mk, 30)
             en1 = en[0] + 1 # EN
-            #en1 = en[0] + 4 # циклический режим
+            # en1 = en[0] + 4 # циклический режим
             #en1 = en[0] + 5 # циклический режим + EN
             print(str(en[0]) + " _ " + str(en1))
             basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 28, 1)  # ANALOG 7 -
@@ -102,19 +102,22 @@ class Commands_Window_OneWire_New_Analog(QtWidgets.QMainWindow):
             print("Chip : " + str(iterator_mk))
             new_chip = micros_chip.Chip(iterator_mk)
             list_chip.append(new_chip)
-            test_ckc_analog.clc(iterator_mk, new_chip)
+            # test_ckc_analog.clc(iterator_mk, new_chip)
             number_mem_in_chip = 0
-            list_k = getattr(new_chip, "k_list")
-            list_b = getattr(new_chip, "b_list")
-            list_m = getattr(new_chip, "m_list")
-            om1 = getattr(new_chip, "om1")
-            om2 = getattr(new_chip, "om2")
-            z1 = getattr(new_chip, "z")
+            # list_k = getattr(new_chip, "k_list")
+            # list_b = getattr(new_chip, "b_list")
+            # list_m = getattr(new_chip, "m_list")
+            # om1 = getattr(new_chip, "om1")
+            # om2 = getattr(new_chip, "om2")
+            # z1 = getattr(new_chip, "z")
             #z2 = getattr(new_chip, "z2")
             #
-            # list_m = [28, 43, 56, 70, 81, 90, 97]
-            # list_k = [40, 53, 61, 64, 76, 94, 120, 136]
-            # list_b = [2, 14, 24, 30, 56, 102, 176, 224]
+            list_m = [18, 33, 42, 62, 75, 83, 90]
+            list_k = [40, 49, 58, 64, 80, 101, 125, 148]
+            list_b = [9, 4, 5, 13, 44, 93, 155, 220]
+            om1 = 209
+            om2 = 243
+            z1 = 252
             #
             # if len(list_k) != 10:
             #     print("Error, len(list_k) != 10 ")
@@ -219,18 +222,24 @@ class Commands_Window_OneWire_New_Analog(QtWidgets.QMainWindow):
 
 
     def startRead(self):
-        list_temp = []
         temp_mit = input()
-        for iterator_mk in range(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk') + 1):
-            basic_commands_onewire.form_temp_cod_not_active(iterator_mk)
-        time.sleep(2)
-        #servis_method.sleep_slave_1(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk'), 3000)
-        for iterator_mk in range(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk') + 1):
-            temp_cod = basic_commands_onewire.read_temp_active(iterator_mk)
-            list_temp.append(temp_cod[0] | (temp_cod[1] << 8))
-        for iterator_mk in range(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk') + 1):
-            file_path_data = open('./data/' + str(iterator_mk) + '.txt', 'a')
-            file_path_data.write(str(temp_mit) + " " + str(list_temp[iterator_mk - 1]) + "\n")
+        for i in range(32):
+            print("step = " + str(i))
+            list_temp = []
+            for iterator_mk in range(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk') + 1):
+                basic_commands_onewire.form_temp_cod_not_active(iterator_mk)
+            time.sleep(0.5)
+            #servis_method.sleep_slave_1(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk'), 3000)
+            for iterator_mk in range(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk') + 1):
+                temp_cod = basic_commands_onewire.read_temp_active(iterator_mk)
+                list_temp.append(temp_cod[0] | (temp_cod[1] << 8))
+            iter = 0
+            for iterator_mk in range(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk') + 1):
+                file_path_data = open('./data/' + str(iterator_mk) + '.txt', 'a')
+                # file_path_data.write(str(temp_mit) + " " + str(list_temp[iterator_mk - 1]) + "\n")
+                file_path_data.write(str(temp_mit) + " " + str(list_temp[iter]) + "\n")
+                file_path_data.close()
+                iter += 1
 
 class Commands_Window_OneWire_New_10(QtWidgets.QMainWindow):
     global saveOption
