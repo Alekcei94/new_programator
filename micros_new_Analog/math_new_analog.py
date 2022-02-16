@@ -95,7 +95,7 @@ def minimum(xlist, ylist):
             x_list_test = []
             for k in range(len(y_list_interval) - 1):
                 x_list_test.append(k)
-                kv_sum = abs(x_list_interval[k] * k_real + b_real) - abs(y_list_interval[k])  # Hmmmm  math is not real
+                kv_sum = abs(x_list_interval[k] * k_real + b_real) - abs(y_list_interval[k])  # Hmmmm  mathem is not real
                 difference.append(pow(kv_sum, 2))
             sum = 0
             for k in difference:
