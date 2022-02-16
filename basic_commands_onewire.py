@@ -193,5 +193,5 @@ def get_ser():
 
 
 # Данное место необходимо переделать
-ser = servis_method.get_ser_com()
-#ser = 12
+#ser = servis_method.get_ser_com()
+ser = 12
