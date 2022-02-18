@@ -100,16 +100,18 @@ def form_m(ele):
 
 
 def interpol(xlist_test, ylist_test):
-    tck = interpolate.splrep(xlist_test, ylist_test)
-    temperaturerite = xlist_test[0]
-    stop_step = xlist_test[len(xlist_test) - 1]
+    interpol = interpolate.interp1d(xlist_test, ylist_test, kind='cubic', fill_value='extrapolate')
+    # temperaturerite = xlist_test[0]
+    # stop_step = xlist_test[len(xlist_test) - 1]
+    temperaturerite = -61.0
+    stop_step = 126.0
     step = 0.01
     interval_y = []
     interval_x = []
 
     while round(temperaturerite, 2) <= stop_step:
         interval_x.append(round(temperaturerite, 2))
-        interval_y.append(float(interpolate.splev(temperaturerite, tck)))
+        interval_y.append(interpol(temperaturerite))
         temperaturerite = temperaturerite + step
     return interval_x, interval_y
 
@@ -145,7 +147,8 @@ def clc(number_mk, chip):
     ylistNew = []
     new_x_list, new_y_list = interpol(xlist, ylist)
     # print(new_y_list[new_x_list.index(125)])
-    all_minus = new_y_list[new_x_list.index(125)] - 200
+    # all_minus = new_y_list[new_x_list.index(125)] - 200
+    all_minus = 13637
     for i in new_y_list:
         ylistNew.append(round((i - all_minus) / 4))
 
@@ -165,13 +168,19 @@ def clc(number_mk, chip):
     int_k_list = []
     int_b_list = []
     int_m_list = []
-    for iterator in k_list:
-        int_k_list.append(form_k(iterator))
-    for iterator in b_list:
-        int_b_list.append(form_b(iterator))
-    for iterator in range(1, len(form_y_list)):
-        int_m_list.append(form_m(form_y_list[iterator]))
+    # for iterator in k_list:
+    #     int_k_list.append(form_k(iterator))
+    # for iterator in b_list:
+    #     int_b_list.append(form_b(iterator))
+    # for iterator in range(1, len(form_y_list)):
+    #     int_m_list.append(form_m(form_y_list[iterator]))
     # print(int_k_list)
+    int_k_list = [62, 56, 50, 43, 34, 28, 23, 18]
+    int_b_list = [0, 3, 8, 16, 31, 46, 63, 85]
+    int_m_list = [16, 27, 36, 53, 82, 108, 141]
+    int_k_list.reverse()
+    int_b_list.reverse()
+    int_m_list.reverse()
     # print(int_b_list)
     # print(int_m_list)
 
@@ -180,7 +189,7 @@ def clc(number_mk, chip):
     test_x = []
     test_y = []
 
-    tem = 125
+    tem = -60
     real_y = []
     while tem <= 125:
         x = int(ylistNew[new_x_list.index(tem)])
@@ -188,132 +197,131 @@ def clc(number_mk, chip):
         if x > (int_m_list[0] << 4):
             k = int_k_list[0]
             b = int_b_list[0]
-            if b_list[0] < 0:
-                z = -1
+            # if b_list[0] < 0:
+            #     z = -1
             kod = x * k
             new_kod = (kod >> 5) + z * (b << 4)
             real_kod = -16 * tem + 2047
-            if new_kod - real_kod > 8:
-                int_b_list[0] = int_b_list[0] + z * (-1)
-                b_list[0] = b_list[0] + z * (-1) * 16
-                continue
-            elif new_kod - real_kod < -8:
-                int_b_list[0] = int_b_list[0] + z
-                b_list[0] = b_list[0] + z * 16
-                continue
+            # if new_kod - real_kod > 8:
+            #     int_b_list[0] = int_b_list[0] + z * (-1)
+            #     b_list[0] = b_list[0] + z * (-1) * 16
+            #     continue
+            # elif new_kod - real_kod < -8:
+            #     int_b_list[0] = int_b_list[0] + z
+            #     b_list[0] = b_list[0] + z * 16
+            #     continue
         elif x > (int_m_list[1] << 4):
             k = int_k_list[1]
             b = int_b_list[1]
-            if b_list[1] < 0:
-                z = -1
+            # if b_list[1] < 0:
+            #     z = -1
             kod = x * k
             new_kod = (kod >> 5) + z * (b << 4)
             real_kod = -16 * tem + 2047
-            if new_kod - real_kod > 8:
-                int_b_list[1] = int_b_list[1] + z * (-1)
-                b_list[1] = b_list[1] + z * (-1) * 16
-                continue
-            elif new_kod - real_kod < -8:
-                int_b_list[1] = int_b_list[1] + z
-                b_list[1] = b_list[1] + z * 16
-                continue
+            # if new_kod - real_kod > 8:
+            #     int_b_list[1] = int_b_list[1] + z * (-1)
+            #     b_list[1] = b_list[1] + z * (-1) * 16
+            #     continue
+            # elif new_kod - real_kod < -8:
+            #     int_b_list[1] = int_b_list[1] + z
+            #     b_list[1] = b_list[1] + z * 16
+            #     continue
         elif x > (int_m_list[2] << 4):
             k = int_k_list[2]
             b = int_b_list[2]
-            if b_list[2] < 0:
-                z = -1
+            # if b_list[2] < 0:
+            #     z = -1
             kod = x * k
             new_kod = (kod >> 5) + z * (b << 4)
             real_kod = -16 * tem + 2047
-            if new_kod - real_kod > 8:
-                int_b_list[2] = int_b_list[2] + z * (-1)
-                b_list[2] = b_list[2] + z * (-1) * 16
-                continue
-            elif new_kod - real_kod < -8:
-                int_b_list[2] = int_b_list[2] + z
-                b_list[2] = b_list[2] + z * 16
-                continue
+            # if new_kod - real_kod > 8:
+            #     int_b_list[2] = int_b_list[2] + z * (-1)
+            #     b_list[2] = b_list[2] + z * (-1) * 16
+            #     continue
+            # elif new_kod - real_kod < -8:
+            #     int_b_list[2] = int_b_list[2] + z
+            #     b_list[2] = b_list[2] + z * 16
+            #     continue
         elif x > (int_m_list[3] << 4):
             k = int_k_list[3]
             b = int_b_list[3]
-            if b_list[3] < 0:
-                z = -1
+            # if b_list[3] < 0:
+            #     z = -1
             kod = x * k
             new_kod = (kod >> 5) + z * (b << 4)
             real_kod = -16 * tem + 2047
-            if new_kod - real_kod > 8:
-                int_b_list[3] = int_b_list[3] + z * (-1)
-                b_list[3] = b_list[3] + z * (-1) * 16
-                continue
-            elif new_kod - real_kod < -8:
-                int_b_list[3] = int_b_list[3] + z
-                b_list[3] = b_list[3] + z * 16
-                continue
+            # if new_kod - real_kod > 8:
+            #     int_b_list[3] = int_b_list[3] + z * (-1)
+            #     b_list[3] = b_list[3] + z * (-1) * 16
+            #     continue
+            # elif new_kod - real_kod < -8:
+            #     int_b_list[3] = int_b_list[3] + z
+            #     b_list[3] = b_list[3] + z * 16
+            #     continue
         elif x > (int_m_list[4] << 4):
             k = int_k_list[4]
             b = int_b_list[4]
-            if b_list[4] < 0:
-                z = -1
+            # if b_list[4] < 0:
+            #     z = -1
             kod = x * k
             new_kod = (kod >> 5) + z * (b << 4)
             real_kod = -16 * tem + 2047
-            if new_kod - real_kod > 8:
-                int_b_list[4] = int_b_list[4] + z * (-1)
-                b_list[4] = b_list[4] + z * (-1) * 16
-                continue
-            elif new_kod - real_kod < -8:
-                int_b_list[4] = int_b_list[4] + z
-                b_list[4] = b_list[4] + z * 16
-                continue
+            # if new_kod - real_kod > 8:
+            #     int_b_list[4] = int_b_list[4] + z * (-1)
+            #     b_list[4] = b_list[4] + z * (-1) * 16
+            #     continue
+            # elif new_kod - real_kod < -8:
+            #     int_b_list[4] = int_b_list[4] + z
+            #     b_list[4] = b_list[4] + z * 16
+            #     continue
         elif x > (int_m_list[5] << 4):
             k = int_k_list[5]
             b = int_b_list[5]
-            if b_list[5] < 0:
-                z = -1
+            # if b_list[5] < 0:
+            #     z = -1
             kod = x * k
             new_kod = (kod >> 5) + z * (b << 4)
             real_kod = -16 * tem + 2047
-            if new_kod - real_kod > 8:
-                int_b_list[5] = int_b_list[5] + z * (-1)
-                b_list[5] = b_list[5] + z * (-1) * 16
-                continue
-            elif new_kod - real_kod < -8:
-                int_b_list[5] = int_b_list[5] + z
-                b_list[5] = b_list[5] + z * 16
-                continue
+            # if new_kod - real_kod > 8:
+            #     int_b_list[5] = int_b_list[5] + z * (-1)
+            #     b_list[5] = b_list[5] + z * (-1) * 16
+            #     continue
+            # elif new_kod - real_kod < -8:
+            #     int_b_list[5] = int_b_list[5] + z
+            #     b_list[5] = b_list[5] + z * 16
+            #     continue
         elif x > (int_m_list[6] << 4):
             k = int_k_list[6]
             b = int_b_list[6]
-            if b_list[6] < 0:
-                z = -1
+            # if b_list[6] < 0:
+            #     z = -1
             kod = x * k
             new_kod = (kod >> 5) + z * (b << 4)
             real_kod = -16 * tem + 2047
-            if new_kod - real_kod > 8:
-                int_b_list[6] = int_b_list[6] + z * (-1)
-                b_list[6] = b_list[6] + z * (-1) * 16
-                continue
-            elif new_kod - real_kod < -8:
-                int_b_list[6] = int_b_list[6] + z
-                b_list[6] = b_list[6] + z * 16
-                continue
+            # if new_kod - real_kod > 8:
+            #     int_b_list[6] = int_b_list[6] + z * (-1)
+            #     b_list[6] = b_list[6] + z * (-1) * 16
+            #     continue
+            # elif new_kod - real_kod < -8:
+            #     int_b_list[6] = int_b_list[6] + z
+            #     b_list[6] = b_list[6] + z * 16
+            #     continue
         elif x <= (int_m_list[6] << 4):
             k = int_k_list[7]
             b = int_b_list[7]
-            if b_list[7] < 0:
-                z = -1
+            # if b_list[7] < 0:
+            #     z = -1
             kod = x * k
-
             new_kod = (kod >> 5) + z * (b << 4)
             real_kod = -16 * tem + 2047
-            if new_kod - real_kod > 8:
-                int_b_list[7] = int_b_list[7] + z * (-1)
-                b_list[7] = b_list[7] - 1 * 16
-                continue
-            elif new_kod - real_kod < -8:
-                int_b_list[7] = int_b_list[7] + z
-                b_list[7] = b_list[7] + 1 * 16
-                continue
+            # if new_kod - real_kod > 8:
+            #     int_b_list[7] = int_b_list[7] + z * (-1)
+            #     b_list[7] = b_list[7] - 1 * 16
+            #     continue
+            # elif new_kod - real_kod < -8:
+            #     int_b_list[7] = int_b_list[7] + z
+            #     b_list[7] = b_list[7] + 1 * 16
+            #     continue
         test_y.append(new_kod)
         real_y.append(real_kod)
         test_x.append(tem)
@@ -327,7 +335,7 @@ def clc(number_mk, chip):
             Z1 += "1"
 
     binCodeEleOM = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-    x = int(all_minus - 64)
+    x = int(all_minus )
     i = 0
     while i < 16:
         y = str(x % 2)
@@ -345,17 +353,17 @@ def clc(number_mk, chip):
     print("OM1 " + str(int(str(''.join(OM1))[::-1], 2)))
     print("OM2 " + str(int(str(''.join(OM2))[::-1], 2)))
 
-    setattr(chip, "m_list", int_m_list)
-    setattr(chip, "b_list", int_b_list)
-    setattr(chip, "k_list", int_k_list)
-    setattr(chip, "om1", int(str(''.join(OM1))[::-1], 2))
-    setattr(chip, "om2", int(str(''.join(OM2))[::-1], 2))
-    setattr(chip, "z", int(Z1, 2))
+    # setattr(chip, "m_list", int_m_list)
+    # setattr(chip, "b_list", int_b_list)
+    # setattr(chip, "k_list", int_k_list)
+    # setattr(chip, "om1", int(str(''.join(OM1))[::-1], 2))
+    # setattr(chip, "om2", int(str(''.join(OM2))[::-1], 2))
+    # setattr(chip, "z", int(Z1, 2))
 
 
-    # plt.axis([minElement(test_x) - 5, maxElement(test_x) + 5, minElement(test_y) - 5, maxElement(test_y) + 5])
-    # plt.plot(test_x, test_y, color='blue')
-    # # plt.plot(test_x, real_temp, color='red')
-    # plt.plot(test_x, real_y, color='red')
-    # plt.show()
+    plt.axis([minElement(test_x) - 5, maxElement(test_x) + 5, minElement(test_y) - 5, maxElement(test_y) + 5])
+    plt.plot(test_x, test_y, color='blue')
+    # plt.plot(test_x, real_temp, color='red')
+    plt.plot(test_x, real_y, color='red')
+    plt.show()
     return int_k_list, int_b_list, int_m_list, int(Z1, 2)

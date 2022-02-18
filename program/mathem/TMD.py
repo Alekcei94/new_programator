@@ -79,14 +79,14 @@ class TMD:
                                    self.temp_interpolate]
         code_interpolate_fitted_extended = [round((interpol(t) - minimum) / self.common_divisor) for t in
                                             self.temp_interpolate_extended]
-        print(code_interpolate_fitted)
+        # print(code_interpolate_fitted)
         return interpol, minimum, code_interpolate_fitted, code_interpolate_fitted_extended
 
     def prepare_interpolation_dictionary(self, code_interpolate_fitted):
         interpolation_dictionary = dict()
         for temp, value in zip(self.temp_interpolate_extended, code_interpolate_fitted):
             interpolation_dictionary[value] = temp
-        print(interpolation_dictionary)
+        # print(interpolation_dictionary)
         return interpolation_dictionary
 
     def prepare_possible_points(self, code_interpolate_fitted):

@@ -3,6 +3,8 @@ import time
 
 import serial
 
+import logger
+
 
 def write_commands(ser, byte_0, byte_1, byte_2, byte_3):
     crc = form_crc(byte_0, byte_1, byte_2, byte_3)
@@ -181,21 +183,21 @@ def read_data_in_mk(ser, claster, number, number_of_bytes, read_flag):
             data = ser.read()
             if data != b'':
                 buf.append(data)
-        if len(buf) == 2 and not read_flag:
-            t_cod = (int.from_bytes(buf[0], "big") | (int.from_bytes(buf[1], "big") << 8))
-            print("T_code: " + str(t_cod))
-            flag_ok = False
-            temperature = float(t_cod * 0.0625)
-            print("Temperature: " + str(temperature))
-        elif len(buf) == 2 and read_flag:
-            t_cod = (int.from_bytes(buf[0], "big") | ((int.from_bytes(buf[1], "big") & 0x0f) << 8))
-            print("T_code_otp: " + str(t_cod))
-            flag_ok = False
-        else:
-            for j in range(len(buf)):
-                address.append(int.from_bytes(buf[j], "big"))
-            print("COD: " + str(address))
-            flag_ok = False
+        # if len(buf) == 2 and not read_flag:
+        #     t_cod = (int.from_bytes(buf[0], "big") | (int.from_bytes(buf[1], "big") << 8))
+        #     print("T_code: " + str(t_cod))
+        #     flag_ok = False
+        #     temperature = float(t_cod * 0.0625)
+        #     print("Temperature: " + str(temperature))
+        # elif len(buf) == 2 and read_flag:
+        #     t_cod = (int.from_bytes(buf[0], "big") | ((int.from_bytes(buf[1], "big") & 0x0f) << 8))
+        #     print("T_code_otp: " + str(t_cod))
+        #     flag_ok = False
+        # else:
+        for j in range(len(buf)):
+            address.append(int.from_bytes(buf[j], "big"))
+        # print("COD: " + str(address))
+        flag_ok = False
     return address
 
 
@@ -203,23 +205,30 @@ def read_data_in_mk(ser, claster, number, number_of_bytes, read_flag):
 # Если приходит Ложь, включить питание, иначе включить
 def all_vdd(first_mk, last_mk, save_object):
     ser = getattr(save_object, "ser")
-
     switcher = getattr(save_object, "voltage_state")
     claster_first, number_first = search_claster_and_number(first_mk)
     claster_last, number_last = search_claster_and_number(last_mk)
-    if not switcher:
-        commands = 161
-        switcher = True
-        choose_voltage_level(ser, save_object)
-        select_operating_mode(ser, save_object)
-        time.sleep(1)
-    else:
-        commands = 160
-        switcher = False
-    setattr(save_object, "voltage_state", switcher)
-    for iterator in range(claster_first, claster_last + 1, 16):
-        write_commands(ser, iterator, 10, commands, 0)
-    return switcher
+    try:
+        if not switcher:
+            logger.write_log("Включение питания.", 0)
+            commands = 161
+            choose_voltage_level(ser, save_object)
+            select_operating_mode(ser, save_object)
+            time.sleep(1)
+            switcher = True
+        else:
+            logger.write_log("Вылючение питания.", 0)
+            commands = 160
+            switcher = False
+        for iterator in range(claster_first, claster_last + 1, 16):
+            write_commands(ser, iterator, 10, commands, 0)
+        setattr(save_object, "voltage_state", switcher)
+        logger.write_log("Управление питанием выполнено.", 0)
+        return True
+    except:
+        print("Проблема выполнения команды управления питанием.")
+        logger.write_log("Управление питанием ошибка выполенния.", 0)
+        return False
 
 
 # Установить напряжения по всем микросхемам
@@ -234,16 +243,7 @@ def choose_voltage_level(ser, save_object):
 
 # Выбрать режим работы микросхем
 def select_operating_mode(ser, save_object):
-    list_type_mk = getattr(save_object, "list_type_mk")
-    for iterator in range(len(list_type_mk)):
-        if int(list_type_mk[iterator]) == 1 or int(list_type_mk[iterator]) == 2 or int(list_type_mk[iterator]) == 3:
-            write_commands(ser, (iterator + 1) * 16, 10, 192, int(list_type_mk[iterator]))
-
-
-# повесить задержку на несколько кластеров
-# def sleep_slave_1(first_mk, last_mk, timer):
-#     claster_first, number_first = search_claster_and_number(first_mk)
-#     claster_last, number_last = search_claster_and_number(last_mk)
-#     time = int(timer / 20)
-#     for iterator in range(claster_first, claster_last + 1):
-#         write_commands(ser, iterator, 10, 165, time)
+    list_interface_mk = getattr(save_object, "list_interface_mk")
+    for iterator in range(len(list_interface_mk)):
+        if 1 <= int(list_interface_mk[iterator]) <= 3:
+            write_commands(ser, (iterator + 1) * 16, 10, 192, int(list_interface_mk[iterator]))
