@@ -129,13 +129,19 @@ class Commands_Window_OneWire_New_Analog(QtWidgets.QMainWindow):
         for iterator_mk in range(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk') + 1):
             logger.write_log("Запись памяти в микросхему " + str(iterator_mk), 0)
             print(f'Микросхема : {iterator_mk}')
-            new_chip = micros_chip.Chip(iterator_mk)
-            list_chip.append(new_chip)
+            # new_chip = micros_chip.Chip(iterator_mk)
+            # list_chip.append(new_chip)
             path_to_file = '../data/' + str(iterator_mk) + '.txt'
             TM = TMD.TMD(tm_type='analog', xy_path=path_to_file, annealing_step=0.001, maximum_gap=100,
                          num_points_total=9, kind='cubic',
                          annealing_multiplier=20, left_mutation=-20, right_mutation=20, min_code=100)
             list_m, list_k, list_b, z = TM.execute_point_optimization()
+            ddd, standard_deviation, absolute_deviation = utility.plot_graph(TM, ( list_m, list_k, list_b, z), plot=False)
+            print(standard_deviation)
+            if standard_deviation > 10:
+                print("Перезапусти меня")
+
+
             z.reverse()
             z1 = int(''.join(str(e) for e in z), 2)
             list_m = [round(i/16) for i in list_m]

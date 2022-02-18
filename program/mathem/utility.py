@@ -33,7 +33,7 @@ def get_all_codes_assosiation_revert(M, k, b, z):
     return answers
 
 
-def get_all_codes_association(M, k, b, z):
+def get_all_codes_association(tm, M, k, b, z):
     ran = np.arange(0, 4000, 1)
     d = dict()
     for code in ran:
@@ -48,7 +48,7 @@ def get_all_codes_association(M, k, b, z):
     answers = dict()
     for code in d.keys():
         k_int, b_int, z_int = d[code]
-        mk_code = (int(code * k_int) >> main.k_bits) + z_int * (b_int << main.b_bits_shift)
+        mk_code = (int(code * k_int) >> tm.k_bits) + z_int * (b_int << tm.b_bits_shift)
         # mk_code = int(code * k_int) + z_int * b_int
         answers[code] = mk_code, k_int, b_int, z_int
     return answers
@@ -89,7 +89,7 @@ def start(minimum):
 
 
 def plot_graph(tm, coeffs, plot=True):
-    ddd = get_all_codes_association(coeffs[0], coeffs[1], coeffs[2], coeffs[3])
+    ddd = get_all_codes_association(tm, coeffs[0], coeffs[1], coeffs[2], coeffs[3])
     t_line = []
     ideal_line = []
     real_line = []
