@@ -136,19 +136,18 @@ class Commands_Window_OneWire_New_Analog(QtWidgets.QMainWindow):
                          num_points_total=9, kind='cubic',
                          annealing_multiplier=20, left_mutation=-20, right_mutation=20, min_code=100)
             list_m, list_k, list_b, z = TM.execute_point_optimization()
-            ddd, standard_deviation, absolute_deviation = utility.plot_graph(TM, ( list_m, list_k, list_b, z), plot=False)
+            ddd, standard_deviation, absolute_deviation = utility.plot_graph(TM, (list_m, list_k, list_b, z), plot=False)
             print(standard_deviation)
             if standard_deviation > 10:
                 print("Перезапусти меня")
-
 
             z.reverse()
             z1 = int(''.join(str(e) for e in z), 2)
             list_m = [round(i/16) for i in list_m]
 
             str_bin_om = bin(int(TM.minimum))[2:].zfill(16)
-            OM2 = int(str_bin_om[:8], 2) # Старшие биты
-            OM1 = int(str_bin_om[8:], 2) # Младшие биты
+            OM2 = int(str_bin_om[:8], 2)  # Старшие биты
+            OM1 = int(str_bin_om[8:], 2)  # Младшие биты
 
             print("Z " + str(z1))
             print("B " + str(list_b))
@@ -157,7 +156,7 @@ class Commands_Window_OneWire_New_Analog(QtWidgets.QMainWindow):
             print("OM1 " + str(OM1))
             print("OM2 " + str(OM2))
 
-            logger.write_log("Запись памяти в микросхему " + str(iterator_mk) + "Z = "
+            logger.write_log("Запись памяти в микросхему " + str(iterator_mk) + "; Z = "
                              + str(z1) + " M = " + str(list_m) + " K = " + str(list_k)
                              + " B = " + str(list_b) + " OM = " + str(TM.minimum)
                              + " OM1 (младший) = " + str(OM1) + " OM2 (старший) = " + str(OM2), 0)
