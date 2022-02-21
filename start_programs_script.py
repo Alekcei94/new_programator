@@ -82,18 +82,18 @@ class Commands_Window_OneWire_New_Analog(QtWidgets.QMainWindow):
     def writeEN2(self):
         for iterator_mk in range(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk') + 1):
             en = basic_commands_onewire.read_mem_new_micros_OneWire(iterator_mk, 30)
-            en1 = en[0] + 1 # EN
-            # en1 = en[0] + 4 # циклический режим
+            # en1 = en[0] + 1 # EN
+            en1 = en[0] + 4 # циклический режим
             #en1 = en[0] + 5 # циклический режим + EN
             print(str(en[0]) + " _ " + str(en1))
-            basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 28, 1)  # ANALOG 7 -
-            time.sleep(2)
+            # basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 28, 1)  # ANALOG 7 -
+            # time.sleep(2)
             basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 30, en1)  # если 204 и 242 в одной посылке, то + 5
             time.sleep(2)
-            # basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 27, 255)
-            # time.sleep(2)
-            # basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 39, 128)
-            # time.sleep(2)
+            basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 27, 255)
+            time.sleep(2)
+            basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 39, 128)
+            time.sleep(2)
 
 
     def writeMem(self):
@@ -112,12 +112,12 @@ class Commands_Window_OneWire_New_Analog(QtWidgets.QMainWindow):
             # z1 = getattr(new_chip, "z")
             #z2 = getattr(new_chip, "z2")
             #
-            list_m = [18, 33, 42, 62, 75, 83, 90]
-            list_k = [40, 49, 58, 64, 80, 101, 125, 148]
-            list_b = [9, 4, 5, 13, 44, 93, 155, 220]
-            om1 = 209
-            om2 = 243
-            z1 = 252
+            list_m = [28, 45, 54, 63, 72, 79, 87]
+            list_k = [46, 58, 69, 75, 84, 100, 130, 153]
+            list_b = [7, 3, 18, 28, 46, 82, 156, 218]
+            om1 = 102
+            om2 = 244
+            z1 = 254
             #
             # if len(list_k) != 10:
             #     print("Error, len(list_k) != 10 ")
@@ -320,25 +320,31 @@ class Commands_Window_OneWire_New_10(QtWidgets.QMainWindow):
         for iterator_mk in range(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk') + 1):
             print("Chip : " + str(iterator_mk))
 
-            new_chip = micros_chip.Chip(iterator_mk)
-            list_chip.append(new_chip)
-            test_clc.clc(iterator_mk, new_chip)
+            # new_chip = micros_chip.Chip(iterator_mk)
+            # list_chip.append(new_chip)
+            # test_clc.clc(iterator_mk, new_chip)
             #mathNewOneWire.coefficients(iterator_mk, new_chip)
             number_mem_in_chip = 0
-            list_k = getattr(new_chip, "k_list")
-            list_b = getattr(new_chip, "b_list")
-            list_m = getattr(new_chip, "m_list")
-            om1 = getattr(new_chip, "om1")
-            om2 = getattr(new_chip, "om2")
-            z1 = getattr(new_chip, "z")
-            print("K")
-            print(list_k)
-            print("B")
-            print(list_b)
-            print("M")
-            print(list_m)
-            print("Z")
-            print(z1)
+            list_k = [18, 23, 28, 34, 43, 50, 56, 62]
+            list_b = [85, 63, 46, 31, 16, 8, 3, 0]
+            list_m = [141, 108, 82, 53, 36, 27, 16]
+            om1 = 69
+            om2 = 53
+            z1 = 0
+            # list_k = getattr(new_chip, "k_list")
+            # list_b = getattr(new_chip, "b_list")
+            # list_m = getattr(new_chip, "m_list")
+            # om1 = getattr(new_chip, "om1")
+            # om2 = getattr(new_chip, "om2")
+            # z1 = getattr(new_chip, "z")
+            # print("K")
+            # print(list_k)
+            # print("B")
+            # print(list_b)
+            # print("M")
+            # print(list_m)
+            # print("Z")
+            # print(z1)
 
             # K
             if list_k[0] != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 0, list_k[0])
