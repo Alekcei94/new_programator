@@ -157,14 +157,11 @@ class Commands_Window_OneWire_New_Analog(QtWidgets.QMainWindow):
             print("OM1 " + str(OM1))
             print("OM2 " + str(OM2))
 
-            # list_k = getattr(new_chip, "k_list")
-            # list_b = getattr(new_chip, "b_list")
-            # list_m = getattr(new_chip, "m_list")
-            # om1 = getattr(new_chip, "om1")
-            # om2 = getattr(new_chip, "om2")
-            # z1 = getattr(new_chip, "z")
-            # z2 = getattr(new_chip, "z2")
-            #
+            logger.write_log("Запись памяти в микросхему " + str(iterator_mk) + "Z = "
+                             + str(z1) + " M = " + str(list_m) + " K = " + str(list_k)
+                             + " B = " + str(list_b) + " OM = " + str(TM.minimum)
+                             + " OM1 (младший) = " + str(OM1) + " OM2 (старший) = " + str(OM2), 0)
+
             # list_m = [18, 33, 42, 62, 75, 83, 90]
             # list_k = [40, 49, 58, 64, 80, 101, 125, 148]
             # list_b = [9, 4, 5, 13, 44, 93, 155, 220]
@@ -260,7 +257,8 @@ class Commands_Window_OneWire_New_Analog(QtWidgets.QMainWindow):
             #OM2
             if om2 != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 25, om2)
             time.sleep(2)
-        print("Конец записи данных")
+        print("Конец записи данных в микросхемы.")
+        logger.write_log("Конец записи данных в микросхемы.", 0)
 
 
     def startRead(self):
