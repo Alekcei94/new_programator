@@ -45,7 +45,7 @@
      <string>Питание</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="test2Button">
+   <widget class="QPushButton" name="newPartButton">
     <property name="geometry">
      <rect>
       <x>30</x>
@@ -58,7 +58,7 @@
      <string>Новая партия</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="test3Button">
+   <widget class="QPushButton" name="addArchiveButton">
     <property name="geometry">
      <rect>
       <x>30</x>
@@ -71,17 +71,20 @@
      <string>Добавить в архив</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="test4Button">
+   <widget class="QPushButton" name="startWorkButton">
     <property name="geometry">
      <rect>
-      <x>30</x>
-      <y>290</y>
+      <x>470</x>
+      <y>70</y>
       <width>121</width>
       <height>51</height>
      </rect>
     </property>
+    <property name="styleSheet">
+     <string notr="true">background-color: rgb(255, 183, 180);</string>
+    </property>
     <property name="text">
-     <string>4</string>
+     <string>старнт измерений</string>
     </property>
    </widget>
    <widget class="QPushButton" name="readTempButton">
@@ -136,7 +139,7 @@
     <property name="geometry">
      <rect>
       <x>470</x>
-      <y>80</y>
+      <y>140</y>
       <width>121</width>
       <height>51</height>
      </rect>
@@ -148,7 +151,23 @@
      <string>K и B</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="writeOTPButton">
+   <widget class="QPushButton" name="write3VButton">
+    <property name="geometry">
+     <rect>
+      <x>470</x>
+      <y>290</y>
+      <width>121</width>
+      <height>51</height>
+     </rect>
+    </property>
+    <property name="styleSheet">
+     <string notr="true">background-color: rgb(255, 183, 180);</string>
+    </property>
+    <property name="text">
+     <string>3V</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="writeENButton">
     <property name="geometry">
      <rect>
       <x>470</x>
@@ -161,23 +180,7 @@
      <string notr="true">background-color: rgb(255, 183, 180);</string>
     </property>
     <property name="text">
-     <string>3V</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="writeEN2Button">
-    <property name="geometry">
-     <rect>
-      <x>470</x>
-      <y>150</y>
-      <width>121</width>
-      <height>51</height>
-     </rect>
-    </property>
-    <property name="styleSheet">
-     <string notr="true">background-color: rgb(255, 183, 180);</string>
-    </property>
-    <property name="text">
-     <string>EN2</string>
+     <string>EN и Отключение DQ</string>
     </property>
    </widget>
    <widget class="QPushButton" name="startButton">

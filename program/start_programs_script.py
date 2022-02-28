@@ -37,13 +37,24 @@ class Commands_Window_OneWire_New_Analog(QtWidgets.QMainWindow):
         super(Commands_Window_OneWire_New_Analog, self).__init__()
         uic.loadUi('./ui/commands_OneWire_New.ui', self)
         self.show()
+
+        # 1 column
         self.vddButton.clicked.connect(self.workVdd)
+        self.newPartButton.clicked.connect(self.)
+        self.addArchiveButton.clicked.connect(self.)
+
+        # 2 column
         self.readTempButton.clicked.connect(self.readTemp)
         self.readAddressButton.clicked.connect(self.readID)
         self.readOTPButton.clicked.connect(self.readOTP)
+
+        # 3 column
+        self.startWorkButton.clicked.connect(self.)
         self.writeKAndBButton.clicked.connect(self.writeMem)
-        self.writeOTPButton.clicked.connect(self.writeEN)
-        self.writeEN2Button.clicked.connect(self.writeEN)
+        self.writeENButton.clicked.connect(self.writeEN)
+        self.write3VButton.clicked.connect(self.)
+
+        # main
         self.startButton.clicked.connect(self.startRead)
 
     def workVdd(self):
@@ -262,6 +273,7 @@ class Commands_Window_OneWire_New_Analog(QtWidgets.QMainWindow):
 
     def startRead(self):
         print("Чтение температурного кода")
+        logger.write_log("Чтение температурного кода", 0)
         temp_mit = input()
         dict = {}
         for i in range(32):
@@ -284,6 +296,15 @@ class Commands_Window_OneWire_New_Analog(QtWidgets.QMainWindow):
             file_path_data.write(str(temp_mit) + " " + str(average_cod) + "\n")
             file_path_data.close()
         print("Конец чтения температурного кода")
+
+    def write3V(self):
+        print(f'Перевод микросхем в 3,3 Вольта')
+        for iterator_mk in range(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk') + 1):
+            en = basic_commands_onewire.read_mem_new_micros_OneWire(iterator_mk, 30)
+            print(str(en[0]) + " _ " + str(en[0] + 2))
+            en1 = en[0] + 2
+            basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 30, en1)
+            time.sleep(2)
 
 
 class Commands_Window_OneWire_New_10(QtWidgets.QMainWindow):
