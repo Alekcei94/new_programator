@@ -40,8 +40,8 @@ class Commands_Window_OneWire_New_Analog(QtWidgets.QMainWindow):
 
         # 1 column
         self.vddButton.clicked.connect(self.workVdd)
-        self.newPartButton.clicked.connect(self.)
-        self.addArchiveButton.clicked.connect(self.)
+        # self.newPartButton.clicked.connect(self.)
+        # self.addArchiveButton.clicked.connect(self.)
 
         # 2 column
         self.readTempButton.clicked.connect(self.readTemp)
@@ -49,10 +49,10 @@ class Commands_Window_OneWire_New_Analog(QtWidgets.QMainWindow):
         self.readOTPButton.clicked.connect(self.readOTP)
 
         # 3 column
-        self.startWorkButton.clicked.connect(self.)
+        # self.startWorkButton.clicked.connect(self.)
         self.writeKAndBButton.clicked.connect(self.writeMem)
         self.writeENButton.clicked.connect(self.writeEN)
-        self.write3VButton.clicked.connect(self.)
+        # self.write3VButton.clicked.connect(self.)
 
         # main
         self.startButton.clicked.connect(self.startRead)
@@ -62,7 +62,7 @@ class Commands_Window_OneWire_New_Analog(QtWidgets.QMainWindow):
         if not servis_method.all_vdd(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk'), saveOption):
             print('\n' + "Не удалось выполнить настройку питания. Проверте источник напряжения.")
         else:
-            if getattr(save_object, "voltage_state"):
+            if getattr(saveOption, "voltage_state"):
                 print('\n' + "Питание включено.")
             else:
                 print('\n' + "Питание выключено.")
@@ -70,6 +70,7 @@ class Commands_Window_OneWire_New_Analog(QtWidgets.QMainWindow):
     def readTemp(self):
         list_temp = []
         try:
+            print("Чтение температурного кода.")
             logger.write_log("Чтение температурного кода.", 0)
             for iterator_mk in range(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk') + 1):
                 basic_commands_onewire.form_temp_cod_not_active(iterator_mk)
@@ -80,7 +81,7 @@ class Commands_Window_OneWire_New_Analog(QtWidgets.QMainWindow):
                 temp = int(temp_cod[0]) | (int(temp_cod[1]) << 8)
                 list_temp.append("микросхема: " + str(iterator_mk) + "; COD: " + str(temp))
                 logger.write_log("чтение температурного кода в микросхеме " + str(iterator_mk) + "микросхема: " +
-                                 str(iterator_mk) + "; COD: " + str(temp), 0)
+                                     str(iterator_mk) + "; COD: " + str(temp), 0)
             print(list_temp)
         except:
             logger.write_log("Произошла ошибка в чтении температурного кода.", 0)
@@ -95,8 +96,12 @@ class Commands_Window_OneWire_New_Analog(QtWidgets.QMainWindow):
             for iterator_mk in range(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk') + 1):
                 logger.write_log("Чтение памяти микросхемы " + str(iterator_mk), 0)
                 print(f' Микросхема: {iterator_mk}')
+                mem_str = ""
                 for i in range(40):
-                    print(str(i) + " : " + str(basic_commands_onewire.read_mem_new_micros_OneWire(iterator_mk, i)))
+                    mem = basic_commands_onewire.read_mem_new_micros_OneWire(iterator_mk, i)
+                    print(str(i) + " : " + str(mem))
+                    mem_str += " " + str(mem)
+                logger.write_log("Чтение памяти микросхемы " + str(iterator_mk) + " " + mem_str, 0)
         except:
             logger.write_log("Произошла ошибка в чтении памяти микросхем", 0)
             print('\n' + "Произошла ошибка в чтении памяти микросхем.")
@@ -116,19 +121,20 @@ class Commands_Window_OneWire_New_Analog(QtWidgets.QMainWindow):
         try:
             logger.write_log("Запись EN", 0)
             for iterator_mk in range(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk') + 1):
+                print(f'микросхема {iterator_mk}')
                 en = basic_commands_onewire.read_mem_new_micros_OneWire(iterator_mk, 30)
                 en1 = en[0] + 1 # EN
                 # en1 = en[0] + 4 # циклический режим
-                #en1 = en[0] + 5 # циклический режим + EN
+                # # en1 = en[0] + 5 # циклический режим + EN
                 print(str(en[0]) + " _ " + str(en1))
-                basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 28, 1)  # ANALOG 7 -
-                time.sleep(2)
+                # basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 28, 1)  # ANALOG 7 -
+                # time.sleep(2)
                 basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 30, en1)  # если 204 и 242 в одной посылке, то + 5
                 time.sleep(2)
                 # basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 27, 255)
                 # time.sleep(2)
-                # basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 39, 128)
-                # time.sleep(2)
+                basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 39, 128)
+                time.sleep(2)
         except:
             logger.write_log("Запись EN не выполенно", 0)
 
@@ -147,30 +153,38 @@ class Commands_Window_OneWire_New_Analog(QtWidgets.QMainWindow):
                          num_points_total=9, kind='cubic',
                          annealing_multiplier=20, left_mutation=-20, right_mutation=20, min_code=100)
             list_m, list_k, list_b, z = TM.execute_point_optimization()
+            print(z)
             ddd, standard_deviation, absolute_deviation = utility.plot_graph(TM, (list_m, list_k, list_b, z), plot=False)
+            z_te = []
+            for i in z:
+                if i >= 0:
+                    z_te.append(0)
+                else:
+                    z_te.append(1)
             print(standard_deviation)
+            print(z_te)
             if standard_deviation > 10:
                 print("Перезапусти меня")
-
-            z.reverse()
-            z1 = int(''.join(str(e) for e in z), 2)
+                exit(0)
+            z_te.reverse()
+            z1 = int(''.join(str(e) for e in z_te), 2)
             list_m = [round(i/16) for i in list_m]
 
             str_bin_om = bin(int(TM.minimum))[2:].zfill(16)
-            OM2 = int(str_bin_om[:8], 2)  # Старшие биты
-            OM1 = int(str_bin_om[8:], 2)  # Младшие биты
+            om2 = int(str_bin_om[:8], 2)  # Старшие биты
+            om1 = int(str_bin_om[8:], 2)  # Младшие биты
 
             print("Z " + str(z1))
             print("B " + str(list_b))
             print("K " + str(list_k))
             print("M " + str(list_m))
-            print("OM1 " + str(OM1))
-            print("OM2 " + str(OM2))
+            print("OM1 " + str(om1))
+            print("OM2 " + str(om2))
 
             logger.write_log("Запись памяти в микросхему " + str(iterator_mk) + "; Z = "
                              + str(z1) + " M = " + str(list_m) + " K = " + str(list_k)
                              + " B = " + str(list_b) + " OM = " + str(TM.minimum)
-                             + " OM1 (младший) = " + str(OM1) + " OM2 (старший) = " + str(OM2), 0)
+                             + " OM1 (младший) = " + str(om1) + " OM2 (старший) = " + str(om2), 0)
 
             # list_m = [18, 33, 42, 62, 75, 83, 90]
             # list_k = [40, 49, 58, 64, 80, 101, 125, 148]
@@ -273,17 +287,19 @@ class Commands_Window_OneWire_New_Analog(QtWidgets.QMainWindow):
 
     def startRead(self):
         print("Чтение температурного кода")
-        logger.write_log("Чтение температурного кода", 0)
+        logger.write_log("Старт измерений", 0)
         temp_mit = input()
         dict = {}
         for i in range(32):
             print("step = " + str(i))
+            time.sleep(0.3)
             list_temp = []
-            for iterator_mk in range(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk') + 1):
-                basic_commands_onewire.form_temp_cod_not_active(iterator_mk)
-            time.sleep(0.5)
+            # for iterator_mk in range(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk') + 1):
+            #     basic_commands_onewire.form_temp_cod_not_active(iterator_mk)
+            # time.sleep(0.9)
             for iterator_mk in range(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk') + 1):
                 temp_cod = basic_commands_onewire.read_temp_active(iterator_mk)
+                print(temp_cod)
                 if dict.get(iterator_mk) is None:
                     dict[iterator_mk] = [temp_cod[0] | (temp_cod[1] << 8)]
                 else:
@@ -291,11 +307,21 @@ class Commands_Window_OneWire_New_Analog(QtWidgets.QMainWindow):
                 list_temp.append(temp_cod[0] | (temp_cod[1] << 8))
         for iterator_mk in range(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk') + 1):
             list_temp = dict.get(iterator_mk)
+            for i in range(len(list_temp)):
+                try:
+                    list_temp.remove(65535)
+                except:
+                    break
             average_cod = round(sum(list_temp) / len(list_temp))
-            file_path_data = open('./data/' + str(iterator_mk) + '.txt', 'a')
+            logger.write_log("Данные измерений при температуре " + str(temp_mit) + "; микросхема номер "
+                             + str(iterator_mk) + "; коды = min:" + str(min(list_temp)) + " ave_cod:" + str(average_cod)
+                             + " max:" + str(max(list_temp)) + " len:" + str(len(list_temp))
+                             + " list_temp: " + str(list_temp), 0)
+            file_path_data = open('../data/' + str(iterator_mk) + '.txt', 'a')
             file_path_data.write(str(temp_mit) + " " + str(average_cod) + "\n")
             file_path_data.close()
         print("Конец чтения температурного кода")
+        logger.write_log("Конец измерений", 0)
 
     def write3V(self):
         print(f'Перевод микросхем в 3,3 Вольта')
@@ -384,7 +410,6 @@ class Commands_Window_OneWire_New_10(QtWidgets.QMainWindow):
         list_chip = []
         for iterator_mk in range(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk') + 1):
             print("Chip : " + str(iterator_mk))
-
             new_chip = micros_chip.Chip(iterator_mk)
             list_chip.append(new_chip)
             # test_clc.clc(iterator_mk, new_chip)
@@ -422,15 +447,15 @@ class Commands_Window_OneWire_New_10(QtWidgets.QMainWindow):
                 i = i + 1
                 x = int(x / 2)
 
-            OM1 = binCodeEleOM[:8]
-            OM2 = binCodeEleOM[8:]
+            om1 = binCodeEleOM[:8]
+            om2 = binCodeEleOM[8:]
 
             print("Z " + str(z1))
             print("B " + str(list_b))
             print("K " + str(list_k))
             print("M " + str(list_m))
-            print("OM1 " + str(int(str(''.join(OM1))[::-1], 2)))
-            print("OM2 " + str(int(str(''.join(OM2))[::-1], 2)))
+            print("OM1 " + str(int(str(''.join(om1))[::-1], 2)))
+            print("OM2 " + str(int(str(''.join(om2))[::-1], 2)))
 
             # K
             if list_k[0] != 0: basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 0, list_k[0])

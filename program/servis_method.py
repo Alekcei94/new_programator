@@ -22,7 +22,7 @@ def write_commands(ser, byte_0, byte_1, byte_2, byte_3):
             #print("Master confirmed")
             for i in range(5):
                 va12.append(int.from_bytes(ser.read(), "big"))
-            #print(va12)
+            # print(va12)
             break
         elif (int.from_bytes(ser.read(), "big")) == 54:
             print("crc_not_ok")
@@ -208,6 +208,8 @@ def all_vdd(first_mk, last_mk, save_object):
     switcher = getattr(save_object, "voltage_state")
     claster_first, number_first = search_claster_and_number(first_mk)
     claster_last, number_last = search_claster_and_number(last_mk)
+    claster_first = 16
+    claster_last = 16
     try:
         if not switcher:
             logger.write_log("Включение питания.", 0)

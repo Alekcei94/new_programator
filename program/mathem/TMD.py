@@ -298,11 +298,11 @@ class TMD:
             x1, x2 = pair[0], pair[1]
             k, b = self.get_k_b_for_line(interpolation_dictionary[x1], x1 + points[x1],
                                          interpolation_dictionary[x2], x2 + points[x2])
-            if math.copysign(1, b) >= 0:
-                z = 0
-            else:
-                z = 1
-            # z =  math.copysign(1, b)
+            # if math.copysign(1, b) >= 0:
+            #     z = 0
+            # else:
+            #     z = 1
+            z =  math.copysign(1, b)
             k_int, b_int = self.form_k_refactored(k), self.form_b_refactored(b)
             m_set.add(x1)
             m_set.add(x2)

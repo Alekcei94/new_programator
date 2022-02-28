@@ -24,6 +24,7 @@ import micros_old.program_logic as program_logic
 def form_temp_cod_not_active(number_mk):
     global ser
     claster, number = servis_method.search_claster_and_number(number_mk)
+    # claster = 16
     servis_method.write_commands(ser, claster, number, 162, 0)  # A2 следующие команды выполняются стеком
     servis_method.write_commands(ser, claster, number, 170, 0)  # AA reset
     servis_method.write_commands(ser, claster, number, 166, 204)  # A6 CC
@@ -35,6 +36,7 @@ def form_temp_cod_not_active(number_mk):
 def read_temp_active(number_mk):
     global ser
     claster, number = servis_method.search_claster_and_number(number_mk)
+    # claster = 16
     servis_method.write_commands(ser, claster, number, 162, 0)  # A2 следующие команды выполняются стеком
     servis_method.write_commands(ser, claster, number, 170, 0)  # AA reset
     servis_method.write_commands(ser, claster, number, 166, 204)  # A6 CC
@@ -193,5 +195,5 @@ def get_ser():
 
 
 # Данное место необходимо переделать
-#ser = servis_method.get_ser_com()
-ser = 12
+ser = servis_method.get_ser_com()
+#ser = 12
