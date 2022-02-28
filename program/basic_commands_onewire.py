@@ -2,6 +2,7 @@ import time
 
 import servis_method
 import micros_old.program_logic as program_logic
+import logger
 
 
 #
@@ -175,7 +176,9 @@ def write_mem_new_micros_OneWire(number_mk, number_mem, data):
     servis_method.write_commands(ser, claster, number, 90, 4)  # 5A задержка в 80мкС
     servis_method.pr(ser, claster, number)
     servis_method.write_commands(ser, claster, number, 42, 0)  # 2A конец записи стека, выполнение
-    print("Mem address : " + str(number_mem) + "; Data mem : " + str(data))
+    print("Адрес памяти : " + str(number_mem) + "; Данные в памяти : " + str(data))
+    logger.write_log("Запись данных в мк " + str(number_mk) + "адрес памяти : " + str(number_mem)
+                     + "; данные в памяти : " + str(data), 0)
 
 def read_mem_new_micros_OneWire(number_mk, number_mem):
     global ser
@@ -195,5 +198,5 @@ def get_ser():
 
 
 # Данное место необходимо переделать
-ser = servis_method.get_ser_com()
-#ser = 12
+# ser = servis_method.get_ser_com()
+ser = 12

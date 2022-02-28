@@ -2,8 +2,6 @@ import time
 
 import serial
 
-import save_options
-
 
 # GET TEMPERATURE WITH MIT8
 # transfer ['2:1.32012E+01B '] -> 13.20
@@ -16,16 +14,14 @@ def get_temperature_with_mit(lineBinary):
     return round(temperature, 2)
 
 
-def main_function_MIT():
+def main_function_MIT(save_options):
     ser = serial.Serial('COM' + str(getattr(save_options, "com_port_mit")), 9600, timeout=0)
     ser.close()
     ser.open()
     ser.isOpen()
-    list_port_mit = getattr(save_options, "last_mit")
     flag = False
-    main_temperature = []
-    for i in range(len(list_port_mit)):
-        main_temperature.append(0)
+    for i in range(getattr(save_options, "first_mit"), getattr(save_options, "last_mit") + 1):
+        list_port_mit.append(i)
     array_temperature = []
     iterator = list_port_mit[0]
     flag2 = False

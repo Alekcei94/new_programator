@@ -1,12 +1,13 @@
 import sys
 import time
 import micros_new_OneWire.math_new_micros_OneWire as mathNewOneWire
-
+import other.other_devices as other_devices
 import micros_chip
 import micros_new_OneWire.math_new_micros_OneWire as mathNewOneWire
 import micros_new_Analog.math_new_analog as mathAnalog
 import logger
 import other.other_functions as other_functions
+
 
 from PyQt5 import QtWidgets, uic
 from PyQt5.QtWidgets import QApplication
@@ -41,18 +42,18 @@ class Commands_Window_OneWire_New_Analog(QtWidgets.QMainWindow):
         # 1 column
         self.vddButton.clicked.connect(self.workVdd)
         # self.newPartButton.clicked.connect(self.)
-        # self.addArchiveButton.clicked.connect(self.)
+        self.addArchiveButton.clicked.connect(self.saveArchive)
 
         # 2 column
         self.readTempButton.clicked.connect(self.readTemp)
         self.readAddressButton.clicked.connect(self.readID)
-        self.readOTPButton.clicked.connect(self.readOTP)
+        self.readOTPButton.clicked.connect(self.readMem)
 
         # 3 column
-        # self.startWorkButton.clicked.connect(self.)
+        self.startWorkButton.clicked.connect(self.presetting)
         self.writeKAndBButton.clicked.connect(self.writeMem)
         self.writeENButton.clicked.connect(self.writeEN)
-        # self.write3VButton.clicked.connect(self.)
+        # self.write3VButton.clicked.connect(self.write3V) #Проверить!
 
         # main
         self.startButton.clicked.connect(self.startRead)
@@ -87,9 +88,7 @@ class Commands_Window_OneWire_New_Analog(QtWidgets.QMainWindow):
             logger.write_log("Произошла ошибка в чтении температурного кода.", 0)
             print('\n' + "Не удалось считать температурный код.")
 
-
-
-    def readOTP(self):
+    def readMem(self):
         try:
             logger.write_log("Чтение памяти микросхем", 0)
             print("Чтение памяти микросхем")
@@ -105,7 +104,6 @@ class Commands_Window_OneWire_New_Analog(QtWidgets.QMainWindow):
         except:
             logger.write_log("Произошла ошибка в чтении памяти микросхем", 0)
             print('\n' + "Произошла ошибка в чтении памяти микросхем.")
-
 
     def readID(self):
         logger.write_log("Чтение адреса", 0)
@@ -124,20 +122,13 @@ class Commands_Window_OneWire_New_Analog(QtWidgets.QMainWindow):
                 print(f'микросхема {iterator_mk}')
                 en = basic_commands_onewire.read_mem_new_micros_OneWire(iterator_mk, 30)
                 en1 = en[0] + 1 # EN
-                # en1 = en[0] + 4 # циклический режим
-                # # en1 = en[0] + 5 # циклический режим + EN
                 print(str(en[0]) + " _ " + str(en1))
-                # basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 28, 1)  # ANALOG 7 -
-                # time.sleep(2)
                 basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 30, en1)  # если 204 и 242 в одной посылке, то + 5
-                time.sleep(2)
-                # basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 27, 255)
                 # time.sleep(2)
                 basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 39, 128)
-                time.sleep(2)
+                # time.sleep(2)
         except:
             logger.write_log("Запись EN не выполенно", 0)
-
 
     def writeMem(self):
         list_chip = []
@@ -284,7 +275,6 @@ class Commands_Window_OneWire_New_Analog(QtWidgets.QMainWindow):
         print("Конец записи данных в микросхемы.")
         logger.write_log("Конец записи данных в микросхемы.", 0)
 
-
     def startRead(self):
         print("Чтение температурного кода")
         logger.write_log("Старт измерений", 0)
@@ -292,7 +282,7 @@ class Commands_Window_OneWire_New_Analog(QtWidgets.QMainWindow):
         dict = {}
         for i in range(32):
             print("step = " + str(i))
-            time.sleep(0.3)
+            time.sleep(0.5)
             list_temp = []
             # for iterator_mk in range(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk') + 1):
             #     basic_commands_onewire.form_temp_cod_not_active(iterator_mk)
@@ -312,7 +302,7 @@ class Commands_Window_OneWire_New_Analog(QtWidgets.QMainWindow):
                     list_temp.remove(65535)
                 except:
                     break
-            average_cod = round(sum(list_temp) / len(list_temp))
+            average_cod = round(list_temp.mean())
             logger.write_log("Данные измерений при температуре " + str(temp_mit) + "; микросхема номер "
                              + str(iterator_mk) + "; коды = min:" + str(min(list_temp)) + " ave_cod:" + str(average_cod)
                              + " max:" + str(max(list_temp)) + " len:" + str(len(list_temp))
@@ -324,14 +314,38 @@ class Commands_Window_OneWire_New_Analog(QtWidgets.QMainWindow):
         logger.write_log("Конец измерений", 0)
 
     def write3V(self):
-        print(f'Перевод микросхем в 3,3 Вольта')
+        print(f'Перевод микросхем в 3.3 Вольта')
         for iterator_mk in range(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk') + 1):
+            logger.write_log("Перевод микросхемы " + str(iterator_mk) + "в 3.3 Вольта", 0)
+            print(f'Перевод микросхемы {iterator_mk} в 3.3 Вольта')
             en = basic_commands_onewire.read_mem_new_micros_OneWire(iterator_mk, 30)
             print(str(en[0]) + " _ " + str(en[0] + 2))
             en1 = en[0] + 2
             basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 30, en1)
             time.sleep(2)
+        print(f'Конец перевода микросхем в 3.3 Вольта')
 
+    def saveArchive(self):
+        other_functions.main_save_archive("13")
+
+    def presetting(self):
+        try:
+            logger.write_log("Предварительная настройка", 0)
+            print("Предварительная настройка")
+            for iterator_mk in range(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk') + 1):
+                print(f'микросхема {iterator_mk}')
+                en = basic_commands_onewire.read_mem_new_micros_OneWire(iterator_mk, 30)
+                en1 = en[0] + 4 # циклический режим
+                print(str(en[0]) + " _ " + str(en1))
+                basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 28, 1)  # ANALOG 7 -
+                # time.sleep(2)
+                basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 30,
+                                                                    en1)  # если 204 и 242 в одной посылке, то + 5
+                # time.sleep(2)
+                basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 27, 255)
+                # time.sleep(2)
+        except:
+            logger.write_log("Предварительная настройка не выполена", 0)
 
 class Commands_Window_OneWire_New_10(QtWidgets.QMainWindow):
     global saveOption
