@@ -280,6 +280,7 @@ class Commands_Window_OneWire_New_Analog(QtWidgets.QMainWindow):
         print("Чтение температурного кода")
         logger.write_log("Старт измерений", 0)
         temp_mit = mit.main_function_MIT(saveOption)
+        # temp_mit = [0, 0, 0]
         dict = {}
         for iterator_mk in range(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk') + 1):
             for i in range(32):
