@@ -2,6 +2,7 @@ import sys
 import time
 import micros_new_OneWire.math_new_micros_OneWire as mathNewOneWire
 import other.other_devices as other_devices
+import other.mit as mit
 import micros_chip
 import micros_new_OneWire.math_new_micros_OneWire as mathNewOneWire
 import micros_new_Analog.math_new_analog as mathAnalog
@@ -124,9 +125,9 @@ class Commands_Window_OneWire_New_Analog(QtWidgets.QMainWindow):
                 en1 = en[0] + 1 # EN
                 print(str(en[0]) + " _ " + str(en1))
                 basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 30, en1)  # если 204 и 242 в одной посылке, то + 5
-                # time.sleep(2)
+                time.sleep(2)
                 basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 39, 128)
-                # time.sleep(2)
+                time.sleep(2)
         except:
             logger.write_log("Запись EN не выполенно", 0)
 
@@ -278,37 +279,48 @@ class Commands_Window_OneWire_New_Analog(QtWidgets.QMainWindow):
     def startRead(self):
         print("Чтение температурного кода")
         logger.write_log("Старт измерений", 0)
-        temp_mit = input()
+        temp_mit = mit.main_function_MIT(saveOption)
         dict = {}
-        for i in range(32):
-            print("step = " + str(i))
-            time.sleep(0.5)
-            list_temp = []
-            # for iterator_mk in range(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk') + 1):
-            #     basic_commands_onewire.form_temp_cod_not_active(iterator_mk)
-            # time.sleep(0.9)
-            for iterator_mk in range(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk') + 1):
+        for iterator_mk in range(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk') + 1):
+            for i in range(32):
+                print(f'step = {i}; mk = {iterator_mk}')
+                # time.sleep(0.5)
+                list_temp = []
+                # for iterator_mk in range(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk') + 1):
+                #     basic_commands_onewire.form_temp_cod_not_active(iterator_mk)
+                # time.sleep(0.9)
+                # for iterator_mk in range(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk') + 1):
+                time.sleep(0.05)
                 temp_cod = basic_commands_onewire.read_temp_active(iterator_mk)
                 print(temp_cod)
+                if len(temp_cod) < 2:
+                    continue
                 if dict.get(iterator_mk) is None:
                     dict[iterator_mk] = [temp_cod[0] | (temp_cod[1] << 8)]
                 else:
                     dict.get(iterator_mk).append(temp_cod[0] | (temp_cod[1] << 8))
-                list_temp.append(temp_cod[0] | (temp_cod[1] << 8))
+                # list_temp.append(temp_cod[0] | (temp_cod[1] << 8))
         for iterator_mk in range(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk') + 1):
+            temp = 0
+            if 1 <= iterator_mk <= 6:
+                temp = temp_mit[0]
+            elif 7 <= iterator_mk <= 12:
+                temp = temp_mit[1]
+            elif 13 <= iterator_mk <= 16:
+                temp = temp_mit[2]
             list_temp = dict.get(iterator_mk)
             for i in range(len(list_temp)):
                 try:
                     list_temp.remove(65535)
                 except:
                     break
-            average_cod = round(list_temp.mean())
-            logger.write_log("Данные измерений при температуре " + str(temp_mit) + "; микросхема номер "
+            average_cod = round(sum(list_temp)/len(list_temp))
+            logger.write_log("Данные измерений при температуре " + str(temp) + "; микросхема номер "
                              + str(iterator_mk) + "; коды = min:" + str(min(list_temp)) + " ave_cod:" + str(average_cod)
                              + " max:" + str(max(list_temp)) + " len:" + str(len(list_temp))
                              + " list_temp: " + str(list_temp), 0)
             file_path_data = open('../data/' + str(iterator_mk) + '.txt', 'a')
-            file_path_data.write(str(temp_mit) + " " + str(average_cod) + "\n")
+            file_path_data.write(str(temp) + " " + str(average_cod) + "\n")
             file_path_data.close()
         print("Конец чтения температурного кода")
         logger.write_log("Конец измерений", 0)
@@ -338,12 +350,12 @@ class Commands_Window_OneWire_New_Analog(QtWidgets.QMainWindow):
                 en1 = en[0] + 4 # циклический режим
                 print(str(en[0]) + " _ " + str(en1))
                 basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 28, 1)  # ANALOG 7 -
-                # time.sleep(2)
+                time.sleep(2)
                 basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 30,
                                                                     en1)  # если 204 и 242 в одной посылке, то + 5
-                # time.sleep(2)
+                time.sleep(2)
                 basic_commands_onewire.write_mem_new_micros_OneWire(iterator_mk, 27, 255)
-                # time.sleep(2)
+                time.sleep(2)
         except:
             logger.write_log("Предварительная настройка не выполена", 0)
 

@@ -22,9 +22,9 @@
 ------
 *далее идут номера первой и последней мк
 firstMk 1
-lastMk 1
-comMIT 2
+lastMk 16
+comMIT 10
 firstMIT 1
-lastMIT 8
+lastMIT 3
 type_mk 6
 list_temperature -63 -40 -10 25 45 90 127

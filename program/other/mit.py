@@ -20,6 +20,7 @@ def main_function_MIT(save_options):
     ser.open()
     ser.isOpen()
     flag = False
+    list_port_mit = []
     for i in range(getattr(save_options, "first_mit"), getattr(save_options, "last_mit") + 1):
         list_port_mit.append(i)
     array_temperature = []
@@ -38,7 +39,6 @@ def main_function_MIT(save_options):
                     iterator += 1
                     if iterator >= list_port_mit[len(list_port_mit) - 1]:
                         iterator = 0
-                        print(main_temperature)
                         print(array_temperature)
                         if flag2:
                             print("Finish point")

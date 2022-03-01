@@ -44,6 +44,7 @@ def read_temp_active(number_mk):
     servis_method.write_commands(ser, claster, number, 166, 190)  # A6 BE
     servis_method.write_commands(ser, claster, number, 164, 9)  # A4 сообщить slave сколько байт считать надо будет
     servis_method.write_commands(ser, claster, number, 42, 0)  # 2A конец записи стека, выполнение
+    # time.sleep(0.2)
     temp_cod = servis_method.read_data_in_mk(ser, claster, number, 9, True)
     return temp_cod
 
@@ -198,5 +199,5 @@ def get_ser():
 
 
 # Данное место необходимо переделать
-# ser = servis_method.get_ser_com()
-ser = 12
+ser = servis_method.get_ser_com()
+# ser = 12
