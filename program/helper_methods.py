@@ -1,5 +1,6 @@
 import time
 import other.mit as mit
+import other.other_devices as other_devices
 import logger
 import basic_commands_onewire
 
@@ -40,3 +41,16 @@ def read_temp_and_write_in_file(saveOption):
         file_path_data = open('../data/' + str(iterator_mk) + '.txt', 'a')
         file_path_data.write(str(temp) + " " + str(average_cod) + "\n")
         file_path_data.close()
+
+def sleep_in_time(saveOption, temp):
+    while True:
+        flag = True
+        temp_mit = mit.main_function_MIT(saveOption)
+        print(f'Температура на МИТ {temp_mit[0]}, {temp_mit[1]}, {temp_mit[2]}, температура на SPEC {temp}')
+        for i in temp_mit:
+            if not (temp - 2) <= i <= (temp + 2):
+                flag = False
+                other_devices.work_spec(temp)
+                break
+        if flag:
+            break
