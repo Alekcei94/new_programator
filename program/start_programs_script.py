@@ -82,7 +82,7 @@ class Commands_Window_OneWire_New_Analog(QtWidgets.QMainWindow):
                 temp_cod = basic_commands_onewire.read_temp_active(iterator_mk)
                 temp = int(temp_cod[0]) | (int(temp_cod[1]) << 8)
                 list_temp.append("микросхема: " + str(iterator_mk) + "; COD: " + str(temp))
-                logger.write_log("чтение температурного кода в микросхеме " + str(iterator_mk) + "микросхема: " +
+                logger.write_log("чтение температурного кода в микросхеме " + str(iterator_mk) + " микросхема: " +
                                      str(iterator_mk) + "; COD: " + str(temp), 0)
             print(list_temp)
         except:
