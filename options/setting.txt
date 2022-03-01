@@ -23,7 +23,7 @@
 *далее идут номера первой и последней мк
 firstMk 1
 lastMk 16
-comMIT 10
+comMIT 5
 firstMIT 1
 lastMIT 3
 type_mk 6
