@@ -4,6 +4,7 @@ import micros_new_OneWire.math_new_micros_OneWire as mathNewOneWire
 import other.other_devices as other_devices
 import other.mit as mit
 import micros_chip
+import helper_methods
 import micros_new_OneWire.math_new_micros_OneWire as mathNewOneWire
 import micros_new_Analog.math_new_analog as mathAnalog
 import logger
@@ -237,52 +238,21 @@ class Commands_Window_OneWire_New_Analog(QtWidgets.QMainWindow):
         logger.write_log("Конец записи данных в микросхемы.", 0)
 
     def startRead(self):
-        print("Чтение температурного кода")
+        print("Старт измерений")
         logger.write_log("Старт измерений", 0)
-        temp_mit = mit.main_function_MIT(saveOption)
-        # temp_mit = [0, 0, 0]
-        dict = {}
-        for iterator_mk in range(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk') + 1):
-            for i in range(32):
-                print(f'step = {i}; mk = {iterator_mk}')
-                # time.sleep(0.5)
-                list_temp = []
-                # for iterator_mk in range(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk') + 1):
-                #     basic_commands_onewire.form_temp_cod_not_active(iterator_mk)
-                # time.sleep(0.9)
-                # for iterator_mk in range(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk') + 1):
-                time.sleep(0.05)
-                temp_cod = basic_commands_onewire.read_temp_active(iterator_mk)
-                print(temp_cod)
-                if len(temp_cod) < 2:
-                    continue
-                if dict.get(iterator_mk) is None:
-                    dict[iterator_mk] = [temp_cod[0] | (temp_cod[1] << 8)]
-                else:
-                    dict.get(iterator_mk).append(temp_cod[0] | (temp_cod[1] << 8))
-                # list_temp.append(temp_cod[0] | (temp_cod[1] << 8))
-        for iterator_mk in range(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk') + 1):
-            temp = 0
-            if 1 <= iterator_mk <= 6:
-                temp = temp_mit[0]
-            elif 7 <= iterator_mk <= 12:
-                temp = temp_mit[1]
-            elif 13 <= iterator_mk <= 16:
-                temp = temp_mit[2]
-            list_temp = dict.get(iterator_mk)
-            for i in range(len(list_temp)):
-                try:
-                    list_temp.remove(65535)
-                except:
-                    break
-            average_cod = round(sum(list_temp)/len(list_temp))
-            logger.write_log("Данные измерений при температуре " + str(temp) + "; микросхема номер "
-                             + str(iterator_mk) + "; коды = min:" + str(min(list_temp)) + " ave_cod:" + str(average_cod)
-                             + " max:" + str(max(list_temp)) + " len:" + str(len(list_temp))
-                             + " list_temp: " + str(list_temp), 0)
-            file_path_data = open('../data/' + str(iterator_mk) + '.txt', 'a')
-            file_path_data.write(str(temp) + " " + str(average_cod) + "\n")
-            file_path_data.close()
+        # TODO вставить логирование температур
+        list_temp_spec = [-60, -30, 0, 25, 50, 75, 100, 125]
+        other_devices.work_spec(-60)
+        for i in range(6):
+            print(f'Осталось {60 - i*10} минут, температура {list_temp_spec[0]}')
+            time.sleep(600)
+        helper_methods.read_temp_and_write_in_file(saveOption)
+        for temp_spec in list_temp_spec:
+            other_devices.work_spec(temp_spec)
+            for i in range(3):
+                print(f'Осталось {30 - i * 10} минут, температура {temp_spec}')
+                time.sleep(600)
+            helper_methods.read_temp_and_write_in_file(saveOption)
         print("Конец чтения температурного кода")
         logger.write_log("Конец измерений", 0)
 

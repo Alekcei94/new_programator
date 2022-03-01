@@ -1,4 +1,4 @@
-.idea/
+.idea/*
 program/__pycache__/
 data/*
 venv/*
