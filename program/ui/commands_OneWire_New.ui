@@ -33,7 +33,7 @@
     <property name="geometry">
      <rect>
       <x>30</x>
-      <y>80</y>
+      <y>70</y>
       <width>121</width>
       <height>51</height>
      </rect>
@@ -49,7 +49,7 @@
     <property name="geometry">
      <rect>
       <x>30</x>
-      <y>150</y>
+      <y>140</y>
       <width>121</width>
       <height>51</height>
      </rect>
@@ -62,7 +62,7 @@
     <property name="geometry">
      <rect>
       <x>30</x>
-      <y>220</y>
+      <y>210</y>
       <width>121</width>
       <height>51</height>
      </rect>
@@ -81,17 +81,18 @@
      </rect>
     </property>
     <property name="styleSheet">
-     <string notr="true">background-color: rgb(255, 183, 180);</string>
+     <string notr="true">background-color: rgb(255, 41, 209);</string>
     </property>
     <property name="text">
-     <string>старнт измерений</string>
+     <string>предваритальная
+ настройка</string>
     </property>
    </widget>
    <widget class="QPushButton" name="readTempButton">
     <property name="geometry">
      <rect>
       <x>250</x>
-      <y>80</y>
+      <y>70</y>
       <width>121</width>
       <height>51</height>
      </rect>
@@ -107,7 +108,7 @@
     <property name="geometry">
      <rect>
       <x>250</x>
-      <y>150</y>
+      <y>140</y>
       <width>121</width>
       <height>51</height>
      </rect>
@@ -123,7 +124,7 @@
     <property name="geometry">
      <rect>
       <x>250</x>
-      <y>220</y>
+      <y>210</y>
       <width>121</width>
       <height>51</height>
      </rect>
@@ -155,7 +156,7 @@
     <property name="geometry">
      <rect>
       <x>470</x>
-      <y>290</y>
+      <y>280</y>
       <width>121</width>
       <height>51</height>
      </rect>
@@ -171,7 +172,7 @@
     <property name="geometry">
      <rect>
       <x>470</x>
-      <y>220</y>
+      <y>210</y>
       <width>121</width>
       <height>51</height>
      </rect>

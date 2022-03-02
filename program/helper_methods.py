@@ -33,6 +33,24 @@ def read_temp_and_write_in_file(saveOption):
                 list_temp.remove(65535)
             except:
                 break
+
+        last_average = sum(list_temp) / len(list_temp)
+        index = None
+        while True:
+            flag = True
+            for i in list_temp:
+                average = sum_list(list_temp.index(i), list_temp)
+                if abs(average - last_average) > 7:
+                    index = list_temp.index(i)
+                    last_average = average
+                    logger.write_log("Данные измерений при температуре " + str(temp) + "; микросхема номер "
+                         + str(iterator_mk) + "; Удвлено значение = " + str(i),0)
+                    flag = False
+                    break
+            if flag:
+                break
+            list_temp.pop(index)
+
         average_cod = round(sum(list_temp) / len(list_temp))
         logger.write_log("Данные измерений при температуре " + str(temp) + "; микросхема номер "
                          + str(iterator_mk) + "; коды = min:" + str(min(list_temp)) + " ave_cod:" + str(average_cod)
@@ -54,3 +72,14 @@ def sleep_in_time(saveOption, temp):
                 break
         if flag:
             break
+
+def action_check():
+    check = input("Подтвердите действие." + "\n")
+    if check == "y":
+        return True
+    return False
+
+def sum_list(iterator, y):
+    new_x = list(y)
+    new_x.pop(iterator)
+    return sum(new_x)/len(new_x)

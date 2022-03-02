@@ -119,6 +119,9 @@ class Commands_Window_OneWire_New_Analog(QtWidgets.QMainWindow):
 
     def writeEN(self):
         try:
+            if not helper_methods.action_check():
+                print("Отказ выполнения")
+                return
             logger.write_log("Запись EN", 0)
             for iterator_mk in range(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk') + 1):
                 print(f'микросхема {iterator_mk}')
@@ -131,6 +134,9 @@ class Commands_Window_OneWire_New_Analog(QtWidgets.QMainWindow):
             logger.write_log("Запись EN не выполенно", 0)
 
     def writeMem(self):
+        if not helper_methods.action_check():
+            print("Отказ выполнения")
+            return
         list_chip = []
         logger.write_log("Запись памяти", 0)
         print("Запись памяти")
@@ -255,6 +261,9 @@ class Commands_Window_OneWire_New_Analog(QtWidgets.QMainWindow):
         logger.write_log("Конец измерений", 0)
 
     def write3V(self):
+        if not helper_methods.action_check():
+            print("Отказ выполнения")
+            return
         print(f'Перевод микросхем в 3.3 Вольта')
         for iterator_mk in range(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk') + 1):
             logger.write_log("Перевод микросхемы " + str(iterator_mk) + "в 3.3 Вольта", 0)
@@ -270,6 +279,9 @@ class Commands_Window_OneWire_New_Analog(QtWidgets.QMainWindow):
 
     def presetting(self):
         try:
+            if not helper_methods.action_check():
+                print("Отказ выполнения")
+                return
             logger.write_log("Предварительная настройка", 0)
             print("Предварительная настройка")
             for iterator_mk in range(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk') + 1):
