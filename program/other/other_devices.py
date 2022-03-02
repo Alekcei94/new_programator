@@ -25,6 +25,7 @@ def work_spec(temperature):
     my_instrument = rm.open_resource(lst[0])
     my_instrument.write('01,MODE,CONSTANT')
     my_instrument.write('01,TEMP,S' + str(temperature))
+    print("Установка температуры в SPEC")
 
 
 # my_instrument.write('01,TEMP,S129')

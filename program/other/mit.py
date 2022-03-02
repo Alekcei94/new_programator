@@ -15,6 +15,7 @@ def get_temperature_with_mit(lineBinary):
 
 
 def main_function_MIT(save_options):
+    print("Запуск считывания с MIT")
     ser = serial.Serial('COM' + str(getattr(save_options, "com_port_mit")), 9600, timeout=0)
     ser.close()
     ser.open()
