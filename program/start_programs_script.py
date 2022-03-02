@@ -250,6 +250,7 @@ class Commands_Window_OneWire_New_Analog(QtWidgets.QMainWindow):
                 print(f'Осталось {20 - i * 10} минут, температура {temp_spec}')
                 time.sleep(600)
             helper_methods.read_temp_and_write_in_file(saveOption)
+            logger.write_log("", 0)
         print("Конец чтения температурного кода")
         logger.write_log("Конец измерений", 0)
 
