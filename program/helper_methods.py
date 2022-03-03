@@ -44,7 +44,7 @@ def read_temp_and_write_in_file(saveOption):
                     index = list_temp.index(i)
                     last_average = average
                     logger.write_log("Данные измерений при температуре " + str(temp) + "; микросхема номер "
-                         + str(iterator_mk) + "; Удвлено значение = " + str(i),0)
+                         + str(iterator_mk) + "; Удвлено значение = " + str(i), 0)
                     flag = False
                     break
             if flag:
