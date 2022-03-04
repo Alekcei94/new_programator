@@ -62,7 +62,7 @@ class Commands_Window_OneWire_New_Analog(QtWidgets.QMainWindow):
 
     def workVdd(self):
         print('\n' + "Производиться управлене питанием, ожидайте.")
-        if not servis_method.all_vdd(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk'), saveOption):
+        if not servis_method.all_vdd(saveOption):
             print('\n' + "Не удалось выполнить настройку питания. Проверте источник напряжения.")
         else:
             if getattr(saveOption, "voltage_state"):
@@ -75,16 +75,17 @@ class Commands_Window_OneWire_New_Analog(QtWidgets.QMainWindow):
         try:
             print("Чтение температурного кода.")
             logger.write_log("Чтение температурного кода.", 0)
-            for iterator_mk in range(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk') + 1):
+            list_IC = getattr(saveOption, 'list_IC')
+            for iterator_mk in list_IC:
                 basic_commands_onewire.form_temp_cod_not_active(iterator_mk)
                 logger.write_log("Формирование температурного кода в микросхеме " + str(iterator_mk), 0)
             time.sleep(0.5)
-            for iterator_mk in range(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk') + 1):
+            for iterator_mk in list_IC:
                 temp_cod = basic_commands_onewire.read_temp_active(iterator_mk)
                 temp = int(temp_cod[0]) | (int(temp_cod[1]) << 8)
                 list_temp.append("микросхема: " + str(iterator_mk) + "; COD: " + str(temp))
-                logger.write_log("чтение температурного кода в микросхеме " + str(iterator_mk) + " микросхема: " +
-                                     str(iterator_mk) + "; COD: " + str(temp), 0)
+                logger.write_log("чтение температурного кода в микросхеме " + str(iterator_mk) + " микросхема: "
+                                    + str(iterator_mk) + "; COD: " + str(temp), 0)
             print(list_temp)
         except:
             logger.write_log("Произошла ошибка в чтении температурного кода.", 0)
@@ -94,7 +95,8 @@ class Commands_Window_OneWire_New_Analog(QtWidgets.QMainWindow):
         try:
             logger.write_log("Чтение памяти микросхем", 0)
             print("Чтение памяти микросхем")
-            for iterator_mk in range(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk') + 1):
+            list_IC = getattr(saveOption, 'list_IC')
+            for iterator_mk in list_IC:
                 logger.write_log("Чтение памяти микросхемы " + str(iterator_mk), 0)
                 print(f' Микросхема: {iterator_mk}')
                 mem_str = ""
@@ -123,7 +125,8 @@ class Commands_Window_OneWire_New_Analog(QtWidgets.QMainWindow):
                 print("Отказ выполнения")
                 return
             logger.write_log("Запись EN", 0)
-            for iterator_mk in range(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk') + 1):
+            list_IC = getattr(saveOption, 'list_IC')
+            for iterator_mk in list_IC:
                 print(f'микросхема {iterator_mk}')
                 en = basic_commands_onewire.read_mem_new_micros_OneWire(iterator_mk, 30)
                 en1 = en[0] + 1 # EN
@@ -140,7 +143,8 @@ class Commands_Window_OneWire_New_Analog(QtWidgets.QMainWindow):
         list_chip = []
         logger.write_log("Запись памяти", 0)
         print("Запись памяти")
-        for iterator_mk in range(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk') + 1):
+        list_IC = getattr(saveOption, 'list_IC')
+        for iterator_mk in list_IC:
             logger.write_log("Запись памяти в микросхему " + str(iterator_mk), 0)
             print(f'Микросхема : {iterator_mk}')
             # new_chip = micros_chip.Chip(iterator_mk)
@@ -246,9 +250,11 @@ class Commands_Window_OneWire_New_Analog(QtWidgets.QMainWindow):
     def startRead(self):
         print("Старт измерений")
         logger.write_log("Старт измерений", 0)
-        # TODO вставить логирование температур
-        list_temp_spec = [-60, -30, 0, 25, 50, 75, 100, 125]
-        for iterator in range(len(list_temp_spec)):
+        list_IC = getattr(saveOption, 'list_IC')
+        list_temp_spec = getattr(saveOption, 'list_temperature')
+        print(f'Список температур {list_temp_spec}')
+        logger.write_log("Список температур " + str(list_temp_spec), 0)
+        for iterator in list_IC:
             temp_spec = list_temp_spec[iterator]
             other_devices.work_spec(temp_spec)
             helper_methods.sleep_in_time(saveOption, temp_spec)
@@ -265,7 +271,8 @@ class Commands_Window_OneWire_New_Analog(QtWidgets.QMainWindow):
             print("Отказ выполнения")
             return
         print(f'Перевод микросхем в 3.3 Вольта')
-        for iterator_mk in range(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk') + 1):
+        list_IC = getattr(saveOption, 'list_IC')
+        for iterator_mk in list_IC:
             logger.write_log("Перевод микросхемы " + str(iterator_mk) + "в 3.3 Вольта", 0)
             print(f'Перевод микросхемы {iterator_mk} в 3.3 Вольта')
             en = basic_commands_onewire.read_mem_new_micros_OneWire(iterator_mk, 30)
@@ -284,7 +291,8 @@ class Commands_Window_OneWire_New_Analog(QtWidgets.QMainWindow):
                 return
             logger.write_log("Предварительная настройка", 0)
             print("Предварительная настройка")
-            for iterator_mk in range(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk') + 1):
+            list_IC = getattr(saveOption, 'list_IC')
+            for iterator_mk in list_IC:
                 print(f'микросхема {iterator_mk}')
                 en = basic_commands_onewire.read_mem_new_micros_OneWire(iterator_mk, 30)
                 en1 = en[0] + 4 # циклический режим
@@ -301,6 +309,8 @@ class Commands_Window_OneWire_New_10(QtWidgets.QMainWindow):
 
     def __init__(self):
         print("Micros 10")
+        print("Данная программа временно не работает!!")
+        exit(0)
         super(Commands_Window_OneWire_New_10, self).__init__()
         uic.loadUi('./ui/commands_OneWire_New.ui', self)
         self.show()

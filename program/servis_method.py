@@ -203,13 +203,15 @@ def read_data_in_mk(ser, claster, number, number_of_bytes, read_flag):
 
 # Управление питанием
 # Если приходит Ложь, включить питание, иначе включить
-def all_vdd(first_mk, last_mk, save_object):
+def all_vdd(save_object):
     ser = getattr(save_object, "ser")
     switcher = getattr(save_object, "voltage_state")
-    claster_first, number_first = search_claster_and_number(first_mk)
-    claster_last, number_last = search_claster_and_number(last_mk)
-    # claster_first = 16
-    # claster_last = 16
+    list_IC = getattr(save_object, 'list_IC')
+    claster_list = []
+    for number_ic in list_IC:
+        claster, number = search_claster_and_number(number_ic)
+        if not claster in claster_list:
+            claster_list.append(claster)
     try:
         if not switcher:
             logger.write_log("Включение питания.", 0)
@@ -222,8 +224,9 @@ def all_vdd(first_mk, last_mk, save_object):
             logger.write_log("Вылючение питания.", 0)
             commands = 160
             switcher = False
-        for iterator in range(claster_first, claster_last + 1, 16):
-            write_commands(ser, iterator, 10, commands, 0)
+        print(claster_list)
+        for claster in claster_list:
+            write_commands(ser, claster, 10, commands, 0)
         setattr(save_object, "voltage_state", switcher)
         logger.write_log("Управление питанием выполнено.", 0)
         return True

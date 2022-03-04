@@ -20,9 +20,9 @@ def main_function_MIT(save_options):
     ser.open()
     ser.isOpen()
     flag = False
-    list_port_mit = []
-    for i in range(getattr(save_options, "first_mit"), getattr(save_options, "last_mit") + 1):
-        list_port_mit.append(i)
+    list_port_mit = getattr(save_options, "list_of_sensors_MIT8")
+    # for i in range(getattr(save_options, "first_mit"), getattr(save_options, "last_mit") + 1):
+    #     list_port_mit.append(i)
     array_temperature = []
     iterator = list_port_mit[0]
     flag2 = False
@@ -61,7 +61,7 @@ def check_MIT(main_temperature, array_temperature):
     return True
 
 
-def form_array_list_port():
+def form_array_list_port(save_options):
     file_text = open('../configuration/map_MIT_and_chip.txt', 'r')
     hash_map_number_chip_and_port_mit = {}
     for line in file_text:
@@ -69,9 +69,7 @@ def form_array_list_port():
         hash_map_number_chip_and_port_mit[int(number_chip_and_number_port_mit[0])] = int(
             number_chip_and_number_port_mit[1])
     file_text.close()
-    list_port_mit = []
-    for i in range(getattr(save_options, "first_mit"), getattr(save_options, "last_mit") + 1):
-        list_port_mit.append(i)
+    list_port_mit = list_port_mit = getattr(save_options, "list_of_sensors_MIT8")
     return list_port_mit
 
 
