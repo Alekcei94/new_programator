@@ -254,8 +254,7 @@ class Commands_Window_OneWire_New_Analog(QtWidgets.QMainWindow):
         list_temp_spec = getattr(saveOption, 'list_temperature')
         print(f'Список температур {list_temp_spec}')
         logger.write_log("Список температур " + str(list_temp_spec), 0)
-        for iterator in list_IC:
-            temp_spec = list_temp_spec[iterator]
+        for temp_spec in list_temp_spec:
             other_devices.work_spec(temp_spec)
             helper_methods.sleep_in_time(saveOption, temp_spec)
             for i in range(2):

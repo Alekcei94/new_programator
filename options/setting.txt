@@ -21,8 +21,8 @@
 16:0|0|0
 ------
 *   далее идут номера первой и последней мк
-IC_list| 1-16
-comMIT| 5
+IC_list| 1-15
+comMIT| 7
 list_of_sensors_MIT8| 1-3
 type_mk| 6
 list_temperature| -60, -30, 0, 25, 50, 75, 100, 125
