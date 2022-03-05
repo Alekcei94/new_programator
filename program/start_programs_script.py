@@ -241,13 +241,13 @@ class Commands_Window_OneWire_New_Analog(QtWidgets.QMainWindow):
         print("Старт измерений")
         logger.write_log("Старт измерений", 0)
         # TODO вставить логирование температур
-        list_temp_spec = [-60, 0, 25, 50, 75, 100, 125]
+        list_temp_spec = [-60, 30, 0, 25, 50, 75, 100, 125]
         # other_devices.work_spec(-60)
         # for i in range(6):
         #     print(f'Осталось {60 - i*10} минут, температура {list_temp_spec[0]}')
         #     time.sleep(600)
         # helper_methods.read_temp_and_write_in_file(saveOption)
-        for iterator in range(1, len(list_temp_spec)):
+        for iterator in range(len(list_temp_spec)):
             temp_spec = list_temp_spec[iterator]
             other_devices.work_spec(temp_spec)
             helper_methods.sleep_in_time(saveOption, temp_spec)
