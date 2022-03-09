@@ -6,8 +6,9 @@ import basic_commands_onewire
 
 def read_temp_and_write_in_file(saveOption):
     temp_mit = mit.main_function_MIT(saveOption)
+    list_IC = getattr(saveOption, 'list_IC')
     dict = {}
-    for iterator_mk in range(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk') + 1):
+    for iterator_mk in list_IC:
         for i in range(32):
             print(f'step = {i}; mk = {iterator_mk}')
             time.sleep(0.05)
@@ -19,7 +20,7 @@ def read_temp_and_write_in_file(saveOption):
                 dict[iterator_mk] = [temp_cod[0] | (temp_cod[1] << 8)]
             else:
                 dict.get(iterator_mk).append(temp_cod[0] | (temp_cod[1] << 8))
-    for iterator_mk in range(getattr(saveOption, 'first_mk'), getattr(saveOption, 'last_mk') + 1):
+    for iterator_mk in list_IC:
         temp = 0
         if 1 <= iterator_mk <= 6:
             temp = temp_mit[0]
@@ -33,7 +34,9 @@ def read_temp_and_write_in_file(saveOption):
                 list_temp.remove(65535)
             except:
                 break
-
+        if len(list_temp) == 0:
+            logger.write_log("Проблемы в микросхеме номер: " + str(iterator_mk) + ", длина массива измеренных значений равна 0", 0)
+            continue
         last_average = sum(list_temp) / len(list_temp)
         index = None
         while True:
@@ -44,7 +47,7 @@ def read_temp_and_write_in_file(saveOption):
                     index = list_temp.index(i)
                     last_average = average
                     logger.write_log("Данные измерений при температуре " + str(temp) + "; микросхема номер "
-                         + str(iterator_mk) + "; Удвлено значение = " + str(i), 0)
+                         + str(iterator_mk) + "; Удалено значение = " + str(i), 0)
                     flag = False
                     break
             if flag:

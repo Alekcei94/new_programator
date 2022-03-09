@@ -144,6 +144,7 @@ class Commands_Window_OneWire_New_Analog(QtWidgets.QMainWindow):
         logger.write_log("Запись памяти", 0)
         print("Запись памяти")
         list_IC = getattr(saveOption, 'list_IC')
+        print(list_IC)
         for iterator_mk in list_IC:
             logger.write_log("Запись памяти в микросхему " + str(iterator_mk), 0)
             print(f'Микросхема : {iterator_mk}')
