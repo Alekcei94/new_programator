@@ -1,19 +1,38 @@
-import os
-import shutil
-from datetime import datetime
 import basic_commands_onewire
 
+
 class SaveOption:
-    voltage_state = False  # Сосотояние наличиние питания на мк Ложь - нету, Истина - есть.
-    type_mk = 1  # тип микросхемы. 1 - старый OneWire; 2 - старый SPI; 3 - новый OneWire_10; 4 - новый SPI; 5 - новый I2C; 6 - новый OneWire_ANALOG
+    # Сосотояние наличиние питания на мк Ложь - нету, Истина - есть.
+    voltage_state = False
+
+    # тип микросхемы. 1 - старый OneWire; 2 - старый SPI; 3 - новый OneWire_10; 4 - новый SPI; 5 - новый
+    # I2C; 6 - новый OneWire_ANALOG
+    type_mk = 1
+
+    # Лист устарновленных VDD во всех кластерах. 5 - 5 Вольт, 3 - 3.3 вольта.
     list_voltage = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
-    list_interface_mk = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]  # 1 - OneWire; 2 - SPI: 3 - I2C
-    list_type_mk = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] # тип микросхемы. 1 - старый OneWire; 2 - старый SPI; 3 - новый OneWire_10; 4 - новый SPI; 5 - новый I2C; 6 - новый OneWire_ANALOG
-    list_temperature = []  # Лист температур для измерения в SPEC
-    com_port_mit = 1  # Номер COM порта MIT8
-    list_IC = []  # Лист используемых микросхе
-    list_of_sensors_MIT8 = []  # Список датчиков MIT8
-    path = "../configuration/save_config.txt"  # Путь до файла настроек
+
+    # 1 - OneWire; 2 - SPI: 3 - I2C
+    list_interface_mk = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+
+    # тип микросхемы. 1 - старый OneWire; 2 - старый SPI; 3 - новый OneWire_10; 4 - новый SPI; 5
+    # - новый I2C; 6 - новый OneWire_ANALOG
+    list_type_mk = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+
+    # Лист температур для измерения в SPEC
+    list_temperature = []
+
+    # Номера используемого COM порта MIT8
+    com_port_mit = 1
+
+    # Лист используемых микросхем
+    list_IC = []
+
+    # Список датчиков MIT8
+    list_of_sensors_MIT8 = []
+
+    # Путь до файла настроек
+    path = "../configuration/save_config.txt"
     ser = 0
 
     __instance = None
@@ -30,7 +49,6 @@ class SaveOption:
         if not cls.__instance:
             cls.__instance = Singleton()
         return cls.__instance
-
 
     def update(self):
         file_setting = open('../options/setting.txt', 'r')
@@ -54,6 +72,7 @@ class SaveOption:
             elif "type_mk" in line:
                 self.type_mk = int(line.split("|")[1])
             elif "list_temperature" in line:
+                self.list_temperature = []
                 for temp in line.split("|")[1].replace(" ", "").split(","):
                     self.list_temperature.append(int(temp))
         file_setting.close()

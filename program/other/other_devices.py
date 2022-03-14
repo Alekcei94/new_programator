@@ -50,15 +50,15 @@ def work_termostrim(temperature):
     time.sleep(5)
 
 
-def block_check_current_chip(i):
-    global max_current
-    name_source = get_number_source()
-    if "1" in str(name_source):
-        current = read_current_yokogawa()
-    elif "2" in str(name_source):
-        current = read_current_regol()
-    else:
-        print("ERROR NOT WORK CONNECTION SOURCE!")
-    if current >= max_current:
-        print("ERROR current MAX limit " + str(i) + " " + '\n')
-    return current
+# def block_check_current_chip(i):
+#     global max_current
+#     name_source = get_number_source()
+#     if "1" in str(name_source):
+#         current = read_current_yokogawa()
+#     elif "2" in str(name_source):
+#         current = read_current_regol()
+#     else:
+#         print("ERROR NOT WORK CONNECTION SOURCE!")
+#     if current >= max_current:
+#         print("ERROR current MAX limit " + str(i) + " " + '\n')
+#     return current

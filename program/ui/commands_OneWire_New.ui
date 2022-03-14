@@ -39,7 +39,7 @@
      </rect>
     </property>
     <property name="styleSheet">
-     <string notr="true"/>
+     <string notr="true">background-color: #ff5a0e;</string>
     </property>
     <property name="text">
      <string>Питание</string>
