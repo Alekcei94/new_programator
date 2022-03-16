@@ -2,6 +2,7 @@ import other.mit as mit
 import other.other_devices as other_devices
 import servis_method
 
+
 # Метод ожидания выхода SPEC в нужную температуру.
 # TODO тут ли метод?
 def sleep_in_time(saveOption, temp):
@@ -17,6 +18,7 @@ def sleep_in_time(saveOption, temp):
         if flag:
             break
 
+
 # Метод подтверждения действий.
 def action_check():
     check = input("Подтвердите действие." + "\n")
@@ -24,6 +26,7 @@ def action_check():
         return True
     print("Отказ выполнения")
     return False
+
 
 # Метод проверки включенного питания. необходимо передалть. Или не включать из метода питание, или добавить
 # изменение цвета кнопки
@@ -38,6 +41,15 @@ def power_check(save_object):
             print("Не удалось включить питание микроконтролера")
             return False
     return True
+
+
+# Метод проверка включения умного режима работы программы.
+def smart_mode_check(save_object, object_chip):
+    switcher = getattr(save_object, "smart_operating_mode")
+    if switcher == 1:
+        return True
+    return False
+
 
 # нахождение среднеарфмитиечкого значения листа, за исключением элемента на месте iterator.
 def sum_list(iterator, y):

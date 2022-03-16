@@ -5,6 +5,11 @@ class SaveOption:
     # Сосотояние наличиние питания на мк Ложь - нету, Истина - есть.
     voltage_state = False
 
+    # Режим умного работы программы. 1 - включен, 0 - выключен.
+    # Данный режим не позволяет случайно выбрать не то действие.Необходимо строго выполнять последовательность действий.
+    # TODO оставить возможность только из кода или оставить возможость управлять этим через файл????
+    smart_operating_mode = 0
+
     # тип микросхемы. 1 - старый OneWire; 2 - старый SPI; 3 - новый OneWire_10; 4 - новый SPI; 5 - новый
     # I2C; 6 - новый OneWire_ANALOG
     type_mk = 1
@@ -75,6 +80,11 @@ class SaveOption:
                 self.list_temperature = []
                 for temp in line.split("|")[1].replace(" ", "").split(","):
                     self.list_temperature.append(int(temp))
+            elif "smart_operating_mode" in line:
+                self.smart_operating_mode = int(line.split("|")[1])
+                if self.smart_operating_mode != 0 and self.smart_operating_mode != 1:
+                    print(f"Неверно настроен параметр: smart_operating_mode = {self.smart_operating_mode}")
+                    exit(0)
         file_setting.close()
 
     # Преобразует строки типа "IC_list 1, 3-8" в лист типа int вида [1,3,4,5,6,7,8]
