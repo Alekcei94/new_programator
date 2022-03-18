@@ -1,4 +1,15 @@
 import basic_commands_onewire
+import Micros_chip
+
+instance = None
+
+
+def getInstance():
+    global instance
+    if instance is None:
+        instance = SaveOption()
+        instance.form_list_mk_obj()
+    return instance
 
 
 class SaveOption:
@@ -7,12 +18,7 @@ class SaveOption:
 
     # Режим умного работы программы. 1 - включен, 0 - выключен.
     # Данный режим не позволяет случайно выбрать не то действие.Необходимо строго выполнять последовательность действий.
-    # TODO оставить возможность только из кода или оставить возможость управлять этим через файл????
     smart_operating_mode = 0
-
-    # тип микросхемы. 1 - старый OneWire; 2 - старый SPI; 3 - новый OneWire_10; 4 - новый SPI; 5 - новый
-    # I2C; 6 - новый OneWire_ANALOG
-    type_mk = 1
 
     # Лист устарновленных VDD во всех кластерах. 5 - 5 Вольт, 3 - 3.3 вольта.
     list_voltage = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
@@ -40,20 +46,15 @@ class SaveOption:
     path = "../configuration/save_config.txt"
     ser = 0
 
-    __instance = None
+    list_mk = []
 
     def __init__(self):
-        if not SaveOption.__instance:
-            self.update()
-        else:
-            self.getInstance()
-            self.update()
+        self.update()
 
-    @classmethod
-    def getInstance(cls):
-        if not cls.__instance:
-            cls.__instance = Singleton()
-        return cls.__instance
+
+    def form_list_mk_obj(self):
+        for iterator in self.list_IC:
+            self.list_mk.append(Micros_chip.Chip(iterator))
 
     def update(self):
         file_setting = open('../options/setting.txt', 'r')
@@ -74,8 +75,6 @@ class SaveOption:
                 self.com_port_mit = int(line.split("|")[1].replace(" ", ""))
             elif "list_of_sensors_MIT8" in line:
                 self.list_of_sensors_MIT8 = self.forming_a_list_from_a_string(line.split("|"))
-            elif "type_mk" in line:
-                self.type_mk = int(line.split("|")[1])
             elif "list_temperature" in line:
                 self.list_temperature = []
                 for temp in line.split("|")[1].replace(" ", "").split(","):

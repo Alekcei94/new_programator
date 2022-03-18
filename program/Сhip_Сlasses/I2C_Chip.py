@@ -1,45 +1,45 @@
+import program.logger as logger
 
 class I2C_Chip:
-
-    def __init__(self):
-        # TODO реализовать адекватный конструктор
-        print("Объект создан")
-
-    def workVdd(self):
-        print("Данная функция пока недоступна")
+    type = 12
 
 
-    def readTemp(self):
-        print("Данная функция пока недоступна")
+    # def workVdd(self):
+    #     print("Данная функция пока недоступна")
 
+    def readTemp(self, iterator_mk):
+        logger.write_log("Чтение температурного кода в микросхеме " + str(iterator_mk) + " микросхема: "
+                         + str(iterator_mk) + "; Данная функция пока недоступна ", 0)
+        return "Микросхема: " + str(iterator_mk) + "; Данная функция пока недоступна "
 
-    def readMem(self):
-        print("Данная функция пока недоступна")
+    def readMem(self, iterator_mk):
+        logger.write_log("Чтение памяти в микросхеме: " + str(iterator_mk) + "; Данная функция пока не доступна", 0)
+        print(f"Чтение памяти в микросхеме: {iterator_mk}; Данная функция пока не доступна")
 
+    def readID(self, iterator_mk):
+        logger.write_log("Чтение адреса в микросхеме: " + str(iterator_mk) + "; Данная функция пока не доступна", 0)
+        # print(f"Чтение адреса в микросхеме {iterator_mk} Данная функция пока не доступна")
+        return "Чтение адреса в микросхеме: " + str(iterator_mk) + "; Данная функция пока не доступна"
 
-    def readID(self):
-        print("Данная функция пока недоступна")
+    def writeEN(self, iterator_mk):
+        logger.write_log("Запись EN в микросхеме: " + str(iterator_mk) + "; Данная функция пока не доступна", 0)
+        print(f"Запись EN в микросхеме: {iterator_mk}; Данная функция пока не доступна")
 
+    def writeMem(self, iterator_mk):
+        logger.write_log("Запись памяти в микросхеме: " + str(iterator_mk) + "; Данная функция пока не доступна", 0)
+        print(f"Запись памяти в микросхеме: {iterator_mk}; Данная функция пока не доступна")
 
-    def writeEN(self):
-        print("Данная функция пока недоступна")
+    def startRead(self, iterator_mk):
+        logger.write_log("Данная функция пока не доступна", 0)
+        print(f"Данная функция пока не доступна")
 
+    def write3V(self, iterator_mk):
+        logger.write_log("Перевод микросхемы: " + str(iterator_mk) + " на напряжение питания 3V", 0)
+        print(f"Перевод микросхемы: {iterator_mk} на напряжение питания 3V")
 
-    def writeMem(self):
-        print("Данная функция пока недоступна")
+    # def saveArchive(self):
+    #     print("Данная функция пока недоступна")
 
-
-    def startRead(self):
-        print("Данная функция пока недоступна")
-
-
-    def write3V(self):
-        print("Данная функция пока недоступна")
-
-
-    def saveArchive(self):
-        print("Данная функция пока недоступна")
-
-
-    def presetting(self):
-        print("Данная функция пока недоступна")
+    def presetting(self, iterator_mk):
+        logger.write_log("Предварительная настройка микросхемы: " + str(iterator_mk), 0)
+        print(f"Предварительная настройка микросхемы: {iterator_mk}")

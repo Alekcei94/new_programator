@@ -1,6 +1,7 @@
 import time
-
 import serial
+
+import program.other.other_devices as other_devices
 
 
 # GET TEMPERATURE WITH MIT8
@@ -49,34 +50,48 @@ def main_function_MIT(save_options):
     return array_temperature
 
 
-def form_main_array(main_temperature, array_temperature):
-    for i in range(len(main_temperature)):
-        main_temperature[i] = array_temperature[i]
-    return main_temperature
+# Метод ожидания выхода SPEC в нужную температуру.
+def sleep_in_time(saveOption, temp):
+    while True:
+        flag = True
+        temp_mit = main_function_MIT(saveOption)
+        print(f'Температура на датчиках МИТ {temp_mit}, температура на SPEC {temp}')
+        for i in temp_mit:
+            if not (temp - 2) <= i <= (temp + 2):
+                flag = False
+                other_devices.work_spec(temp)
+                break
+        if flag:
+            break
+
+# def form_main_array(main_temperature, array_temperature):
+#     for i in range(len(main_temperature)):
+#         main_temperature[i] = array_temperature[i]
+#     return main_temperature
+#
+#
+# def check_MIT(main_temperature, array_temperature):
+#     for i in range(len(main_temperature)):
+#         if round(main_temperature[i], 1) != round(array_temperature[i], 1):
+#             return False
+#     return True
 
 
-def check_MIT(main_temperature, array_temperature):
-    for i in range(len(main_temperature)):
-        if round(main_temperature[i], 1) != round(array_temperature[i], 1):
-            return False
-    return True
+# def form_array_list_port(save_options):
+#     file_text = open('../configuration/map_MIT_and_chip.txt', 'r')
+#     hash_map_number_chip_and_port_mit = {}
+#     for line in file_text:
+#         number_chip_and_number_port_mit = line.split(':')
+#         hash_map_number_chip_and_port_mit[int(number_chip_and_number_port_mit[0])] = int(
+#             number_chip_and_number_port_mit[1])
+#     file_text.close()
+#     list_port_mit = list_port_mit = getattr(save_options, "list_of_sensors_MIT8")
+#     return list_port_mit
 
 
-def form_array_list_port(save_options):
-    file_text = open('../configuration/map_MIT_and_chip.txt', 'r')
-    hash_map_number_chip_and_port_mit = {}
-    for line in file_text:
-        number_chip_and_number_port_mit = line.split(':')
-        hash_map_number_chip_and_port_mit[int(number_chip_and_number_port_mit[0])] = int(
-            number_chip_and_number_port_mit[1])
-    file_text.close()
-    list_port_mit = list_port_mit = getattr(save_options, "list_of_sensors_MIT8")
-    return list_port_mit
-
-
-def get_temperature_in_chip_on_MIT(array_temperature, port):
-    file = open('../configuration/map_MIT_and_chip.txt', 'r')
-    for line in file:
-        if int(line.split(':')[0]) == port:
-            return int(line.split(':')[1]) - 1
-    return 999
+# def get_temperature_in_chip_on_MIT(array_temperature, port):
+#     file = open('../configuration/map_MIT_and_chip.txt', 'r')
+#     for line in file:
+#         if int(line.split(':')[0]) == port:
+#             return int(line.split(':')[1]) - 1
+#     return 999
