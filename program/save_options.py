@@ -1,15 +1,16 @@
 import basic_commands_onewire
 import Micros_chip
 
-instance = None
+_instance = None
 
 
 def getInstance():
-    global instance
-    if instance is None:
-        instance = SaveOption()
-        instance.form_list_mk_obj()
-    return instance
+    global _instance
+    if _instance is None:
+        _instance = SaveOption()
+        _instance.form_list_mk_obj()
+        _instance.form_list_mk_obj()
+    return _instance
 
 
 class SaveOption:
@@ -44,13 +45,15 @@ class SaveOption:
 
     # Путь до файла настроек
     path = "../configuration/save_config.txt"
+
+    map_chip_and_MIT = {}
+    # Номер COM порта программатора
     ser = 0
 
     list_mk = []
 
     def __init__(self):
         self.update()
-
 
     def form_list_mk_obj(self):
         for iterator in self.list_IC:
@@ -99,3 +102,9 @@ class SaveOption:
                 list_mk.append(number_mk)
         list_mk = [int(i) for i in list_mk]
         return list_mk
+
+    # Счтатать карту связи номера микросхемы с датчиком MIT. Необходимо для измерения.
+    def form_map_chip_and_MIT(self):
+        file = open("../options/map_MIT_and_chip.txt", 'r')
+        for line in file:
+            self.map_chip_and_MIT[int(line.split(":")[0])] = int(line.split(":")[1])

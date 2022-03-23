@@ -1,6 +1,7 @@
 import datetime
 import os
 import shutil
+from PyQt5.QtWidgets import QMessageBox
 
 
 # Сохранение данных в архив
@@ -42,7 +43,6 @@ def action_check():
 def power_check(save_object):
     switcher = getattr(save_object, "voltage_state")
     if not switcher:
-        print("Питание микроконтролера отклюено. \nПожалуйста включите питание")
         return False
     return True
 

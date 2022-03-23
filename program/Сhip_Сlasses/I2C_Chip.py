@@ -43,3 +43,6 @@ class I2C_Chip:
     def presetting(self, iterator_mk):
         logger.write_log("Предварительная настройка микросхемы: " + str(iterator_mk), 0)
         print(f"Предварительная настройка микросхемы: {iterator_mk}")
+
+    def read_temp_and_write_in_file(self, iterator_mk):
+        print("Не работает")

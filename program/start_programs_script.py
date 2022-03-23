@@ -1,7 +1,7 @@
 import sys
 import time
 from PyQt5 import QtWidgets, uic
-from PyQt5.QtWidgets import QApplication
+from PyQt5.QtWidgets import QApplication, QMessageBox
 
 import program.logger as logger
 import program.servis_method as servis_method
@@ -47,29 +47,29 @@ class Commands_Window(QtWidgets.QMainWindow):
 
     # Реализация данного метода есть во всех классах типов микросхем. В случае изменения включения питания переделать.
     def workVdd(self):
-        print('\n' + "Производится управление питанием, ожидайте.")
+        print("\nПроизводится управление питанием, ожидайте.")
         if not servis_method.all_vdd(save_options.getInstance()):
             print("Не удалось выполнить настройку питания. Проверьте источник напряжения.")
         else:
             if getattr(save_options.getInstance(), "voltage_state"):
                 self.vddButton.setStyleSheet('QPushButton {background-color: #22ff13;}')
-                print('\n' + "Питание включено.")
+                print("\nПитание включено.")
             else:
                 self.vddButton.setStyleSheet('QPushButton {background-color: #ff5a0e;}')
-                print('\n' + "Питание выключено.")
+                print("\nПитание выключено.")
 
     # Чтение температураного кода. Формат вывода - (KOD : TEMP)
     def readTemp(self):
         list_temp = []
         if not other_functions.power_check(save_options.getInstance()):
+            self.print_message_error("Питание микроконтролера отключено. \nПожалуйста включите питание")
             return
         try:
-            print("Чтение температурного кода.")
             logger.write_log("Чтение температурного кода.", 0)
             list_mk = getattr(save_options.getInstance(), 'list_mk')
             for iterator_mk in list_mk:
                 basic_commands_onewire.form_temp_cod_not_active(iterator_mk.number_slot)
-                logger.write_log("Формирование температурного кода в микросхеме " + str(iterator_mk.number_slot), 0)
+                logger.write_log(f"Формирование температурного кода в микросхеме {iterator_mk.number_slot}", 0)
             # TODO тут проблема, каждая мк имеет свое время преобразования т.кода
             time.sleep(0.5)
             for iterator_mk in list_mk:
@@ -78,114 +78,112 @@ class Commands_Window(QtWidgets.QMainWindow):
             print(list_temp)
         except:
             logger.write_log("Произошла ошибка в чтении температурного кода.", 0)
-            print('\n' + "Не удалось считать температурный код.")
 
     # Чтеине памяти микросхемы. Формат вывода - (ADDRESS : DATA, .....) В виде листа.
     def readMem(self):
         if not other_functions.power_check(save_options.getInstance()):
+            self.print_message_error("Питание микроконтролера отключено. \nПожалуйста включите питание")
             return
         try:
             logger.write_log("Чтение памяти микросхем", 0)
-            print("Чтение памяти микросхем")
             list_mk = getattr(save_options.getInstance(), 'list_mk')
             for iterator_mk in list_mk:
                 iterator_mk.type_chip.readMem(iterator_mk.number_slot)
         except:
             logger.write_log("Произошла ошибка в чтении памяти микросхем", 0)
-            print('\n' + "Произошла ошибка в чтении памяти микросхем.")
 
     # Чтение адреса микросхемы. Не все мк имеют адрес.
     def readID(self):
         if not other_functions.power_check(save_options.getInstance()):
+            self.print_message_error("Питание микроконтролера отключено. \nПожалуйста включите питание")
             return
         try:
             logger.write_log("Чтение адреса микросхем", 0)
-            print("Чтение адреса микросхем")
             list_mk = getattr(save_options.getInstance(), 'list_mk')
             for iterator_mk in list_mk:
                 iterator_mk.type_chip.readID(iterator_mk.number_slot)
             print("Конец записи функции чтения адреса.")
         except:
             logger.write_log("Произошла ошибка в чтении адреса микросхем", 0)
-            print('\n' + "Произошла ошибка в чтении адреса микросхем.")
 
     # Запись бита перключения работы мк. В некоторых микросхемах записываются дополительные функцианальные биты.
     def writeEN(self):
         try:
             if not other_functions.power_check(save_options.getInstance()):
+                self.print_message_error("Питание микроконтролера отключено. \nПожалуйста включите питание")
                 return
-            if not other_functions.action_check():
+            if not self.action_check():
                 return
             logger.write_log("Запись EN", 0)
-            print("Запись EN")
             list_mk = getattr(save_options.getInstance(), 'list_mk')
             for iterator_mk in list_mk:
                 if other_functions.smart_mode_check(save_options.getInstance()):
                     if not iterator_mk.writeMem:
-                        print(f"Микросхема под номером {iterator_mk.number_slot} не может выполнить данную функцию, "
-                              f"\nтак как не выолнены предидущие итерации")
+                        self.print_message_error(f"Микросхема под номером {iterator_mk.number_slot} не может "
+                                                 f"выполнить данную функцию, \nтак как не выолнены предидущие "
+                                                 f"итерации")
                         return
             for iterator_mk in list_mk:
                 iterator_mk.type_chip.writeEN(iterator_mk.number_slot)
                 iterator_mk.writeEN = True
                 iterator_mk.dump()
-            print("Конец функции записи EN")
             logger.write_log("Конец функции записи EN", 0)
         except:
+            self.print_message_error(f"Запись EN не выполенно")
             logger.write_log("Запись EN не выполенно", 0)
 
     # Запись памяти мк. В некоторых мк записывается больше информации.
     # TODO надо додумать для паралельного программирования. Возможно, стоит добавить многопоточку, для расчета
     def writeMem(self):
         if not other_functions.power_check(save_options.getInstance()):
+            self.print_message_error("Питание микроконтролера отключено. \nПожалуйста включите питание")
             return
-        if not other_functions.action_check():
+        if not self.action_check():
             return
         logger.write_log("Запись памяти", 0)
-        print("Запись памяти")
         list_mk = getattr(save_options.getInstance(), 'list_mk')
         for iterator_mk in list_mk:
             if other_functions.smart_mode_check(save_options.getInstance()):
                 if not iterator_mk.startRead:
-                    print(f"Микросхема под номером {iterator_mk.number_slot} не может выполнить данную функцию, "
-                          f"\nтак как не выолнены предидущие итерации")
+                    self.print_message_error(f"Микросхема под номером {iterator_mk.number_slot} не может "
+                                             f"выполнить данную функцию, \nтак как не выолнены предидущие "
+                                             f"итерации")
                     return
 
         for iterator_mk in list_mk:
-            iterator_mk.type_chip.writeMem(iterator_mk.number_slot)
+            iterator_mk.type_chip.writeMem(iterator_mk)
             iterator_mk.writeMem = True
             iterator_mk.dump()
-
-        print("Конец записи данных в микросхемы.")
         logger.write_log("Конец записи данных в микросхемы.", 0)
 
     # Запуск измерения микросхем для последующей настройки. Происходит формирование файлов вида - (TEMP DATA).
     # Для некоторых микросхем может быть изменено.
     def startRead(self):
         if not other_functions.power_check(save_options.getInstance()):
+            self.print_message_error("Питание микроконтролера отключено. \nПожалуйста включите питание")
             return
-        print("Старт измерений")
         logger.write_log("Старт измерений", 0)
         list_mk = getattr(save_options.getInstance(), 'list_mk')
         for iterator_mk in list_mk:
             if other_functions.smart_mode_check(save_options.getInstance()):
                 if not iterator_mk.presetting:
-                    print(f"Микросхема под номером {iterator_mk.number_slot} не может выполнить данную функцию, "
-                          f"\nтак как не выолнены предидущие итерации")
+                    self.print_message_error(f"Микросхема под номером {iterator_mk.number_slot} не может "
+                                             f"выполнить данную функцию, \nтак как не выолнены предидущие "
+                                             f"итерации")
                     return
         list_temp_spec = getattr(save_options.getInstance(), 'list_temperature')
-        print(f'Список температур {list_temp_spec}')
-        logger.write_log("Список температур " + str(list_temp_spec), 0)
+        logger.write_log(f"Список температур {list_temp_spec}", 0)
         for temp_spec in list_temp_spec:
             other_devices.work_spec(temp_spec)
             mit.sleep_in_time(save_options.getInstance(), temp_spec)
             for i in range(2):
                 print(f'Осталось {20 - i * 10} минут, температура {temp_spec}')
                 time.sleep(600)
-            #TODO тут нужна пробежка по всем мк
-            self.read_temp_and_write_in_file(save_options.getInstance())
+            # TODO тут надо как то сделать оп другому. так очень долго
+            for iterator_mk in list_mk:
+                iterator_mk.type_chip.read_temp_and_write_in_file(iterator_mk.number_slot)
+                iterator_mk.dump()
             logger.write_log("", 0)
-        print("Конец чтения температурного кода")
         logger.write_log("Конец измерений", 0)
         for iterator_mk in list_mk:
             iterator_mk.startRead = True
@@ -194,7 +192,11 @@ class Commands_Window(QtWidgets.QMainWindow):
     # Перевести микросхему на 3 вольта. Данная функция может быить применена и для других действий. Смотрите описание.
     # TODO данная функция отключена
     def write3V(self):
-        self.chip_13.write3V()
+        # if not other_functions.power_check(save_options.getInstance()):
+        #     self.print_message_error("Питание микроконтролера отключено. \nПожалуйста включите питание")
+        #     return
+        # self.chip_13.write3V()
+        self.print_message_error("Данная функция не работает, обратитесь в отдел разработки ПО.")
 
     # Добавление всех данных по настройке микросхем в архив. Данный метод реализован в каждом классе.
     # При необходимости можно переделать
@@ -206,11 +208,11 @@ class Commands_Window(QtWidgets.QMainWindow):
     def presetting(self):
         try:
             if not other_functions.power_check(save_options.getInstance()):
+                self.print_message_error("Питание микроконтролера отключено. \nПожалуйста включите питание")
                 return
-            if not other_functions.action_check():
+            if not self.action_check():
                 return
             logger.write_log("Предварительная настройка", 0)
-            print("Предварительная настройка")
             list_mk = getattr(save_options.getInstance(), 'list_mk')
             for iterator_mk in list_mk:
                 print(f'микросхема {iterator_mk.number_slot}')
@@ -219,11 +221,25 @@ class Commands_Window(QtWidgets.QMainWindow):
                 iterator_mk.dump()
         except:
             logger.write_log("Предварительная настройка не выполена", 0)
-
+            self.print_message_error("Предварительная настройка не выполена")
 
     # Работа с новой партией. Пока что не реализована совсем.
     # def work_new_part(self):
     #     return
+
+    def action_check(self):
+        message = 'Подтвердите действие'
+        reply = QtWidgets.QMessageBox.question(self, 'Уведомление', message,
+                                               QtWidgets.QMessageBox.Yes,
+                                               QtWidgets.QMessageBox.No)
+
+        if reply == QtWidgets.QMessageBox.Yes:
+            return True
+        else:
+            return False
+
+    def print_message_error(self, text):
+        QMessageBox.about(self, "Внимение", text)
 
 
 # class MainWindow(QtWidgets.QMainWindow):
@@ -247,7 +263,7 @@ class Commands_Window(QtWidgets.QMainWindow):
 
 
 voltage_state = False
-logger.write_log('\n' + "Запуск программы" + '\n' + "---------------", 0)
+logger.write_log("\nЗапуск программы\n---------------", 0)
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     # w = MainWindow()

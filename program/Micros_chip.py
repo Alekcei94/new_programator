@@ -34,7 +34,7 @@ class Chip:
         file_data = open("../microchip_life/" + str(number) + ".txt")
         for line in file_data:
             if "data" in line:
-                self.data = ast.literal_eval(line.split(" ")[1])
+                self.data = ast.literal_eval(line.split("data ")[1])
             elif "number_slot" in line:
                 self.number_slot = int(line.split(" ")[1])
             elif "type_chip" in line:

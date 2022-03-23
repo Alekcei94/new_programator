@@ -2,14 +2,13 @@ from scipy import interpolate
 import numpy as np
 import random as rand
 import math
-# import mathem.utility as test
-import mathem.utility as utility
+import program.mathem.utility as utility
 
 
 class TMD:
     """Main tm class"""
 
-    def __init__(self, tm_type, xy_path, left_temp=-60, right_temp=125, num_interpolate_points=20000, kind='cubic',
+    def __init__(self, tm_type, microchip, left_temp=-60, right_temp=125, num_interpolate_points=20000, kind='cubic',
                  num_points_total=9,
                  maximum_gap=10,
                  min_code=200, annealing_start_temp=50, annealing_step=0.001, annealing_multiplier=10, k_bits=5,
@@ -54,10 +53,17 @@ class TMD:
                                                      endpoint=True)
         self.pair_result_saved = dict()
 
-        with open(xy_path) as f:
-            lines = f.readlines()
-            x = [float(el.split(' ')[0]) for el in lines]
-            y = [float(el.split(' ')[1].strip()) for el in lines]
+        x = []
+        y = []
+        for key_dict in microchip.keys():
+            x.append(float(key_dict))
+            y.append(float(microchip[key_dict]))
+        print(x ,y)
+        # with open(xy_path) as f:
+        #
+        #     lines = f.readlines()
+        #     x = [float(el.split(' ')[0]) for el in lines]
+        #     y = [float(el.split(' ')[1].strip()) for el in lines]
         self.interpol, self.minimum, self.code_interpolate_fitted, self.code_interpolate_fitted_extended = self.prepare_interpolation(
             x, y)
         self.interpolation_dictionary = self.prepare_interpolation_dictionary(self.code_interpolate_fitted_extended)

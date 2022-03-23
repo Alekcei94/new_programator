@@ -60,7 +60,7 @@ class OneWire_Chip:
         print(f"микросхема: {iterator_mk}")
 
         path_to_file = './data/' + str(iterator_mk) + '.txt'
-        TM = TMD.TMD(tm_type='10', xy_path=path_to_file, annealing_step=0.001, maximum_gap=100,
+        TM = TMD.TMD(tm_type='10', microchip=iterator_mk.data, annealing_step=0.001, maximum_gap=100,
                      num_points_total=9, kind='cubic',
                      annealing_multiplier=20, left_mutation=-20, right_mutation=20, min_code=100)
         list_m, list_k, list_b, z = TM.execute_point_optimization()
@@ -161,3 +161,7 @@ class OneWire_Chip:
 
     def presetting(self, iterator_mk):
         print("Данной функции нет в данной микросхеме")
+
+
+    def read_temp_and_write_in_file(self, iterator_mk):
+        print("Не работает")
